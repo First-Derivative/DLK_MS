@@ -15,7 +15,7 @@
   <link href="{% static '/overview_app/styles/build/overview.css' %}" type="stylesheet" rel="stylesheet">
 
   <!-- users CSS -->
-  <link hre="{% static '/users/styles/build/login.'%}"
+  <link hre="{% static '/users/styles/build/login.css'%}"
 
   {% comment %}
   <link rel="icon" href="{% static '/main/images/icons/website_icon_1.png'%}">
@@ -27,10 +27,30 @@
 
 <body>
 
-  <div class="container">
+  <div class="container-fluid vh-100" id="login_container">
 
-    <div>
+    <div class="row m-5">
+      <form method="POST">
+      {% csrf_token %}
+      {% for field in login_form %}
+    
+      <div class="form-group">
+          {{field.label_tag}}
+  
+          {{field}}
+      </div>
+      {% endfor %}
 
+      <div class="text-center pt-3">
+        <button type="submit" class="btn std_button" id="user_button">Login</button>
+      </div>
+    </form>
+  
+    {% for message in messages %}
+      <div class="alert alert-danger" role="alert" style="margin-top: 1.5rem;">
+        {{ message }}
+      </div>
+    {% endfor %}
       
     </div>
 
