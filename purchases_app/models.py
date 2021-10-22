@@ -1,11 +1,11 @@
 from django.db import models
-from accounts.models import Currency
-from sales.models import Sales
+from accounts_app.models import Currency
+from sales_app.models import Sales
 
 class Purchases(models.Model):
 
   purchase_code = models.CharField(primary_key=True,verbose_name="Purchase Order Number",max_length=10)
-  project_code = models.ForeignKey(Sales, on_delete=models.NULL)
+  project_code = models.ForeignKey(Sales, on_delete=models.PROTECT)
   po_date = models.DateField()
   supplier_name	= models.CharField(max_length=100)
   purchased_items = models.CharField(max_length=80)
