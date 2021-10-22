@@ -2,6 +2,7 @@ from django.db import models
 from accounts_app.models import Currency
 
 class Sales(models.Model):
+  
   project_code = models.CharField(primary_key=True,max_length=10)
   project_name = models.CharField(max_length=80)
   client_name = models.CharField(max_length=100)
