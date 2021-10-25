@@ -39,10 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'overview_app',
     'sales_app',
     'purchases_app',
     'operations_app',
-    'shipping_app'
+    'shipping_app',
+    'accounts_app'
 ]
 
 MIDDLEWARE = [
@@ -60,7 +62,7 @@ ROOT_URLCONF = 'ms_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
