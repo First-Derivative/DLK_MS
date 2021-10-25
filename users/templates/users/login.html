@@ -51,13 +51,15 @@
           <div class="text-center pt-3">
             <button type="submit" class="btn std_button" id="login_btn">Login</button>
           </div>
+          
+          {% for message in messages %}
+          <div class="alert alert-danger" role="alert" style="margin-top: 1.5rem;">
+            {{ message }}
+          </div>
+          {% endfor %}
+
         </form>
         
-        {% for message in messages %}
-        <div class="alert alert-danger" role="alert" style="margin-top: 1.5rem;">
-          {{ message }}
-        </div>
-        {% endfor %}
       </div>
       <div class="col-xl background"></div> <!-- empty column for layout -->
     </div>
