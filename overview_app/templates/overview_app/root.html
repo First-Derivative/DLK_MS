@@ -7,12 +7,15 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
+  
+  {% comment %}
   <!-- Root CSS -->
   <link href="{% static '/overview_app/styles/build/root.css' %}" rel="stylesheet">
+  {% endcomment %}
+
+  <!-- Bootstrap CSS LAST LINE = HIGHER PRIORITY-->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
 
 
   {% comment %}
@@ -24,14 +27,24 @@
 </head>
 
 <body>
-  <!-- Dependency Scripts : LAST LINE = HIGHER PRIORITY -->
-  <div>
-    <h3> Cool-Guys.com</h3>
-    <p>
-      Hey guys, welcome to the coolest site full of future progress.
-    </p>
+  <div class="container-fluid" id="root_container">
+    <div class="row d-flex justify-content-center ">
+      {% block content %}
+      {% endblock content %}
+      <div class="col-xl-3" style="background-color:blue">
+      <p>
+        COntent Content Content Content Content
+      </p></div>
+      <div class="col-xl-6" style="background-color:black">
+      <p>
+        COntent Content Content Content Content
+      </p></div>
+      <div class="col-xl-3" style="background-color:red">
+      <p>
+        COntent Content Content Content Content
+      </p></div>
+    </div>
   </div>
-
 </body>
 
 </html>

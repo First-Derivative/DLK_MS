@@ -5,6 +5,7 @@ from ms_app.decorators import unauthenticated_check
 @unauthenticated_check
 def homepage(request):
   if(request.method == "GET"):
-    return HttpResponse("homepage")
+    print("stupid fucking homepage view")
+    return render(request, "overview_app/overview.html", {})
   else:
     return HttpResponseBadRequest("Invalid Request")
