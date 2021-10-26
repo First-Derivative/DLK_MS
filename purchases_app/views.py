@@ -32,7 +32,7 @@ def getPurchases(request):
   return JsonResponse({"purchases":purchases})
 
 @method_check(allowed_methods=["POST"])
-@role_check(allowed_roles=["sales"])
+@role_check(allowed_roles=["purchases"])
 def addPurchase(request):
   post = request.post
 
