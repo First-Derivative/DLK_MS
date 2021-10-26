@@ -5,7 +5,7 @@ from sales_app.models import Sales
 class Purchases(models.Model):
 
   purchase_code = models.CharField(primary_key=True,verbose_name="Purchase Order Number",max_length=10)
-  project_code = models.ForeignKey(Sales, on_delete=models.PROTECT)
+  project_code = models.CharField(max_length=10)
   po_date = models.DateField()
   supplier_name	= models.CharField(max_length=100)
   purchased_items = models.CharField(max_length=80)
@@ -15,6 +15,8 @@ class Purchases(models.Model):
   supplier_date = models.DateField(verbose_name="Supplier Delivary Date")
 
   cancelled = models.BooleanField(default=False)
+
+  
 
   @property
   def amount(self):
