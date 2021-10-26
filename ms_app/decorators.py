@@ -1,5 +1,5 @@
 from django.shortcuts import redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 
 # Disables access to rest of site if user is unathenticated *consider refactor if low use case
 def unauthenticated_check(view_func):
@@ -33,7 +33,7 @@ def method_check(allowed_methods=[]):
       if request.method in allowed_methods:
         return view_func(request, *args, **kwargs)
       else:
-        return HttpResponse(status=405)
+        return HttpResponseBadRequest("Suspicious Request methods used")
     
     return wrapper_func
   return decorator
