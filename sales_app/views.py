@@ -11,29 +11,27 @@ def SerializeSale(sale):
   serial["client_name"] = sale.client_name
   serial["project_detail"] = sale.project_detail
   serial["value"] = sale.value
-  serial["order_date"] = sale.order_date.strftime('%d %B %Y') # Consider this strftime format in case of error
-  serial["shipping_date"] = sale.shipping_date.strftime('%d %B %Y')
+  serial["order_date"] = sale.order_date #.strftime('%d %B %Y') Consider this strftime format in case of error
+  serial["shipping_date"] = sale.shipping_date
   serial["payment_term"] = sale.payment_term
   serial["currency"] = resolveCurrency(sale.currency)
   serial["cancelled"] = sale.cancelled
 
   return serial
 
+# @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def getSales(request):
-  if(not request.user_is_anonymous):
     unserialized_sales = Sales.objects.all()
-    sales = []
+    sales = {"sales":[]}
     for sale in unserialized_sales:
-      sales.append(SerializeSale(sale))
+      sales["sales"].append(SerializeSale(sale))
 
     return JsonResponse(sales)
-  else:
-    return HttpResponse("User not logged in")
 
 #@unauthenticated_check 
 @role_check(allowed_roles=["sales"])
-def addSale(request):
+def addSales(request):
   if(request.method == "POST"):
     post = request.post
     

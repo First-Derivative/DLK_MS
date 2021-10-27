@@ -16,6 +16,10 @@ class Sales(models.Model):
   payment_term = models.CharField(max_length=100)
   cancelled = models.BooleanField(default=False)
 
+  class Meta:
+    verbose_name = "Sales"
+    verbose_name_plural = "Sales"
+
   @property
   def invoice_amount(self):
     return "{a}{b.2f}".format(a=self.currency, b=self.value)
