@@ -23,11 +23,11 @@ def SerializeSale(sale):
 @method_check(allowed_methods=["GET"])
 def getSales(request):
     unserialized_sales = Sales.objects.all()
-    sales = {"sales":[]}
+    sales = []
     for sale in unserialized_sales:
-      sales["sales"].append(SerializeSale(sale))
+      sales.append(SerializeSale(sale))
 
-    return JsonResponse(sales)
+    return JsonResponse({"sales":sales})
 
 #@unauthenticated_check 
 @role_check(allowed_roles=["sales"])

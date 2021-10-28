@@ -37,7 +37,7 @@ function postSale(new_sale)
     url: postSales_url,
     data:
     {
-      'data': new_sale
+      "data": new_sale
     },
     success: function(response) 
     {
