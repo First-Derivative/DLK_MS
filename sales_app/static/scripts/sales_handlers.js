@@ -6,7 +6,7 @@ $("#addSales_confirm").click(function()
   
   // Get & Assign Data
   let data_form = $("form").serializeArray()
-  $.each(x, function(i, field)
+  $.each(data_form, function(i, field)
   {
     property = field.name 
     new_sales.property = field.value
