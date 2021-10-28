@@ -2,6 +2,7 @@ from django.db import models
 from sales_app.models import Sales
 
 class Operations(models.Model):
+  operations_id = models.BigAutoField(primary_key=True)
   project_code = models.CharField(max_length=10)
   project_name = models.CharField(max_length=80)
   client_name = models.CharField(max_length=100)

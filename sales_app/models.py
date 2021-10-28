@@ -2,10 +2,8 @@ from django.db import models
 from accounts_app.models import Currency
 
 class Sales(models.Model):
-  
-  # sales_id = models.BigAutoField(primary_key=True)
-  # ^ incase project_code needs to be abstracted into project object
-  project_code = models.CharField(primary_key=True,max_length=10)
+  sales_id = models.BigAutoField(primary_key=True)
+  project_code = models.CharField(max_length=20)
   project_name = models.CharField(max_length=80)
   client_name = models.CharField(max_length=100)
   project_detail = models.CharField(max_length=600, null=True, blank=True)

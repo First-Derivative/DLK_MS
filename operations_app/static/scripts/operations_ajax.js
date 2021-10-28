@@ -27,7 +27,7 @@ function getOperations(obj)
 
 // Post Operations
 function postOperations(new_operations)
-{
+{ 
   $.ajax(
   {
     type: "POST",
