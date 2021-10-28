@@ -1,6 +1,9 @@
 from django.db import models
+from django.db.models.deletion import PROTECT
+from sales_app.models import Sales
+from purchases_app.models import Purchases
 
-class Currency(models.TextChoices):
+class Currency(models. TextChoices):
   MYR = ("MYR","RM")
   EUR = ("EUR","€")
   USD = ("USD","$")
@@ -12,6 +15,10 @@ def resolveCurrency(currency):
       return choice.label
 
 class PaymentStatus(models.Model):
+
+  sales_relation = models.ForeignKey(Sales, on_delete=PROTECT)
+  purchases_relation = models.ForeignKey(Purchases, on_delete=PROTECT)
+
   paymentstatus_id = models.BigAutoField(primary_key=True)
   proforma_number = models.CharField(max_length=30)
   invoice_number = models.CharField(max_length=30)

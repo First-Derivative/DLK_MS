@@ -1,0 +1,13 @@
+{% extends "overview_app/root.html" %}
+{% load static %}
+
+{% block content %}
+
+{% endblock content %}
+
+<script>
+  const token = {% csrf_token %}
+  const getSales_url = {% url 'getSales_url' %}
+  const postSales_url = {% url 'postSales_api' %}
+  
+</script>

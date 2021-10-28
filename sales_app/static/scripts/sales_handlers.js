@@ -15,3 +15,24 @@ $("#addSales_confirm").click(function()
   // Calls Ajax postSale
   postSale(new_sales)
 })
+
+// UI Functionality: Add Sale
+function addSale(new_sale)
+{
+  sale_item_template = `<div> {} </div>`
+
+  sales_id = 
+  project_code =
+  project_name =
+  client_name =
+  project_detail =
+  value =
+  currency =
+  order_date = 
+  shipping_date =
+  payment_term =
+  cancelled = 
+
+
+
+}
