@@ -13,6 +13,8 @@ def serializeShipping(shipment):
   serial["remark"] = shipment.remark
   serial["cancelled"] = shipment.cancelled
 
+  return serial
+
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
 def getShipping(request):
@@ -20,6 +22,7 @@ def getShipping(request):
   shipping = []
   for shipment in unserialized_shipping:
     shipping.append(serializeShipping(shipment))
+  return JsonResponse({"shipping":shipping})
 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["shipping"])
