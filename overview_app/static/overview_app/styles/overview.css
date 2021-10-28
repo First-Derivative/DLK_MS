@@ -1,0 +1,6 @@
+#overview_wrapper
+{
+  display: flex;
+  flex-direction: column;
+  background-color: navy;
+}
