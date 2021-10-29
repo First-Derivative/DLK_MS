@@ -1,51 +1,86 @@
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed,
-figure, figcaption, footer, header, hgroup,
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+body, html, * 
+{
+  font-family: 'Poppins', sans-serif;
 }
 
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure,
-footer, header, hgroup, menu, nav, section {
-  display: block;
+ul,li {list-style-type: none;}
+
+.img-thumbnail{border: none;}
+
+#navbar_container > * 
+{
+  color: black;
 }
 
-body {
-  line-height: 1;
+#navbar_container
+{
+  border-bottom: 0.5em solid #d82d4e;;
+  margin-right: 2em;
+  margin-left: 2em;
+  padding-top: 1em;
+  padding-bottom: 2em;
 }
 
-ol, ul {
-  list-style: none;
+.nav-link:focus {color: inherit;}
+
+.navbar-brand
+{
+  text-align: center;
+  height: 3em;
+  width: 8.5em;
+  font-size: 1.7em;
+  margin-left: 0.5em;
+  /* background-color: maroon; */
 }
 
-blockquote, q {
-  quotes: none;
+#navbar_nav
+{
+  margin-left: 2.5em;
 }
 
-blockquote:before, blockquote:after,
-q:before, q:after {
-  content: "";
-  content: none;
+.nav_footer
+{
+  margin-left: 10em;
 }
 
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
+.active
+{
+  color: #d82d4e;
+  /* border-bottom: 0.2em solid #dd3455; */
+  /* border-bottom: 0.2em solid #333; */
 }
 
-/*# sourceMappingURL=root.css.map */
+.nav-item > a
+{
+  font-size: 1.4em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav-item > a:hover{color:inherit}
+
+.nav-item
+{
+  align-self: center !important;
+  text-align: center;
+  padding: 1em;
+  /* background-color: grey; */
+}
+
+#accounts_tab
+{
+  height: 4.0625em;
+  padding-left: 1em;
+  padding-right: 1em;
+  padding-top: 1em;
+  padding-bottom: 0.5em;
+}
+
+#accounts_tab_text{padding:0em;}
+
+#root_container
+{
+  margin-left: 2em;
+}

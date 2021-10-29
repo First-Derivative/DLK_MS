@@ -34,4 +34,4 @@ def userLogin(request):
   
 def userLogout(request):
   logout(request)
-  return HttpResponse("User Logout")
+  return redirect("user_login")
