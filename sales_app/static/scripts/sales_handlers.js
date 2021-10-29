@@ -20,7 +20,7 @@ $("#addSales_confirm").click(function()
 function addSale(new_sale)
 {
   sale_item_template = `<div> {} </div>`
-
+/*
   sales_id = 
   project_code =
   project_name =
@@ -32,7 +32,7 @@ function addSale(new_sale)
   shipping_date =
   payment_term =
   cancelled = 
-
+*/
 
 
 }

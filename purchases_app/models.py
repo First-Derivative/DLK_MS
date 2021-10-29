@@ -1,5 +1,5 @@
 from django.db import models
-from accounts_app.models import Currency
+from ms_app.models import Currency
 from sales_app.models import Sales
 
 class Purchases(models.Model):

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from ms_app.decorators import *
 from .models import Purchases
-from accounts_app.models import Currency, resolveCurrency
+from ms_app.models import Currency, resolveCurrency
 
 
 def serializePurchase(purchase):

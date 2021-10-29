@@ -1,5 +1,5 @@
 from django.db import models
-from accounts_app.models import Currency
+from ms_app.models import Currency
 
 class Sales(models.Model):
   sales_id = models.BigAutoField(primary_key=True)
