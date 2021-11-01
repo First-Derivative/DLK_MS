@@ -4,22 +4,26 @@ from ms_app.decorators import *
 from .models import Sales
 from ms_app.models import Currency, resolveCurrency
 
+@unauthenticated_check
+@method_check(allowed_methods=["GET"])
+def salesPage(request):
+  return render(request, "sales_app/sales.html",  {})
+
 def SerializeSale(sale):
   serial = {}
   serial["project_code"] = sale.project_code
   serial["project_name"] = sale.project_name
   serial["client_name"] = sale.client_name
   serial["project_detail"] = sale.project_detail
-  serial["value"] = sale.value
+  serial["invoice_amount"] = sale.invoice_amount
   serial["order_date"] = sale.order_date #.strftime('%d %B %Y') Consider this strftime format in case of error
   serial["shipping_date"] = sale.shipping_date
   serial["payment_term"] = sale.payment_term
-  serial["currency"] = resolveCurrency(sale.currency)
   serial["cancelled"] = sale.cancelled
 
   return serial
 
-# @unauthenticated_check
+@unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def getSales(request):
     unserialized_sales = Sales.objects.all()

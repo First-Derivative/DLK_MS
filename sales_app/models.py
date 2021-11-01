@@ -1,5 +1,5 @@
 from django.db import models
-from ms_app.models import Currency
+from ms_app.models import Currency, resolveCurrency
 
 class Sales(models.Model):
   sales_id = models.BigAutoField(primary_key=True)
@@ -20,4 +20,5 @@ class Sales(models.Model):
 
   @property
   def invoice_amount(self):
-    return "{a}{b.2f}".format(a=self.currency, b=self.value)
+    currency_label = resolveCurrency(self.currency)
+    return "{a}{b}".format(a=currency_label, b=self.value)
