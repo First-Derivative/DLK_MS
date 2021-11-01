@@ -1,18 +1,30 @@
 .hidden{display: none !important;}
 
+#left_content > img
+{
+  display: inline;
+}
+
 .card
 {
   border: 0.15em solid #d82d4e;
   display: flex;
   justify-content: space-between;
+  background-color: #d82d4e;
   margin-bottom: 0.6em;
+}
+
+.card-expand
+{
+  filter: invert(100%);
 }
 
 .card-header
 {
   font-size: 1em;
   height: 2.6em;
-
+  background-color: #d82d4e;
+  color: white;
 }
 
 .card-header > p 
@@ -20,16 +32,21 @@
   display: inline;
 }
 
-.dropdown
+.card-expand
 {
   width: 24px !important;
   height: 24px !important;
 }
 
-.card-body{font-size: 0.8em;}
+.card-body
+{
+  font-size: 0.8em;
+  background-color: white;
+}
 .card-footer
 {
   font-size: 0.8em;
+  background-color: white;
 }
 
 #body_wrapper

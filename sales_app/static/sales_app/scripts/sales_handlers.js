@@ -26,7 +26,7 @@ function addSale(new_sale)
   `<div class="card" name="${new_sale.project_code}">
     <div class="card-header d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
-      <img src="${droparrow_src}" class="hoverable dropdown" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
+      <img src="${droparrow_src}" class="hoverable card-expand" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
     </div>
     <div class="card-body d-flex justify-content-between">
       <div class="card_row">

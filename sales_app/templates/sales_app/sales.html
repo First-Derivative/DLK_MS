@@ -5,6 +5,13 @@
 <link href="{% static '/sales_app/styles/sales_app.css' %}" rel="stylesheet">
 {% endblock app_stylsheet %}
 
+{% block left_content%}
+  <p><img src="{% static 'sales_app/icons/search.png' %}" style="margin-bottom:2em" class="hoverable mr-3" id="add_sale" alt="Add Sale"> Search</p>
+  <br>
+  <p><img src="{% static 'sales_app/icons/add.png' %}" class="hoverable mr-3" id="add_sale" alt="Add Sale"> Add Sale</p>
+  {% comment %} <p>Add Sale</p> {% endcomment %}
+{% endblock left_content%}
+
 {% block main_content %}
 {% endblock main_content %}
 
