@@ -9,6 +9,9 @@ media
 */*/migrations/
 */*/migrations/*
 
+# Special Files #
+*_key.json
+
 # Backup files # 
 *.bak 
 
