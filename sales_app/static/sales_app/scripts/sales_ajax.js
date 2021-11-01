@@ -1,12 +1,12 @@
 // Get Sales
-function getSales(obj)
+function getSales()
 {
   $.ajax({
     type: "GET",
     url: getSales_url,
     success: function(response)
     {
-      sales = request.sales
+      sales = response.sales
       sales_count = sales.length
 
       sales.reverse() // reverse sales array for performance

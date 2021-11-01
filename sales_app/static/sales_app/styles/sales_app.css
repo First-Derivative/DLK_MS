@@ -1,0 +1,52 @@
+.hidden{display: none !important;}
+
+.card
+{
+  border: 0.15em solid #d82d4e;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6em;
+}
+
+.card-header
+{
+  font-size: 1em;
+  height: 2.6em;
+
+}
+
+.card-header > p 
+{
+  display: inline;
+}
+
+.dropdown
+{
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.card-body{font-size: 0.8em;}
+.card-footer
+{
+  font-size: 0.8em;
+}
+
+#body_wrapper
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#body_wrapper > .card-text
+{
+  padding-top: 1em;
+  padding-bottom: 1em;
+  padding-right: 1em;
+}
+
+.card_row
+{
+  flex-direction: column;
+}

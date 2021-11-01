@@ -1,13 +1,26 @@
 {% extends "overview_app/root.html" %}
 {% load static %}
 
-{% block content %}
+{% block app_stylsheet %}
+<link href="{% static '/sales_app/styles/sales_app.css' %}" rel="stylesheet">
+{% endblock app_stylsheet %}
 
-{% endblock content %}
+{% block main_content %}
+{% endblock main_content %}
+
+{% block scripts %}
+<script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
+<script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
 
 <script>
-  const token = {% csrf_token %}
-  const getSales_url = {% url 'getSales_url' %}
-  const postSales_url = {% url 'postSales_api' %}
-  
+  // Import Consts
+  {% comment %} const token = {% csrf_token.value %} {% endcomment %}
+  const getSales_url = "{% url 'getSales_api' %}"
+  const postSales_url = "{% url 'postSales_api' %}"
+  const droparrow_src = "{% static '/sales_app/icons/dropdown-arrow.png' %}"
+
+  // Startup Script
+  $(document).ready(function(){getSales()})
+
 </script>
+{% endblock scripts %}

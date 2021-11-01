@@ -7,6 +7,8 @@ body, html, *
 
 ul,li {list-style-type: none;}
 
+.hoverable:hover{cursor: pointer;}
+
 .img-thumbnail{border: none;}
 
 #navbar_container > * 
@@ -16,7 +18,7 @@ ul,li {list-style-type: none;}
 
 #navbar_container
 {
-  border-bottom: 0.5em solid #d82d4e;;
+  border-bottom: 0.5em solid #d82d4e;
   margin-right: 2em;
   margin-left: 2em;
   padding-top: 1em;
