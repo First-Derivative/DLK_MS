@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from ms_app.decorators import *
 from .models import Purchases
-from ms_app.models import Currency, resolveCurrency
+from ms_app.models import Currency, resolveCurrencyLabel
 
 
 def serializePurchase(purchase):
@@ -13,7 +13,7 @@ def serializePurchase(purchase):
   serial["supplier_name"] = purchase.supplier_name
   serial["purchased_items"] = purchase.purchased_items
   serial["value"] = purchase.value
-  serial["currency"] = resolveCurrency(purchase.currency)
+  serial["currency"] = resolveCurrencyLabel(purchase.currency)
   serial["expected_date"] = purchase.expected_date
   serial["supplier_date"] = purchase.supplier_date
   serial["cancelled"] = purchase.cancelled

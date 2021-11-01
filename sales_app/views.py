@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from ms_app.decorators import *
 from .models import Sales
-from ms_app.models import Currency, resolveCurrency
+from ms_app.models import Currency, resolveCurrencyLabel
 
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])

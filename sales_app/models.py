@@ -1,5 +1,5 @@
 from django.db import models
-from ms_app.models import Currency, resolveCurrency
+from ms_app.models import Currency, resolveCurrencyLabel
 
 class Sales(models.Model):
   sales_id = models.BigAutoField(primary_key=True)
@@ -14,11 +14,16 @@ class Sales(models.Model):
   payment_term = models.CharField(max_length=100)
   cancelled = models.BooleanField(default=False)
 
+  # DJango Model DT Format: YYYY-MM-DD
+  # Gspread Sheets DT Format:MM-DD-YYYY
   class Meta:
     verbose_name = "Sales"
     verbose_name_plural = "Sales"
 
   @property
   def invoice_amount(self):
-    currency_label = resolveCurrency(self.currency)
+    currency_label = resolveCurrencyLabel(self.currency)
     return "{a}{b}".format(a=currency_label, b=self.value)
+
+  def __str__(self):
+    return "{a} {b}".format(a=self.project_code, b=self.project_name)
