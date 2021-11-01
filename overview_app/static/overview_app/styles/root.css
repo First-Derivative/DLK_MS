@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap');
 
 body, html, * 
 {
@@ -19,8 +19,6 @@ ul,li {list-style-type: none;}
 #navbar_container
 {
   border-bottom: 0.5em solid #d82d4e;
-  margin-right: 2em;
-  margin-left: 2em;
   padding-top: 1em;
   padding-bottom: 2em;
 }
@@ -81,8 +79,3 @@ ul,li {list-style-type: none;}
 }
 
 #accounts_tab_text{padding:0em;}
-
-#root_container
-{
-  margin-left: 2em;
-}

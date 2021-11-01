@@ -19,11 +19,10 @@ $("#addSales_confirm").click(function()
 */
 
 // UI Functionality: Add Sale
-function addSale(new_sale)
-{
+function addSale(new_sale) {
 
-  sales_card_template = 
-  `<div class="card" name="${new_sale.project_code}">
+  sales_card_template =
+    `<div class="card" name="${new_sale.project_code}">
     <div class="card-header d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
       <img src="${droparrow_src}" class="hoverable card-expand" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
@@ -31,7 +30,7 @@ function addSale(new_sale)
     <div class="card-body d-flex justify-content-between">
       <div class="card_row">
         <p class="card-text">${new_sale.client_name}</p>
-        <p class="card-text">${new_sale.invoice_amount}</p>
+        <p class="card-text value">${new_sale.invoice_amount}</p>
         
       </div>
       <div class="card_row>
@@ -47,18 +46,15 @@ function addSale(new_sale)
 
   $('#main_content').append(sales_card_template)
   dropdown_selector = "#card-dropdown-" + new_sale.project_code
-  
-  $(dropdown_selector).on("click", function()
-  {
+
+  $(dropdown_selector).on("click", function () {
     id = $(this).attr('name')
     selector = "#card-footer-" + id
-    
-    if($(`#card-footer-${id}`).hasClass("hidden"))
-    {
+
+    if ($(`#card-footer-${id}`).hasClass("hidden")) {
       $(`#card-footer-${id}`).removeClass("hidden")
     }
-    else
-    {
+    else {
       $(`#card-footer-${id}`).addClass("hidden")
     }
   })

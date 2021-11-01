@@ -1,8 +1,11 @@
 .hidden{display: none !important;}
 
-#left_content > img
+#left_content > img {display: inline;}
+
+.value
 {
-  display: inline;
+  color: #d82d4e;
+  font-weight: bold;
 }
 
 .card
