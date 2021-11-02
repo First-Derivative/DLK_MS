@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'users',
+    'users_app',
     'overview_app',
     'sales_app',
     'purchases_app',
@@ -75,7 +75,7 @@ TEMPLATES = [
     },
 ]
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users_app.User'
 WSGI_APPLICATION = 'ms_app.wsgi.application'
 
 

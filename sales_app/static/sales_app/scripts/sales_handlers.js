@@ -1,31 +1,42 @@
-// Add Sales Form Handler
-/*
-$("#addSales_confirm").click(function()
-{
-  // Init
-  new_sales = {project_code:null, project_name:null, client_name:null, project_detail:null, value:null, order_date:null, shipping_date:null, payment_term:null, currency:null}
-  
-  // Get & Assign Data
-  let data_form = $("form").serializeArray()
-  $.each(data_form, function(i, field)
-  {
-    property = field.name 
-    new_sales.property = field.value
-  })
-
-  // Calls Ajax postSale
-  postSale(new_sales)
+// UX Functionality: Display addSale Modal
+$('#add_sale').click(function () {
+  console.log("modal click")
+  $('#modal_addSale').modal()
 })
+
+// UX Functionality: Add Sale
+function addSale() {
+  /*
+  $("#addSales_confirm").click(function()
+  {
+    // Init
+    new_sales = {project_code:null, project_name:null, client_name:null, project_detail:null, value:null, order_date:null, shipping_date:null, payment_term:null, currency:null}
+    
+    // Get & Assign Data
+    let data_form = $("form").serializeArray()
+    $.each(data_form, function(i, field)
+    {
+      property = field.name 
+      new_sales.property = field.value
+    })
+  
+    // Calls Ajax postSale
+    postSale(new_sales)
+  })
 */
+}
 
 // UI Functionality: Add Sale
-function addSale(new_sale) {
+function UI_addSale(new_sale) {
 
   sales_card_template =
     `<div class="card" name="${new_sale.project_code}">
     <div class="card-header d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
-      <img src="${droparrow_src}" class="hoverable card-expand" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
+      <div class="d-flex justify-content-between" style="width:4em">
+        <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
+        <img src="${droparrow_src}" width="24" height="24" class="hoverable header-img" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
+      </div>
     </div>
     <div class="card-body d-flex justify-content-between">
       <div class="card_row">

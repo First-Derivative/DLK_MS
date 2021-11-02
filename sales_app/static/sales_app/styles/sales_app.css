@@ -17,7 +17,7 @@
   margin-bottom: 0.6em;
 }
 
-.card-expand
+.header-img
 {
   filter: invert(100%);
 }
@@ -28,11 +28,6 @@
   height: 2.6em;
   background-color: #d82d4e;
   color: white;
-}
-
-.card-header > p 
-{
-  display: inline;
 }
 
 .card-expand
@@ -69,4 +64,73 @@
 .card_row
 {
   flex-direction: column;
+}
+
+.modal-header
+{
+  background-color: #d82d4e;
+  color: white;
+}
+
+.modal-close-btn, .btn-close
+{
+  filter: invert(100%);
+}
+
+.search_wrapper
+{
+  /* height: 2.3em; */
+  width: 18.34275em;
+}
+
+.search_input
+{
+  border: 0.2em solid #4d4b4a;
+}
+
+.search_input::placeholder{color: #4d4b4a;}
+
+.search_input:focus, .search_input:focus::placeholder
+{
+  color: white;
+  background-color: #383736;
+}
+
+.sales_standard-btn
+{
+  background-color: #4d4b4a;
+  color: white;
+}
+
+.sales_standard-btn:hover
+{
+  background-color: #383736;
+  color:white;
+}
+
+.sales_secondary-btn
+{
+  background-color: #d82d4e;
+  color: white;
+}
+
+.sales_secondary-btn:hover
+{
+  background-color: #b8233f;
+  color: white;
+}
+
+.form-floating
+{
+  margin-bottom: 1em;
+}
+
+#modal-input-project_detail, #modal-input-order_date
+{
+  height: 3.625em ;
+}
+
+#modal-input-order_date::placeholder
+{
+  color: black;
 }

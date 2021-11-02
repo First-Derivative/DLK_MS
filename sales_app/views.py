@@ -16,7 +16,7 @@ def SerializeSale(sale):
   serial["client_name"] = sale.client_name
   serial["project_detail"] = sale.project_detail
   serial["invoice_amount"] = sale.invoice_amount
-  serial["order_date"] = sale.order_date #.strftime('%d %B %Y') Consider this strftime format in case of error
+  serial["order_date"] = sale.order_date
   serial["shipping_date"] = sale.shipping_date
   serial["payment_term"] = sale.payment_term
   serial["cancelled"] = sale.cancelled

@@ -10,7 +10,7 @@ class Sales(models.Model):
   value = models.DecimalField(max_digits=8, decimal_places=2)
   currency = models.CharField(max_length=5, choices=Currency.choices, default=Currency.MYR)
   order_date = models.DateField()
-  shipping_date = models.DateField(null=True, blank=True) 
+  shipping_date = models.CharField(max_length=100,null=True, blank=True) 
   payment_term = models.CharField(max_length=100)
   cancelled = models.BooleanField(default=False)
 

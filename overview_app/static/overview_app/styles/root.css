@@ -45,6 +45,30 @@ ul,li {list-style-type: none;}
   margin-left: 10em;
 }
 
+.standard-btn
+{
+  background-color: #d82d4e;
+  color: white;
+}
+
+.standard-btn:hover
+{
+  background-color: #b8233f;
+  color:white;
+}
+
+.secondary-btn
+{
+  background-color: #4d4b4a;
+  color: white;
+}
+
+.secondary-btn:hover
+{
+  background-color: #383736;
+  color: white;
+}
+
 .active
 {
   color: #d82d4e;

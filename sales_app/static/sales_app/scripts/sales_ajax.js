@@ -1,23 +1,19 @@
 // Get Sales
-function getSales()
-{
+function getSales() {
   $.ajax({
     type: "GET",
     url: getSales_url,
-    success: function(response)
-    {
+    success: function (response) {
       sales = response.sales
       sales_count = sales.length
 
       sales.reverse() // reverse sales array for performance
-      for (i = 0; i < sales_count; i++)
-      {
+      for (i = 0; i < sales_count; i++) {
         content = sales.pop()
-        addSale(content)
+        UI_addSale(content)
       }
     },
-    error: function(jqXHR, textStatus, errorThrown)
-    {
+    error: function (jqXHR, textStatus, errorThrown) {
       // Debugging case
       alert("textStatus: " + textStatus + " " + errorThrown)
     }
@@ -25,35 +21,30 @@ function getSales()
 }
 
 // Post (new) Sale
-function postSale(new_sale)
-{
+function postSale(new_sale) {
   $.ajax(
-  {
-    type: "POST",
-    headers:
     {
-      "X-CSRFToken": token 
-    },
-    url: postSales_url,
-    data:
-    {
-      "data": new_sale
-    },
-    success: function(response) 
-    {
-      if(response.error)
+      type: "POST",
+      headers:
       {
-        alert(response.error)
-      }
-      else
+        "X-CSRFToken": token
+      },
+      url: postSales_url,
+      data:
       {
-        addSale(new_sale)
+        "data": new_sale
+      },
+      success: function (response) {
+        if (response.error) {
+          alert(response.error)
+        }
+        else {
+          addSale(new_sale)
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Debugging case
+        alert("textStatus: " + textStatus + " " + errorThrown)
       }
-    },
-    error: function(jqXHR, textStatus, errorThrown)
-    {
-      // Debugging case
-      alert("textStatus: " + textStatus + " " + errorThrown)
-    }
-  })
+    })
 }
