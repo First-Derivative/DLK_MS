@@ -39,7 +39,7 @@ function postSale(new_sale) {
           alert(response.error)
         }
         else {
-          addSale(new_sale)
+          UI_addSale(new_sale)
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
