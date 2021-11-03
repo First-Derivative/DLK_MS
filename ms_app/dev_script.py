@@ -27,9 +27,9 @@ def reset_database():
     #Reset to Home after deleetion
     os.chdir(home)
 
-    os.system('python manage.py makemigrations users_app sales_app accounts_app purchases_app')
+    # os.system('python manage.py makemigrations users_app sales_app accounts_app purchases_app')
 
-    os.system('python manage.py migrate')
+    # os.system('python manage.py migrate')
   
 
 def readSheet(sheet):

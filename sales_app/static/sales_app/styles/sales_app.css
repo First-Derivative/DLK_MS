@@ -1,3 +1,5 @@
+/* LEGACY COLOR: #d82d4e; */
+
 .hidden{display: none !important;}
 
 #left_content > img {display: inline;}
@@ -80,7 +82,7 @@
 .search_wrapper
 {
   /* height: 2.3em; */
-  width: 18.34275em;
+  width: inherit;
 }
 
 .search_input

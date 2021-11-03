@@ -9,9 +9,25 @@
 
   <div class="d-flex flex-column position-fixed">
     <form class="search_wrapper mb-3">
-      <div class="">
+
+      <div class="col mb-3">
         <input type="text" class="search_input form-control" placeholder="Search...">
       </div>
+
+      <div class="col mb-3">
+          <input class="form-check-input" type="checkbox" value="" id="input-cancelled">
+        <label class="form-check-label" for="input-cancelled">
+          Show Cancelled Orders
+        </label>
+      </div>
+
+      <div class="col">
+          <input class="form-check-input" type="checkbox" value="" id="input-completed">
+        <label class="form-check-label" for="input-completed">
+          Show Completed Orders
+        </label>
+      </div>
+      
     </form>
     
     {% comment %}
@@ -24,16 +40,6 @@
     {% endcomment %}
 
     <!-- If User has sales Permissions -->
-    {% if perms.sales %} 
-    <div class="d-flex flex-row">
-      <button type="button" class="btn sales_standard-btn" data-bs-toggle="modal" data-bs-target="#modal_addSale">
-        Add Sale
-      </button>
-  
-    </div>
-    {% endif %}
-
-
   </div>
   {% comment %} <p>Add Sale</p> {% endcomment %}
 {% endblock left_content%}
@@ -131,6 +137,24 @@
   </div>
 </div>
 {% endblock main_content %}
+
+{% block right_content %}
+
+    {% if perms.sales %} 
+    <div class="d-flex flex-row">
+      <button type="button" class="btn sales_standard-btn mb-3" data-bs-toggle="modal" data-bs-target="#modal_addSale">
+        Add Sale
+      </button>
+    </div>
+    {% endif %}
+
+    <div>
+      <button type="button" class="btn sales_standard-btn" data-bs-toggle="modal" data-bs-target="#modal_addSale">
+        Reverse List
+      </button>
+    </div>
+
+{% endblock right_content %}
 
 {% block scripts %}
 <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
