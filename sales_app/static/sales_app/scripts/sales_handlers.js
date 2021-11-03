@@ -1,30 +1,28 @@
-// UX Functionality: Display addSale Modal
+// UX Functionality: Trigger Modal Display
 $('#add_sale').click(function () {
   console.log("modal click")
   $('#modal_addSale').modal()
 })
 
 // UX Functionality: Add Sale
-function addSale() {
-  /*
-  $("#addSales_confirm").click(function()
-  {
-    // Init
-    new_sales = {project_code:null, project_name:null, client_name:null, project_detail:null, value:null, order_date:null, shipping_date:null, payment_term:null, currency:null}
-    
-    // Get & Assign Data
-    let data_form = $("form").serializeArray()
-    $.each(data_form, function(i, field)
-    {
-      property = field.name 
-      new_sales.property = field.value
-    })
-  
-    // Calls Ajax postSale
-    postSale(new_sales)
+$("#modal-btn-save").click(function () {
+  // Init
+  new_sales = { project_code: null, project_name: null, client_name: null, project_detail: null, value: null, order_date: null, shipping_date: null, payment_term: null, currency: null }
+
+  // Get & Assign Data
+  let data_form = $("#modal-form-addSale").serializeArray()
+  $.each(data_form, function (i, field) {
+    console.log("doing something with each")
+    console.log(i, field)
+    property = field.name
+    new_sales.property = field.value
   })
-*/
-}
+
+  console.log(new_sales)
+
+  // Calls Ajax postSale
+  // postSale(new_sales)
+})
 
 // UI Functionality: Add Sale
 function UI_addSale(new_sale) {
