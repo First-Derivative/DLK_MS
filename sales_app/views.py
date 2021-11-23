@@ -20,6 +20,7 @@ def SerializeSale(sale):
   serial["shipping_date"] = sale.shipping_date
   serial["payment_term"] = sale.payment_term
   serial["cancelled"] = sale.cancelled
+  serial["visible"] = False
 
   return serial
 

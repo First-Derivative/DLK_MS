@@ -24,11 +24,33 @@ $("#modal-btn-save").click(function () {
   // postSale(new_sales)
 })
 
+$("#input-cancelled").click(function(){
+  for(const sale of sales_library)
+  {
+    if(sale.cancelled)
+    {
+      console.log(`toggling out ${sale.project_code}`)
+      UI_toggleVisibility(sale.project_code)
+    }
+  }
+})
+
+function UI_toggleVisibility(sale_id){
+  if($(`div[name=${sale_id}]`).hasClass("hidden"))
+  {
+    $(`div[name=${sale_id}]`).removeClass("hidden")
+  }
+  else
+  {
+    $(`div[name=${sale_id}]`).addClass("hidden")
+  }
+}
+
 // UI Functionality: Add Sale
 function UI_addSale(new_sale) {
 
   sales_card_template =
-    `<div class="card" name="${new_sale.project_code}">
+    `<div class="card" name="${new_sale.project_code}" style="${new_sale.visibility ? 'display:none' : ''}">
     <div class="card-header d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
       <div class="d-flex justify-content-between" style="width:4em">

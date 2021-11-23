@@ -1,6 +1,6 @@
 // Get Sales
-function getSales() {
-  $.ajax({
+function getSales(library) {
+  return $.ajax({
     type: "GET",
     url: getSales_url,
     success: function (response) {
@@ -10,7 +10,11 @@ function getSales() {
       sales.reverse() // reverse sales array for performance
       for (i = 0; i < sales_count; i++) {
         content = sales.pop()
-        UI_addSale(content)
+        if(i < 15)
+        {
+          content.visible = true
+        }
+        library.push(content)
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {

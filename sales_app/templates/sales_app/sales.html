@@ -15,7 +15,7 @@
       </div>
 
       <div class="col mb-3">
-          <input class="form-check-input" type="checkbox" value="" id="input-cancelled">
+          <input class="form-check-input" type="checkbox" value=""" id="input-cancelled" checked>
         <label class="form-check-label" for="input-cancelled">
           Show Cancelled Orders
         </label>
@@ -157,20 +157,30 @@
 {% endblock right_content %}
 
 {% block scripts %}
-<script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
-<script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
-<script src="{% static 'sales_app/scripts/autoresize.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script>
+  <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/autoresize.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script>
+
   // Import Consts
   const getSales_url = "{% url 'getSales_api' %}"
   const postSales_url = "{% url 'postSales_api' %}"
   const edit_src = "{% static '/sales_app/icons/edit.png' %}"
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
 
+  // Initiliaze parameters
+  sales_library = []
+
   // Startup Script
-  $(document).ready(function(){getSales()})
+  $.when(getSales(sales_library)).done(function(){
+    for(const sale of sales_library)
+    {
+      UI_addSale(sale)
+    }
+  })
+  
   $('.modal-form-project_detail').autoResize()// Add Resize to Modal input fields
   $('.date').datepicker({
     todayBtn: "linked",
