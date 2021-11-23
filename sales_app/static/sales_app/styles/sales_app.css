@@ -148,6 +148,11 @@ div:hover > #input-helper
   color: white;
 }
 
+.sales_left_content-btn
+{
+  width: 9em;
+}
+
 .form-floating
 {
   margin-bottom: 1em;
