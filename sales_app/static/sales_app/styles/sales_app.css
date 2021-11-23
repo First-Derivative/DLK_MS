@@ -85,6 +85,20 @@
   width: inherit;
 }
 
+#input-helper
+{
+  transition: opacity 0.8s ease-out;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+div:hover > #input-helper
+{
+  opacity: 1;
+  height: auto;
+}
+
 .search_input
 {
   border: 0.2em solid #4d4b4a;

@@ -1,3 +1,28 @@
+function searchSales(search_key) {
+  $.ajax(
+    {
+      type: "GET",
+      url: getSearchAPI.replace(0, search_key),
+      success: function (response) {
+
+        if (response.length) {
+          $("#search-text").remove()
+          for (const sale of response) {
+            UI_addSale(sale, true)
+          }
+        }
+        else {
+          $("#search-text").append(`<h5>No results for ${search_key}</h5>`)
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Debugging case
+        alert("textStatus: " + textStatus + " " + errorThrown)
+      }
+    })
+}
+
+
 // Get Sales
 function getSales(library) {
   return $.ajax({
@@ -10,8 +35,7 @@ function getSales(library) {
       sales.reverse() // reverse sales array for performance
       for (i = 0; i < sales_count; i++) {
         content = sales.pop()
-        if(i < 15)
-        {
+        if (i < 15) {
           content.visible = true
         }
         library.push(content)

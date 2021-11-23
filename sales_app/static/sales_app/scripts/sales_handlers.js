@@ -24,33 +24,12 @@ $("#modal-btn-save").click(function () {
   // postSale(new_sales)
 })
 
-$("#input-cancelled").click(function(){
-  for(const sale of sales_library)
-  {
-    if(sale.cancelled)
-    {
-      console.log(`toggling out ${sale.project_code}`)
-      UI_toggleVisibility(sale.project_code)
-    }
-  }
-})
-
-function UI_toggleVisibility(sale_id){
-  if($(`div[name=${sale_id}]`).hasClass("hidden"))
-  {
-    $(`div[name=${sale_id}]`).removeClass("hidden")
-  }
-  else
-  {
-    $(`div[name=${sale_id}]`).addClass("hidden")
-  }
-}
 
 // UI Functionality: Add Sale
-function UI_addSale(new_sale) {
+function UI_addSale(new_sale, search) {
 
   sales_card_template =
-    `<div class="card" name="${new_sale.project_code}" style="${new_sale.visibility ? 'display:none' : ''}">
+    `<div class="card" id="${search ? 'searched_sale' : ''}" name="${new_sale.project_code}" style="${new_sale.visibility ? 'display:none' : ''}">
     <div class="card-header d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
       <div class="d-flex justify-content-between" style="width:4em">
@@ -105,4 +84,92 @@ function UI_addSale(new_sale) {
     $(footer_id).addClass("hidden")
   })
   */
+}
+
+// UI Functionality: Entering search mode clears all displayed cards
+function enterSearchMode() {
+  search_mode = true
+  UI_toggleAll()
+  return true
+}
+
+// UI Functionality: Leaving search mode displays all previously hidden cards
+function leaveSearchMode() {
+  search_mode = false
+  UI_toggleAll()
+  clearSearchDOM()
+  $("#input-search").val("")
+
+}
+
+// UI Functionality: Clears search-text and previous searched_cards for new search
+// whilst still in search mode
+function clearSearchDOM() {
+  $("#search-text").remove()
+  $("div[id*=searched_sale]").each(function () {
+    $(this).remove()
+  })
+}
+
+// UX Functionality: Enter 'search mode' on enter key
+$("#left_content_form").on("keypress", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 13) {
+    event.preventDefault();
+
+    if (!search_mode) { // check if already in search mode, if false then enter and start search
+      enterSearchMode()
+    }
+    else {
+      clearSearchDOM()
+    }
+    const input_value = $("#input-search").val()
+    searchSales(input_value)
+    $("#main_content").append(`<div class="text-center" id="search-text"><h5>Searching for ${input_value}...</h5></div>`)
+    return false;
+  }
+})
+
+// UX Functionality: Leave 'search mode' on escape key
+$("#left_content_form").on("keyup", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 27) {
+    if (search_mode) { leaveSearchMode() } // check if already out of search mode
+
+  }
+})
+
+// UX Functionality: calls leaveSearchMode
+$("#input-search-clear").click(function () {
+  if (search_mode) { leaveSearchMode() } // Prevents clearing override if clicked whilst not in search_mode
+})
+
+// UX Functionality: Show Cancelled Order Toggle
+$("#input-cancelled").click(function () {
+  for (const sale of sales_library) {
+    if (sale.cancelled) {
+      UI_toggleVisibility(sale.project_code)
+    }
+  }
+})
+
+// UI Functionality: Toggle Sale Cards via project_code
+function UI_toggleVisibility(sale_id) {
+  if ($(`div[name=${sale_id}]`).hasClass("hidden")) {
+    $(`div[name=${sale_id}]`).removeClass("hidden")
+    return
+  }
+  $(`div[name=${sale_id}]`).addClass("hidden")
+}
+
+function UI_toggleAll() {
+  for (const sale of sales_library) {
+    id = sale.project_code
+    if ($(`div[name=${id}]`).hasClass("hidden")) {
+      $(`div[name=${id}]`).removeClass("hidden")
+      continue
+    }
+    $(`div[name=${id}]`).addClass("hidden")
+
+  }
 }
