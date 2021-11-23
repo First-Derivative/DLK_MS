@@ -24,6 +24,16 @@ $("#modal-btn-save").click(function () {
   // postSale(new_sales)
 })
 
+// UX Functionality: Search Function
+$("#input-search").autocomplete({source:sales_libraryIndex})
+$("#input-search").keypress(function(){
+  console.log($(this).val())
+})
+$("#input-search").blur(function() {
+  console.log("Back to OG")
+})
+
+// UX Functionality: Show Cancelled Order Toggle
 $("#input-cancelled").click(function(){
   for(const sale of sales_library)
   {
@@ -35,6 +45,7 @@ $("#input-cancelled").click(function(){
   }
 })
 
+// UI Functionality: Toggle Sale Cards via project_code
 function UI_toggleVisibility(sale_id){
   if($(`div[name=${sale_id}]`).hasClass("hidden"))
   {

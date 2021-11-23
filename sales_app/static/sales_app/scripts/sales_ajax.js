@@ -1,5 +1,5 @@
 // Get Sales
-function getSales(library) {
+function getSales(library,library_index) {
   return $.ajax({
     type: "GET",
     url: getSales_url,

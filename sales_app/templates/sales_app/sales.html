@@ -11,11 +11,11 @@
     <form class="search_wrapper mb-3">
 
       <div class="col mb-3">
-        <input type="text" class="search_input form-control" placeholder="Search...">
+        <input type="text" class="search_input form-control" placeholder="Search..." id="input-search">
       </div>
 
       <div class="col mb-3">
-          <input class="form-check-input" type="checkbox" value=""" id="input-cancelled" checked>
+          <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
         <label class="form-check-label" for="input-cancelled">
           Show Cancelled Orders
         </label>
@@ -172,9 +172,10 @@
 
   // Initiliaze parameters
   sales_library = []
+  sales_libraryIndex = []
 
   // Startup Script
-  $.when(getSales(sales_library)).done(function(){
+  $.when(getSales(sales_library,sales_libraryIndex)).done(function(){
     for(const sale of sales_library)
     {
       UI_addSale(sale)
