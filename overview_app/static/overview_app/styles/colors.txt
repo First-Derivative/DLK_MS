@@ -1,0 +1,8 @@
+RED Component Primary: d82d4e
+RED Component Secondary: b8233f
+
+Black Component Primary: 4d4b4a
+Black Component Secondary: 383736
+
+Blue Component Primary: 4199f8
+Blue Component Secondary: 
