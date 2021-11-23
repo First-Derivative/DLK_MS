@@ -6,7 +6,6 @@ function searchSales(search_key) {
       success: function (response) {
 
         if (response.length) {
-          $("#search-text").remove()
           for (const sale of response) {
             UI_addSale(sale, true)
           }
