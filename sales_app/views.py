@@ -4,6 +4,15 @@ from ms_app.decorators import *
 from .models import Sales
 from ms_app.models import Currency, resolveCurrencyLabel
 
+from rest_framework import generics, filters
+from .serializers import SalesSerializer
+
+class SalesAPI(generics.ListCreateAPIView):
+  search_fields = ['project_code', 'project_name', 'client_name']
+  filter_backends = (filters.SearchFilter,)
+  queryset = Sales.objects.all()
+  serializer_class = SalesSerializer
+
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def salesPage(request):
