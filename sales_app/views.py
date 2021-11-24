@@ -76,7 +76,9 @@ def addSales(request):
       try:
         new_sale.full_clean()
       except ValidationError as e:
-        return JsonResponse({"error": str(e)})
+        # for k, v in e.items():
+        # print(e.keys())
+        return JsonResponse({"error": dict(e)})
       # new_sale.save()
 
       #end of user-flow for succesful request: return status OK

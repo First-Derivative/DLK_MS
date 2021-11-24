@@ -60,7 +60,11 @@ function postSale(new_sale) {
       },
       success: function (response) {
         if (response.error) {
-          alert(response.error)
+          Object.keys(response.error).forEach(key => {
+            $("#modal-errors").append(`<p class="text-left">${response.error[key]}</p>`)
+            $(`input[name=${key}]`).css("border","0.1em solid #d82d4e")
+            console.log("ERROR KEY SELECTOR"+ $(`input[name=${key}]`).val())
+          });
         }
         else {
           UI_addSale(new_sale)

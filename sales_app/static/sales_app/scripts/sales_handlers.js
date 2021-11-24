@@ -16,10 +16,7 @@ $("#modal-btn-save").click(function () {
 
   // Get & Assign Data
   let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
-  console.log(data_form)
   $.each(data_form, function (i, field) {
-    console.log("doing something with each")
-    console.log(i, field)
     property = field.name
     console.log(property, field.value)
     new_sales[property] = field.value
