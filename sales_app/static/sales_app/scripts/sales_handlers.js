@@ -4,7 +4,7 @@ function startUpSales() {
   $.when(getSales(sales_library)).done(function(){
     for(const sale of sales_library)
     {
-      UI_addSale(sale)
+      UI_addSale(sale, sale.cancelled)
     }
   })
 }
@@ -82,6 +82,20 @@ function UI_addSale(new_sale, search) {
 
 }
 
+// UX Functionality: Handler for #reverse-list button
+$("#reverse-list").click(function () {
+  $("#sales_display").children().each(function () 
+  {
+    $("#sales_display").prepend($(this))
+  })
+})
+
+// UI Functionality: Reverse list
+function reverseList() 
+{
+
+}
+
 // UI Functionality: Entering search mode clears all displayed cards
 function enterSearchMode() {
   search_mode = true
@@ -145,7 +159,7 @@ $("#input-cancelled").click(function () {
   {
     if(sale.cancelled)
     {
-      UI_addSale(sale)
+      UI_addSale(sale, true)
     }
   }
 })
