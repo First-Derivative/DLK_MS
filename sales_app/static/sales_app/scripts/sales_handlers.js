@@ -29,8 +29,8 @@ $("#modal-btn-save").click(function () {
 function UI_addSale(new_sale, search) {
 
   sales_card_template =
-    `<div class="card" id="${search ? 'searched_sale' : ''}" name="${new_sale.project_code}" style="${new_sale.visibility ? 'display:none' : ''}">
-    <div class="card-header d-flex justify-content-between">
+    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="${search ? 'searched_sale' : ''}" name="${new_sale.project_code}" style="${new_sale.visibility ? 'display:none' : ''}">
+    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
       <div class="d-flex justify-content-between" style="width:4em">
         <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
