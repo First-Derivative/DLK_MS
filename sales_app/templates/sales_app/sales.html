@@ -179,7 +179,8 @@
 {% endblock right_content %}
 
 {% block scripts %}
-<script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/sales_library.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
   <script src="{% static 'sales_app/scripts/autoresize.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -194,7 +195,7 @@
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
 
   // Initiliaze parameters
-  sales_library = []
+  sales_library = new Library()
   search_mode = false
 
   // Startup Script

@@ -1,8 +1,8 @@
 // UX Functionality: Start Up Sales  Page
 function startUpSales() {
-  sales_library = []
+  sales_library.clearLibrary()
   $.when(getSales(sales_library)).done(function(){
-    for(const sale of sales_library)
+    for(const sale of sales_library.getLibrary())
     {
       UI_addSale(sale, sale.cancelled)
     }
@@ -155,9 +155,16 @@ $("#input-cancelled").click(function () {
     })
     return
   }
-  for(const sale of sales_library)
+  for(const sale of sales_library.getLibrary())
   {
-    if(sale.cancelled)
+    if (sale.cancelled && search_mode)
+    {
+      if(sale.searched)
+      {
+        UI_addSale(sale, true)
+      }
+    }
+    else if(sale.cancelled)
     {
       UI_addSale(sale, true)
     }

@@ -8,6 +8,8 @@ function searchSales(search_key) {
         if (response.length) {
           $("#search-text").remove()
           for (const sale of response) {
+            sale["searched"] = true
+            sales_library.append(sale)
             UI_addSale(sale, true)
           }
         }
@@ -33,13 +35,7 @@ function getSales(library) {
       sales_count = sales.length
 
       sales.reverse() // reverse sales array for performance
-      for (i = 0; i < sales_count; i++) {
-        content = sales.pop()
-        if (i < 15) {
-          content.visible = true
-        }
-        library.push(content)
-      }
+      library.setLibrary(sales)
     },
     error: function (jqXHR, textStatus, errorThrown) {
       // Debugging case
