@@ -1,9 +1,10 @@
 from django.db import models
 from ms_app.models import Currency, resolveCurrencyLabel
+from .validators import validate_project_code
 
 class Sales(models.Model):
   sales_id = models.BigAutoField(primary_key=True)
-  project_code = models.CharField(max_length=20)
+  project_code = models.CharField(max_length=20, validators=[validate_project_code])
   project_name = models.CharField(max_length=80)
   client_name = models.CharField(max_length=100)
   project_detail = models.CharField(max_length=600, null=True, blank=True)

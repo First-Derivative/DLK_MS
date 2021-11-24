@@ -68,38 +68,38 @@
         <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="row gx-3 px-3 mt-3" id="modal-form-addSale">
+        <form class="row gx-3 px-3 mt-3" id="modal-form-addSale" name="addSale_form">
 
           <div class="col-lg-3">
             <div class="form-floating">
-              <input type="text" class="form-control" id="modal-input-project_code" placeholder="DLK-21-0040">
+              <input type="text" class="form-control" name="project_code" id="modal-input-project_code" placeholder="DLK-21-0040">
               <label for="modal-input-project_code">Project Code</label>
             </div>
           </div>
 
           <div class="col-lg-4">
             <div class="form-floating">
-              <input type="text" class="form-control" id="modal-input-project_name" placeholder="Project Scorsese">
+              <input type="text" class="form-control" name="project_name" id="modal-input-project_name" placeholder="Project Scorsese">
               <label for="modal-input-project_name">Project Name</label>
             </div>
           </div>
 
           <div class="col-lg-5">
             <div class="form-floating">
-              <input type="text" class="form-control" id="modal-input-client_name" placeholder="Leonardo DiCaprio">
+              <input type="text" class="form-control" name="client_name" id="modal-input-client_name" placeholder="Leonardo DiCaprio">
               <label for="modal-input-client_name">Client Name</label>
             </div>
           </div>
 
           <div class="col-lg-12">
             <div class="form-floating">
-              <textarea class="form-control modal-form-project_detail" placeholder="Project Detail" id="modal-input-project_detail"></textarea>
+              <textarea class="form-control modal-form-project_detail" name="project_detail" placeholder="Project Detail" id="modal-input-project_detail"></textarea>
               <label for="modal-input-project_detail">Project Detail</label>
             </div>
           </div>
 
           <div class="col-lg-2 align-items-center">
-            <select class="form-select" style="height: 3.5em;" id="modal-input-currency" required>
+            <select class="form-select" style="height: 3.5em;" id="modal-input-currency" name="currency" required>
               <option selected value="MYR">RM</option>
               <option value="EUR">€</option>
               <option value="USD">$</option>
@@ -108,34 +108,34 @@
 
           <div class="col-lg-5">
             <div class="form-floating">
-              <input type="text" class="form-control" id="modal-input-amount" placeholder="20000">
+              <input type="text" class="form-control" id="modal-input-amount" name="value" placeholder="20000">
               <label for="modal-input-amount">Amount</label>
             </div>
           </div>
 
           <div class="col-lg-5">
             <div class="form-floating">
-              <input type="textarea" class="form-control modal-form-payment_term" id="modal-input-project_name" placeholder="Project Detail">
+              <input type="textarea" class="form-control modal-form-payment_term" name="payment_term" id="modal-input-project_name" placeholder="Project Detail">
               <label for="modal-input-payment_term">Payment Term</label>
             </div>
           </div>
 
           <div class="col-lg-6 date_wrapper">
             <div class="input-group date">
-              <input type="text" class="form-control" id="modal-input-order_date" placeholder="Order Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              <input type="text" class="form-control" id="modal-input-order_date" name="order_date" placeholder="Order Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
             </div>
           </div>
 
           <div class="col-lg-6">
             <div class="form-floating">
-              <input type="textarea" class="form-control modal-form-shipping_date" id="modal-input-shipping_date" placeholder="CWD">
+              <input type="textarea" class="form-control modal-form-shipping_date" name="shipping_date" id="modal-input-shipping_date" placeholder="CWD">
               <label for="modal-input-shipping_date">Customer Wanted Date</label>
             </div>
           </div>
 
           <div class="col-lg">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="modal-input-cancelled">
+              <input class="form-check-input" type="checkbox" value="" name="cancelled" id="modal-input-cancelled">
               <label class="form-check-label" for="modal-input-cancelled">
                 Cancelled Order?
               </label>
@@ -145,8 +145,8 @@
         </form>
       </div>
       <div class="modal-footer" style="border: none">
-        <button type="button" class="btn sales_standard-btn" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn sales_secondary-btn" id="modal-btn-save">Save changes</button>
+        <button type="button" class="btn sales_standard-btn" style="width:auto;" data-bs-dismiss="modal">Close</button>
+        <button  class="btn sales_secondary-btn" id="modal-btn-save">Save changes</button>
       </div>
     </div>
   </div>
@@ -184,6 +184,7 @@
   <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
   <script src="{% static 'sales_app/scripts/autoresize.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script>
 
@@ -193,6 +194,7 @@
   const postSales_url = "{% url 'postSales_api' %}"
   const edit_src = "{% static '/sales_app/icons/edit.png' %}"
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
+  const token = "{{csrf_token}}"
 
   // Initiliaze parameters
   sales_library = new Library()
