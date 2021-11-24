@@ -52,6 +52,14 @@
 {% endblock left_content%}
 
 {% block main_content %}
+
+<!-- SOURCE OF SALE CARDS FOR DISPLAY -->
+<div class="" id="sales_display">
+
+
+</div>
+
+<!-- MODAL  -->
 <div class="modal" tabindex="-1" id="modal_addSale">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -190,12 +198,7 @@
   search_mode = false
 
   // Startup Script
-  $.when(getSales(sales_library)).done(function(){
-    for(const sale of sales_library)
-    {
-      UI_addSale(sale)
-    }
-  })
+  startUpSales()
 
   $('.modal-form-project_detail').autoResize()// Add Resize to Modal input fields
   $('.date').datepicker({
