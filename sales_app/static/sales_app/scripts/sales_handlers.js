@@ -80,21 +80,6 @@ function UI_addSale(new_sale, search) {
     }
   })
 
-  /*
-
-  const footer_id = "#card-footer-" + new_sale.project_code
-  const dropdown_id = "#card-dropwdown-" + new_sale.project_code
-  
-  $(document).on("click", "#card-dropdown-DLK-21-0006",function ()
-  {
-    console.log("click!")
-    if($("#card-footer-DLK-21-0006").hasClass("hidden")){
-      $("#card-footer-DLK-21-0006").removeClass("hidden")
-      return true;
-    }
-    $(footer_id).addClass("hidden")
-  })
-  */
 }
 
 // UI Functionality: Entering search mode clears all displayed cards
@@ -114,15 +99,6 @@ function leaveSearchMode() {
   $("#input-search").val("")
 
 }
-
-// UI Functionality: Clears search-text and previous searched_cards for new search
-// whilst still in search mode
-// function clearSearchDOM() {
-//   $("#search-text").remove()
-//   $("div[id*=searched_sale]").each(function () {
-//     $(this).remove()
-//   })
-// }
 
 // UX Functionality: Enter 'search mode' on enter key
 $("#left_content_form").on("keypress", function (event) {
@@ -179,28 +155,8 @@ function UI_removeSale(sale_id) {
   $(`div[id*='${sales_id}']`).remove()
 }
 
+// UI Functionality: Removes All Sale cards from #sales_display
 function UI_removeAll()
 {
   $("#sales_display").empty();
 }
-
-// // UI Functionality: Toggle Sale Cards via project_code
-// function UI_toggleVisibility(sale_id) {
-//   if ($(`div[name=${sale_id}]`).hasClass("hidden")) {
-//     $(`div[name=${sale_id}]`).removeClass("hidden")
-//     return
-//   }
-//   $(`div[name=${sale_id}]`).addClass("hidden")
-// }
-
-// function UI_toggleAll() {
-//   for (const sale of sales_library) {
-//     id = sale.project_code
-//     if ($(`div[name=${id}]`).hasClass("hidden")) {
-//       $(`div[name=${id}]`).removeClass("hidden")
-//       continue
-//     }
-//     $(`div[name=${id}]`).addClass("hidden")
-
-//   }
-// }
