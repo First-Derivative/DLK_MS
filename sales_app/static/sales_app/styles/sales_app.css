@@ -58,6 +58,7 @@
 .card-footer
 {
   font-size: 0.8em;
+  display: none;
   background-color: white;
 }
 
@@ -102,8 +103,8 @@
 {
   transition: opacity 0.8s ease-out;
   opacity: 0;
-  height: 0;
   overflow: hidden;
+  height: 0;
 }
 
 div:hover > #input-helper

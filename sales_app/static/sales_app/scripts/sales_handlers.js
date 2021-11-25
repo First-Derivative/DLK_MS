@@ -74,7 +74,7 @@ function UI_addSale(new_sale, search) {
         <p class="card-text"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date}</p>
       </div>
     </div>
-    <div class="card-footer hidden" id="card-footer-${new_sale.project_code}">
+    <div class="card-footer" id="card-footer-${new_sale.project_code}">
       <p class="card-text"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
       <p class="card-text"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
     </div>
@@ -87,12 +87,21 @@ function UI_addSale(new_sale, search) {
     id = $(this).attr('name')
     selector = "#card-footer-" + id
 
-    if ($(`#card-footer-${id}`).hasClass("hidden")) {
-      $(`#card-footer-${id}`).removeClass("hidden")
+    if($(`#card-footer-${id}`).css('display') == "none")
+    {
+      $(`#card-footer-${id}`).show("fast")
     }
-    else {
-      $(`#card-footer-${id}`).addClass("hidden")
+    else
+    {
+      $(`#card-footer-${id}`).hide("fast")
     }
+
+    // if ($(`#card-footer-${id}`).hasClass("hidden")) {
+    //   $(`#card-footer-${id}`).removeClass("hidden")
+    // }
+    // else {
+    //   $(`#card-footer-${id}`).addClass("hidden")
+    // }
   })
 
 }
