@@ -59,15 +59,26 @@ function postSale(new_sale) {
         "data": new_sale
       },
       success: function (response) {
-        if (response.error) {
+        if (response.hasOwnProperty("error")) {
           Object.keys(response.error).forEach(key => {
-            error_title = key.replace("_", " ")
-            $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p>${error_title} : ${response.error[key]}</p></div>`)
+            error_src = key.split("_")
+            error_title = null
+            for (i = 0; i < error_src.length; i++)
+            {
+              error_src[i] = error_src[i].charAt(0).toUpperCase() + error_src[i].substr(1,error_src[i].length)
+            }
+            error_title = error_src.join(" ")
+            $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
             $(`input[name=${key}]`).css("border","0.1em solid #d82d4e")
           });
         }
-        if (response[status] == "OK") {
-          UI_addSale(new_sale)
+        if (response.hasOwnProperty("status")) {
+          if(response.status == "OK")
+          {
+            $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p>New Sale Added!</p></div>`)
+            UI_addSale(new_sale)
+            console.log("new sale added")
+          }
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {

@@ -1,6 +1,6 @@
 from django.db import models
 from ms_app.models import Currency, resolveCurrencyLabel
-from .validators import validate_project_code
+from .validators import *
 
 class Sales(models.Model):
   sales_id = models.BigAutoField(primary_key=True)
@@ -8,7 +8,7 @@ class Sales(models.Model):
   project_name = models.CharField(max_length=80)
   client_name = models.CharField(max_length=100)
   project_detail = models.CharField(max_length=600, null=True)
-  value = models.DecimalField(max_digits=10, decimal_places=2)
+  value = models.DecimalField(max_digits=10, decimal_places=2, validators=[validate_value])
   currency = models.CharField(max_length=5, choices=Currency.choices, default=Currency.MYR)
   order_date = models.DateField()
   shipping_date = models.CharField(max_length=100,null=True) 

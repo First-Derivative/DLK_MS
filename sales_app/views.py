@@ -51,7 +51,7 @@ def addSales(request):
     # Validate postdata for duplication 
     try:
       sale = Sales.objects.get(project_code=post["data[project_code]"])
-      return JsonResponse({"error": "Sale with that project code already exists, please check for duplicate records"})
+      return JsonResponse({"error": {"duplication_error": "Sale with that project code already exists, please check for duplicate records"}})
     # No Duplicate Found-> Create new Object
     except Sales.DoesNotExist:
       project_code = post["data[project_code]"]

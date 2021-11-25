@@ -12,7 +12,11 @@ function startUpSales() {
 // UX Functionality: Add Sale
 $("#modal-btn-save").click(function () {
   // Init
-  new_sales = { project_code: null, project_name: null, client_name: null, project_detail: null, value: null, order_date: null, shipping_date: null, payment_term: null, currency: null }
+  new_sales = { project_code: null, project_name: null, client_name: null, project_detail: null, value: null, order_date: null, shipping_date: null, payment_term: null, currency: null, cancelled: false }
+  $("div[class*=validation-error-text]").each(function () {
+    console.log("removing error updates")
+    $(this).remove()
+  })
 
   // Get & Assign Data
   let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
@@ -37,12 +41,7 @@ $("#modal-btn-save").click(function () {
       new_sales[property] = field.value
     }
   })
-
-  $("div[class*=validation-error-text]").each(function () {
-    $(this).remove()
-    console.log("removing error updates")
-  })
-
+  console.log(` Gathered Data: ${new_sales}`)
   // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
   postSale(new_sales)
 })
