@@ -36,12 +36,16 @@ $("#modal-btn-save").click(function () {
       format_date = src_split.join("-")
       new_sales[property] = format_date
     }
+    else if(property == "cancelled")
+    {
+      new_sales["cancelled"] = true
+    }
     else
     {
       new_sales[property] = field.value
+
     }
   })
-  console.log(` Gathered Data: ${new_sales}`)
   // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
   postSale(new_sales)
 })
