@@ -18,13 +18,32 @@ $("#modal-btn-save").click(function () {
   let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
   $.each(data_form, function (i, field) {
     property = field.name
-    console.log(property, field.value)
-    new_sales[property] = field.value
+    if(property == "order_date")
+    {
+      src = field.value 
+      src = src.replace("/","-")
+      src = src.replace("/","-")
+      src_split = src.split("-")
+      src_split.reverse()
+      temp = src_split[2]
+      src_split[2] = src_split[1]
+      src_split[1] = temp
+      
+      format_date = src_split.join("-")
+      new_sales[property] = format_date
+    }
+    else
+    {
+      new_sales[property] = field.value
+    }
   })
 
-  console.log(new_sales)
+  $("div[class*=validation-error-text]").each(function () {
+    $(this).remove()
+    console.log("removing error updates")
+  })
 
-  // Calls Ajax postSale
+  // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
   postSale(new_sales)
 })
 
@@ -33,7 +52,7 @@ $("#modal-btn-save").click(function () {
 function UI_addSale(new_sale, search) {
 
   sales_card_template =
-    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="${search ? 'searched_sale' : ''}" name="${new_sale.project_code}" style="${new_sale.visibility ? 'display:none' : ''}">
+    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="${search ? 'searched_sale' : ''}" name="${new_sale.project_code}">
     <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex justify-content-between">
       <p>${new_sale.project_code} : ${new_sale.project_name} </p>
       <div class="d-flex justify-content-between" style="width:4em">
@@ -58,7 +77,7 @@ function UI_addSale(new_sale, search) {
     </div>
   </div>`
 
-  $('#sales_display').append(sales_card_template)
+  $('#sales_display').prepend(sales_card_template)
   dropdown_selector = "#card-dropdown-" + new_sale.project_code
 
   $(dropdown_selector).on("click", function () {

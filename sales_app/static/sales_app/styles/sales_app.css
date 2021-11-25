@@ -82,7 +82,8 @@
 
 .modal-header
 {
-  background-color: #d82d4e;
+  /* background-color: #d82d4e; */
+  background-color: #383736;
   color: white;
 }
 

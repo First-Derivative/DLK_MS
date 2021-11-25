@@ -29,7 +29,6 @@ def SerializeSale(sale):
   serial["shipping_date"] = sale.shipping_date
   serial["payment_term"] = sale.payment_term
   serial["cancelled"] = sale.cancelled
-  serial["visible"] = False
 
   return serial
 
@@ -76,11 +75,9 @@ def addSales(request):
       try:
         new_sale.full_clean()
       except ValidationError as e:
-        # for k, v in e.items():
-        # print(e.keys())
         return JsonResponse({"error": dict(e)})
-      # new_sale.save()
 
       #end of user-flow for succesful request: return status OK
+      new_sale.save()
       return JsonResponse({"status":"OK"}) #consider sending new_sale back if necessary instead of status:OK
   return HttpResponseBadRequest("Bad Request not POST")

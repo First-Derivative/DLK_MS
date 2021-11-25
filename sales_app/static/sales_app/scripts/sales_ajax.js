@@ -61,12 +61,12 @@ function postSale(new_sale) {
       success: function (response) {
         if (response.error) {
           Object.keys(response.error).forEach(key => {
-            $("#modal-errors").append(`<p class="text-left">${response.error[key]}</p>`)
+            error_title = key.replace("_", " ")
+            $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p>${error_title} : ${response.error[key]}</p></div>`)
             $(`input[name=${key}]`).css("border","0.1em solid #d82d4e")
-            console.log("ERROR KEY SELECTOR"+ $(`input[name=${key}]`).val())
           });
         }
-        else {
+        if (response[status] == "OK") {
           UI_addSale(new_sale)
         }
       },
