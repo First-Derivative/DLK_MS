@@ -13,19 +13,19 @@ def unauthenticated_check(view_func):
 
 # Whitelists access to page if user has assigned role (group) allowed_roles
 def role_check(allowed_roles=[]):
-	def decorator(view_func):
-		def wrapper_func(request, *args, **kwargs):
+  def decorator(view_func):
+    def wrapper_func(request, *args, **kwargs):
+      group = None
+      print(request.user.groups.all())
+      if request.user.groups.exists():
+        group = request.user.groups.all()[0].name
 
-			group = None
-			if request.user.groups.exists():
-				group = request.user.groups.all()[0].name
-
-			if group in allowed_roles:
-				return view_func(request, *args, **kwargs)
-			else:
-				return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})
-		return wrapper_func
-	return decorator
+      if group in allowed_roles:
+        return view_func(request, *args, **kwargs)
+      else:
+        return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})
+    return wrapper_func
+  return decorator
 
 def method_check(allowed_methods=[]):
   def decorator(view_func):

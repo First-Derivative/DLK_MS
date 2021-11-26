@@ -13,7 +13,6 @@ $("#modal-btn-save").click(function () {
   // Init
   new_sales = { project_code: null, project_name: null, client_name: null, project_detail: null, value: null, order_date: null, shipping_date: null, payment_term: null, currency: null, cancelled: false }
   $("div[class*=validation-error-text]").each(function () {
-    console.log("removing error updates")
     $(this).remove()
   })
 
@@ -43,8 +42,6 @@ $("#modal-btn-save").click(function () {
     }
   })
 
-  console.log(data_form)
-  console.log(new_sales)
   // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
   postSale(new_sales)
 })
@@ -214,29 +211,31 @@ function leaveEditMode(sale) {
   $(`#card-footer-${project_code}`).empty();
 
   // Add card_rows to card-body
-  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row0"></div>`);
-  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row1"></div>`);
+  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row0"></div>`)
+  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row1"></div>`)
 
-  i = 0
+  console.log(sale)
   $.each(sale, function (field, value) {
-    console.log(i, field)
     if (field == "project_code") {
       selector = `#input_project_code_${project_code}`
       $(selector).unwrap()
       $(selector).replaceWith(`<p id="project_code_${project_code}">${project_code}</p>`)
     }
-    else if (i == 1 || i == 2) {
+    else if (field == "project_name" || field == "client_name") {
       $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text" id="${field}_${project_code}">${value}</p>`)
     }
-    else if (i == 4) {
+    else if (field == "invoice_amount") {
       $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text value" id="invoice_amount_${project_code}">${value}</p>`)
     }
-    else if (i == 5 || i == 6) {
-      $(`.card_row[name=${project_code}_row1]`).append(`<p class="card-text" id="order_date_${project_code}"><span class="text-muted">${field}: </span>${value}</p>`)
+    else if (field == "order_date" || field == "shipping_date") {
+      $(`.card_row[name=${project_code}_row1]`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
     }
-
-
-    i += 1
+    else if (field == "project_detail" || field == "payment_term") {
+      $(`#card-footer-${project_code}`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
+    }
+    else if (field == "cancelled") {
+      // Do nothing
+    }
   })
 
   // // Replace all input tags with appropriate values 
@@ -357,9 +356,9 @@ function UI_removeAll() {
 }
 
 function propertyToTitle(property) {
-  if (property == "shipping_date") //edge-case
+  if (property === "shipping_date") //edge-case
   {
-
+    return "Customer Wanted Date"
   }
   src = property.split("_")
   title = null
