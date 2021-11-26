@@ -1,9 +1,8 @@
 // UX Functionality: Start Up Sales  Page
 function startUpSales() {
   sales_library.clearLibrary()
-  $.when(getSales(sales_library)).done(function(){
-    for(const sale of sales_library.getLibrary())
-    {
+  $.when(getSales(sales_library)).done(function () {
+    for (const sale of sales_library.getLibrary()) {
       UI_addSale(sale)
     }
   })
@@ -22,30 +21,30 @@ $("#modal-btn-save").click(function () {
   let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
   $.each(data_form, function (i, field) {
     property = field.name
-    if(property == "order_date")
-    {
-      src = field.value 
-      src = src.replace("/","-")
-      src = src.replace("/","-")
+    if (property == "order_date") {
+      src = field.value
+      src = src.replace("/", "-")
+      src = src.replace("/", "-")
       src_split = src.split("-")
       src_split.reverse()
       temp = src_split[2]
       src_split[2] = src_split[1]
       src_split[1] = temp
-      
+
       format_date = src_split.join("-")
       new_sales[property] = format_date
     }
-    else if(property == "cancelled")
-    {
+    else if (property == "cancelled") {
       new_sales["cancelled"] = true
     }
-    else
-    {
+    else {
       new_sales[property] = field.value
 
     }
   })
+
+  console.log(data_form)
+  console.log(new_sales)
   // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
   postSale(new_sales)
 })
@@ -66,7 +65,7 @@ function UI_addSale(new_sale) {
       <div class="card_row">
         <p class="card-text" id="project_name_${new_sale.project_code}">${new_sale.project_name}</p>
         <p class="card-text" id="client_name_${new_sale.project_code}">${new_sale.client_name}</p>
-        <p class="card-text value" id="invoice_amount_${new_sale.project_code}">${ new_sale.hasOwnProperty("invoice_amount") ? new_sale.invoice_amount: resolveCurrency(new_sale.currency) + new_sale.value}</p>
+        <p class="card-text value" id="invoice_amount_${new_sale.project_code}">${new_sale.invoice_amount}</p>
         
       </div>
       <div class="card_row">
@@ -88,17 +87,16 @@ function UI_addSale(new_sale) {
   $(dropdown_selector).on("click", function () {
     id = $(this).attr("name")
     selector = "#card-footer-" + id
-    
-    if($(`#card-footer-${id}`).css('display') == "none"){$(`#card-footer-${id}`).show("fast")}
-    else{$(`#card-footer-${id}`).hide("fast")}
+
+    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+    else { $(`#card-footer-${id}`).hide("fast") }
   })
-  
+
   // Edit button for sales Card Handler
   edit_selector = "#card-edit-" + new_sale.project_code
-  $(edit_selector).on("click", function()
-  {
+  $(edit_selector).on("click", function () {
     id = $(this).attr("name")
-    if($(`#card-footer-${id}`).css('display') == "none"){$(`#card-footer-${id}`).show("fast")}
+    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
     enterEditMode(new_sale.project_code)
   })
 
@@ -106,17 +104,14 @@ function UI_addSale(new_sale) {
 
 // UX Functionality: Handler for #reverse-list button
 $("#reverse-list").click(function () {
-  $("#sales_display").children().each(function () 
-  {
+  $("#sales_display").children().each(function () {
     $("#sales_display").prepend($(this))
   })
 })
 
 // UI Functionality: Selects a specific card to enterEditMode, allowing for inputs and POST to db
-function enterEditMode(project_code)
-{
-  if(!$(`#sales-card-${project_code}`).attr("editing"))
-  {
+function enterEditMode(project_code) {
+  if (!$(`#sales-card-${project_code}`).attr("editing")) {
 
     // Set sales-card (wrapper) attribute 'editing' to active '1'
     $(`#sales-card-${project_code}`).attr("editing", "1")
@@ -132,84 +127,149 @@ function enterEditMode(project_code)
     $(`#card-body-${project_code}`).removeClass("d-flex")
 
     // Wrap with forms and switch to inputs (Excludes Currency + Value)
-    fields = ["project_code","project_name","client_name","project_detail","order_date","shipping_date","payment_term"]
-    $.each(fields, function(i, item) {
+    fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
+    $.each(fields, function (i, item) {
 
       // handles project_code, project_name, client_name
-      if(i < 3)
-      {
-        if($(`#${item}_${project_code}`).parent().hasClass("card_row")) {$(`#${item}_${project_code}`).unwrap()}
-        
-        const input = $(`<input type="text" class="form-control edit-input" id="input_${item}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+      if (i < 3) {
+        if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
+
+        const input = $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
         $(`#${item}_${project_code}`).replaceWith(input)
-        
-        $(`#input_${item}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}"></div>`)
-        $(`#form-group-${item}`).prepend(`<label for="input_${item}" class="sr-only ps-1 pb-2" style="color: #426285">${propertyToTitle(item)}</label>`)
+
+        $(`#input_${item}_${project_code}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}_${project_code}"></div>`)
+        $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" style="color: #426285">${propertyToTitle(item)}</label>`)
       }
-      
+
       // handles project_detail, order_date, shpping_date (customer wanted date), payment_term
-      else
-      {
-        if($(`#${item}_${project_code}`).parent().hasClass("card_row")){$(`#${item}_${project_code}`).unwrap()}
+      else {
+        if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
         $(`#${item}_${project_code} > span`).remove()
-        
-        const input = (item == "project_detail") ? $(`<textarea class="form-control" id="input_${item}" name="${item}" required>></textarea>`).val($(`#${item}_${project_code}`).text()) : $(`<input type="text" class="form-control edit-input" id="input_${item}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+
+        const input = (item == "project_detail") ? $(`<textarea class="form-control" id="input_${item}_${project_code}" name="${item}" style="height: 6em" required>></textarea>`).val($(`#${item}_${project_code}`).text()) : $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
         $(`#${item}_${project_code}`).replaceWith(input)
-        
-        $(`#input_${item}`).wrap(`<div class="form-group mb-2" id="form-group-${item}"></div>`)
-        $(`#form-group-${item}`).prepend(`<label for="input_${item}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
+
+        $(`#input_${item}_${project_code}`).wrap(`<div class="form-group my-2" id="form-group-${item}_${project_code}"></div>`)
+        $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
       }
-  })
-  
-  // Add Currency + Value Input
-  invoice_amount = $(`#invoice_amount_${project_code}`).text()
-  invoice_currency = invoice_amount.substr(0, 1)
-  invoice_value = invoice_amount.substr(1, invoice_amount.length)
+    })
 
-  // Format extracted invoice_currency invoice_value into DOM elements
-  currency_value_input = `<div class="form-group mb-2" id="form-group-currency">
-  <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
-  <select class="form-select edit-input" id="input_currency" name="currency" required>
-  <option ${invoice_currency == 'RM' ? 'selected ' : ''}value="MYR">RM</option>
-  <option ${invoice_currency == '€' ? 'selected ' : ''}value="EUR">€</option>
-  <option ${invoice_currency == '$' ? 'selected ' : ''}value="USD">$</option>
-  </select></div>
-  <div class="form-group mb-2" id="form-group-value">
-  <label for="input_value" class="sr-only ps-1 pb-2" style="color: #426285">Amount</label>
-  <input type="text" class="form-control edit-input" id="input_value" name="value">
-  </div>`
-  
-  $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
-  $(`#input_value`).val(invoice_value)
+    // Add Currency + Value Input
+    invoice_amount = $(`#invoice_amount_${project_code}`).text()
+    invoice_currency = invoice_amount.substr(0, 1)
+    invoice_value = invoice_amount.substr(1, invoice_amount.length)
 
-  // Add Event Handlers to newly appended DOMS
-  $('.edit-input').on("keydown", function (e) {
-    if (e.keyCode == 13) {
-      var inputs = $(this).parents("form").eq(0).find(":input");
-      if (inputs[inputs.index(this) + 1] != null) {                    
+    // Format extracted invoice_currency invoice_value into DOM elements
+    currency_value_input = `<div class="form-group my-2" id="form-group-currency_${project_code}">
+      <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
+      <select class="form-select edit-input" id="input_currency_${project_code}" name="currency" required>
+        <option ${invoice_currency == 'RM' ? 'selected ' : ''}value="MYR">RM</option>
+        <option ${invoice_currency == '€' ? 'selected ' : ''}value="EUR">€</option>
+        <option ${invoice_currency == '$' ? 'selected ' : ''}value="USD">$</option>
+      </select></div>
+      <div class="form-group mb-2" id="form-group-value_${project_code}">
+        <label for="input_value" class="sr-only ps-1 pb-2" style="color: #426285">Amount</label>
+        <input type="text" class="form-control edit-input" id="input_value_${project_code}" name="value">
+      </div>`
+
+    $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
+    $(`#input_value_${project_code}`).val(invoice_value)
+
+    // Add Event Handlers to newly appended DOMS
+    $('.edit-input').on("keydown", function (e) {
+      if (e.keyCode == 13) {
+        var inputs = $(this).parents("form").eq(0).find(":input");
+        if (inputs[inputs.index(this) + 1] != null) {
           inputs[inputs.index(this) + 1].focus();
+        }
+        e.preventDefault();
+        return false;
       }
-      e.preventDefault();
-      return false;
-    }
-  })
+    })
 
-  // Cancel_edit button for sales editing hadler
-  $(`#cancel-edit-${project_code}`).on("click", function()
-  {
-    id = $(this).attr("name")
-    if($(`#sales-card-${id}`).attr("editing") == "1"){leaveEditMode(project_code)}
-  })
+    // Cancel_edit button for sales editing hadler
+    $(`#cancel-edit-${project_code}`).on("click", function () {
+      id = $(this).attr("name")
+      if ($(`#sales-card-${id}`).attr("editing") == "1") {
+        getSale({ "project_code": String(project_code) }, leaveEditMode)
+      }
+    })
 
-  // Autoresize by Jack Moore
-  autosize($("#input_project_detail"))
-    
+    // Autoresize by Jack Moore
+    autosize($(`#input_project_detail_${project_code}`))
+
   }
 }
 
-function leaveEditMode(project_code)
-{
-  console.log(getSale())
+function leaveEditMode(sale) {
+  project_code = sale.project_code
+
+  // Revert DOM and Styling to before Edit mode
+  $(`#sales-card-${project_code}`).unwrap()
+  $(`#card-body-${project_code}`).addClass("justify-content-between")
+  $(`#card-body-${project_code}`).addClass("d-flex")
+
+  // Empty card-body and card-footer
+  $(`#card-body-${project_code}`).empty();
+  $(`#card-footer-${project_code}`).empty();
+
+  // Add card_rows to card-body
+  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row0"></div>`);
+  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row1"></div>`);
+
+  i = 0
+  $.each(sale, function (field, value) {
+    console.log(i, field)
+    if (field == "project_code") {
+      selector = `#input_project_code_${project_code}`
+      $(selector).unwrap()
+      $(selector).replaceWith(`<p id="project_code_${project_code}">${project_code}</p>`)
+    }
+    else if (i == 1 || i == 2) {
+      $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text" id="${field}_${project_code}">${value}</p>`)
+    }
+    else if (i == 4) {
+      $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text value" id="invoice_amount_${project_code}">${value}</p>`)
+    }
+    else if (i == 5 || i == 6) {
+      $(`.card_row[name=${project_code}_row1]`).append(`<p class="card-text" id="order_date_${project_code}"><span class="text-muted">${field}: </span>${value}</p>`)
+    }
+
+
+    i += 1
+  })
+
+  // // Replace all input tags with appropriate values 
+  // for (const field in sale) {
+  //   }
+  //   else if (field == "project_name") {
+  //     selector = `#input_project_name_${sale.project_code}`
+  //     $(`form-group-project_name`).unwrap()
+  //     console.log(text_val)
+  //   }
+  //   else if (field == "invoice_amount") {
+  //     currency = $(`#input_currency_${sale.project_code} option:selected`).text()
+  //     amount = $(`#input_value_${sale.project_code}`).val()
+  //     console.log(currency + amount)
+  //   }
+  //   else if (field == "order_date") {
+  //     text_val = $(`#input_order_date_${sale.project_code}`).val()
+  //     console.log(text_val)
+  //   }
+  //   else if (field == "project_detail") {
+  //     text_val = $(`#input_project_detail_${sale.project_code}`).val()
+  //     console.log(text_val)
+  //   }
+  //   else {
+  //     text_val = $(`#input_${field}_${sale.project_code}`).val()
+  //     console.log(field, sale[field])
+  //   }
+  // }
+
+  // Finally, set sales-card editing to false "0" and scroll into view 
+  $(`#sales-card-${sale.project_code}`).attr("editing", 0)
+  document.getElementById(`sales-card-${sale.project_code}`).scrollIntoView(false)
+
 }
 
 // UI Functionality: Entering search mode clears all displayed cards
@@ -264,24 +324,19 @@ $("#input-search-clear").click(function () {
 
 // UX Functionality: Show Cancelled Order Toggle
 $("#input-cancelled").click(function () {
-  if(!$(this).is(":checked"))
-  {
+  if (!$(this).is(":checked")) {
     $("div[class*=cancelled-card]").each(function () {
       $(this).remove()
     })
     return
   }
-  for(const sale of sales_library.getLibrary())
-  {
-    if (sale.cancelled && search_mode)
-    {
-      if(sale.searched)
-      {
+  for (const sale of sales_library.getLibrary()) {
+    if (sale.cancelled && search_mode) {
+      if (sale.searched) {
         UI_addSale(sale)
       }
     }
-    else if(sale.cancelled)
-    {
+    else if (sale.cancelled) {
       UI_addSale(sale)
     }
   }
@@ -289,22 +344,27 @@ $("#input-cancelled").click(function () {
 
 // UI Functionality: Removes Sale cards from #sales_display
 function UI_removeSale(sale_id) {
+  $(`div[id*='${sales_id}']`).off() // unbinds handlers ?
   $(`div[id*='${sales_id}']`).remove()
 }
 
 // UI Functionality: Removes All Sale cards from #sales_display
-function UI_removeAll()
-{
-  $("#sales_display").empty();
+function UI_removeAll() {
+  $(`.card`).each(function () {
+    $(this).off()
+  })
+  $("#sales_display").empty()
 }
 
-function propertyToTitle(property)
-{
+function propertyToTitle(property) {
+  if (property == "shipping_date") //edge-case
+  {
+
+  }
   src = property.split("_")
   title = null
-  for (i = 0; i < src.length; i++)
-  {
-    src[i] = src[i].charAt(0).toUpperCase() + src[i].substr(1,src[i].length)
+  for (i = 0; i < src.length; i++) {
+    src[i] = src[i].charAt(0).toUpperCase() + src[i].substr(1, src[i].length)
   }
   title = src.join(" ")
 
@@ -312,9 +372,8 @@ function propertyToTitle(property)
 }
 
 // UX Functionality: resolveCurrency for API serialized schema for Sales
-function resolveCurrency(currency)
-{
-  switch(currency){
+function resolveCurrency(currency) {
+  switch (currency) {
     case "MYR": return "RM";
     case "EUR": return "€";
     case "USD": return "$";
@@ -325,11 +384,11 @@ function resolveCurrency(currency)
 // UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'
 $('#modal-form-addSale input').keydown(function (e) {
   if (e.keyCode == 13) {
-      var inputs = $(this).parents("form").eq(0).find(":input");
-      if (inputs[inputs.index(this) + 1] != null) {                    
-          inputs[inputs.index(this) + 1].focus();
-      }
-      e.preventDefault();
-      return false;
+    var inputs = $(this).parents("form").eq(0).find(":input");
+    if (inputs[inputs.index(this) + 1] != null) {
+      inputs[inputs.index(this) + 1].focus();
+    }
+    e.preventDefault();
+    return false;
   }
 });

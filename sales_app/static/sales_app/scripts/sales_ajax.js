@@ -25,23 +25,26 @@ function searchSales(search_key) {
 }
 
 // Get Sale
-function getSale() {
-  return $.ajax({
+function getSale(params, callback) {
+  request_params = "?"
+
+  for (const query in params) {
+    request_params += (query + "=" + params[query] + "&")
+  }
+  $.ajax({
     type: "GET",
-    url: getSaleAPI,
-    success: function (response)
-    {
-      if(response.hasOwnProperty("error"))
-      {
-       console.log(response.error)
+    url: getSaleAPI + request_params,
+    success: function (response) {
+      if (response.hasOwnProperty("error")) {
+        console.log("has error")
+        console.log(response.error)
       }
-      else
-      {
-        return response
+      else {
+        callback(response)
       }
 
     },
-    error: function(jqXHR, textStatus, errorThrown) {
+    error: function (jqXHR, textStatus, errorThrown) {
       // Debugging case
       alert("textStatus: " + textStatus + " " + errorThrown)
     }
@@ -86,12 +89,11 @@ function postSale(new_sale) {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
-            $(`.modal-input[name=${key}]`).css("border","0.1em solid #d82d4e")
+            $(`.modal-input[name=${key}]`).css("border", "0.1em solid #d82d4e")
           });
         }
         if (response.hasOwnProperty("status")) {
-          if(response.status == "OK")
-          {
+          if (response.status == "OK") {
             $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p>New Sale Added!</p></div>`)
             UI_addSale(new_sale)
             console.log("new sale added")
