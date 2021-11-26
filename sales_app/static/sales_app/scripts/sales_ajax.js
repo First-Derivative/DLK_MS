@@ -24,8 +24,31 @@ function searchSales(search_key) {
     })
 }
 
+// Get Sale
+function getSale() {
+  return $.ajax({
+    type: "GET",
+    url: getSaleAPI,
+    success: function (response)
+    {
+      if(response.hasOwnProperty("error"))
+      {
+       console.log(response.error)
+      }
+      else
+      {
+        return response
+      }
 
-// Get Sales
+    },
+    error: function(jqXHR, textStatus, errorThrown) {
+      // Debugging case
+      alert("textStatus: " + textStatus + " " + errorThrown)
+    }
+  })
+}
+
+// Get (all) Sales
 function getSales(library) {
   return $.ajax({
     type: "GET",
@@ -63,7 +86,7 @@ function postSale(new_sale) {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
-            $(`input[name=${key}]`).css("border","0.1em solid #d82d4e")
+            $(`.modal-input[name=${key}]`).css("border","0.1em solid #d82d4e")
           });
         }
         if (response.hasOwnProperty("status")) {

@@ -50,7 +50,6 @@ $("#modal-btn-save").click(function () {
   postSale(new_sales)
 })
 
-
 // UI Functionality: Add Sale
 function UI_addSale(new_sale) {
 
@@ -67,7 +66,7 @@ function UI_addSale(new_sale) {
       <div class="card_row">
         <p class="card-text" id="project_name_${new_sale.project_code}">${new_sale.project_name}</p>
         <p class="card-text" id="client_name_${new_sale.project_code}">${new_sale.client_name}</p>
-        <p class="card-text value" id="invoice_amount_${new_sale.project_code}">${new_sale.invoice_amount}</p>
+        <p class="card-text value" id="invoice_amount_${new_sale.project_code}">${ new_sale.hasOwnProperty("invoice_amount") ? new_sale.invoice_amount: resolveCurrency(new_sale.currency) + new_sale.value}</p>
         
       </div>
       <div class="card_row">
@@ -81,9 +80,11 @@ function UI_addSale(new_sale) {
     </div>
   </div>`
 
+  // Prepend new_sale Card to DOM
   $('#sales_display').prepend(sales_card_template)
+
+  // Dropdown for sales Card Handler
   dropdown_selector = "#card-dropdown-" + new_sale.project_code
-  
   $(dropdown_selector).on("click", function () {
     id = $(this).attr("name")
     selector = "#card-footer-" + id
@@ -92,16 +93,13 @@ function UI_addSale(new_sale) {
     else{$(`#card-footer-${id}`).hide("fast")}
   })
   
-  
+  // Edit button for sales Card Handler
   edit_selector = "#card-edit-" + new_sale.project_code
-
   $(edit_selector).on("click", function()
   {
     id = $(this).attr("name")
     if($(`#card-footer-${id}`).css('display') == "none"){$(`#card-footer-${id}`).show("fast")}
-
     enterEditMode(new_sale.project_code)
-
   })
 
 }
@@ -120,12 +118,13 @@ function enterEditMode(project_code)
   if(!$(`#sales-card-${project_code}`).attr("editing"))
   {
 
+    // Set sales-card (wrapper) attribute 'editing' to active '1'
     $(`#sales-card-${project_code}`).attr("editing", "1")
 
     // Add Cancel and Save Changes Buttons
     $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3">
-    <button type="button" class="btn sales_standard-btn" style="width:auto;" data-bs-dismiss="modal">Cancel</button>
-    <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Save changes</button></div>`)
+    <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
+    <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="modal-btn-save">Save changes</button></div>`)
 
     // Edit Card Styling for Editing formatting
     $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
@@ -135,6 +134,8 @@ function enterEditMode(project_code)
     // Wrap with forms and switch to inputs (Excludes Currency + Value)
     fields = ["project_code","project_name","client_name","project_detail","order_date","shipping_date","payment_term"]
     $.each(fields, function(i, item) {
+
+      // handles project_code, project_name, client_name
       if(i < 3)
       {
         if($(`#${item}_${project_code}`).parent().hasClass("card_row")) {$(`#${item}_${project_code}`).unwrap()}
@@ -145,14 +146,15 @@ function enterEditMode(project_code)
         $(`#input_${item}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}"></div>`)
         $(`#form-group-${item}`).prepend(`<label for="input_${item}" class="sr-only ps-1 pb-2" style="color: #426285">${propertyToTitle(item)}</label>`)
       }
+      
+      // handles project_detail, order_date, shpping_date (customer wanted date), payment_term
       else
       {
         if($(`#${item}_${project_code}`).parent().hasClass("card_row")){$(`#${item}_${project_code}`).unwrap()}
         $(`#${item}_${project_code} > span`).remove()
-
-        const input = $(`<input type="text" class="form-control edit-input" id="input_${item}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
-        $(`#${item}_${project_code}`).replaceWith(input)
         
+        const input = (item == "project_detail") ? $(`<textarea class="form-control" id="input_${item}" name="${item}" required>></textarea>`).val($(`#${item}_${project_code}`).text()) : $(`<input type="text" class="form-control edit-input" id="input_${item}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+        $(`#${item}_${project_code}`).replaceWith(input)
         
         $(`#input_${item}`).wrap(`<div class="form-group mb-2" id="form-group-${item}"></div>`)
         $(`#form-group-${item}`).prepend(`<label for="input_${item}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
@@ -160,15 +162,17 @@ function enterEditMode(project_code)
   })
   
   // Add Currency + Value Input
-  value_src = $(`#invoice_amount_${project_code}`).text()
-  value_amount = value_src.substr(1, value_src.length)
-  console.log(value_amount)
+  invoice_amount = $(`#invoice_amount_${project_code}`).text()
+  invoice_currency = invoice_amount.substr(0, 1)
+  invoice_value = invoice_amount.substr(1, invoice_amount.length)
+
+  // Format extracted invoice_currency invoice_value into DOM elements
   currency_value_input = `<div class="form-group mb-2" id="form-group-currency">
   <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
   <select class="form-select edit-input" id="input_currency" name="currency" required>
-  <option selected value="MYR">RM</option>
-  <option value="EUR">€</option>
-  <option value="USD">$</option>
+  <option ${invoice_currency == 'RM' ? 'selected ' : ''}value="MYR">RM</option>
+  <option ${invoice_currency == '€' ? 'selected ' : ''}value="EUR">€</option>
+  <option ${invoice_currency == '$' ? 'selected ' : ''}value="USD">$</option>
   </select></div>
   <div class="form-group mb-2" id="form-group-value">
   <label for="input_value" class="sr-only ps-1 pb-2" style="color: #426285">Amount</label>
@@ -176,7 +180,7 @@ function enterEditMode(project_code)
   </div>`
   
   $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
-  $(`#input_value`).val(value_amount)
+  $(`#input_value`).val(invoice_value)
 
   // Add Event Handlers to newly appended DOMS
   $('.edit-input').on("keydown", function (e) {
@@ -189,9 +193,23 @@ function enterEditMode(project_code)
       return false;
     }
   })
-  $("#input_project_detail").autoResize()
+
+  // Cancel_edit button for sales editing hadler
+  $(`#cancel-edit-${project_code}`).on("click", function()
+  {
+    id = $(this).attr("name")
+    if($(`#sales-card-${id}`).attr("editing") == "1"){leaveEditMode(project_code)}
+  })
+
+  // Autoresize by Jack Moore
+  autosize($("#input_project_detail"))
     
   }
+}
+
+function leaveEditMode(project_code)
+{
+  console.log("leaving edit for " + project_code)
 }
 
 // UI Functionality: Entering search mode clears all displayed cards
@@ -291,6 +309,17 @@ function propertyToTitle(property)
   title = src.join(" ")
 
   return title
+}
+
+// UX Functionality: resolveCurrency for API serialized schema for Sales
+function resolveCurrency(currency)
+{
+  switch(currency){
+    case "MYR": return "RM";
+    case "EUR": return "€";
+    case "USD": return "$";
+    default: return "ERROR";
+  }
 }
 
 // UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'

@@ -7,7 +7,11 @@ from django.core.exceptions import ValidationError
 from rest_framework import generics, filters
 from .serializers import SalesSerializer
 
-class SalesAPI(generics.ListCreateAPIView):
+class salesAPI(generics.ListCreateAPIView):
+  queryset = Sales.objects.all()
+  serializer_class = SalesSerializer
+
+class searchAPI(generics.ListCreateAPIView):
   search_fields = ['project_code', 'project_name', 'client_name']
   filter_backends = (filters.SearchFilter,)
   queryset = Sales.objects.all()
