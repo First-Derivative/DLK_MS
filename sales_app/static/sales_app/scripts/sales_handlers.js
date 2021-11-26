@@ -108,56 +108,61 @@ $("#reverse-list").click(function () {
 
 // UI Functionality: Selects a specific card to enterEditMode, allowing for inputs and POST to db
 function enterEditMode(project_code) {
-  if (!$(`#sales-card-${project_code}`).attr("editing")) {
+  edit_check = $(`#sales-card-${project_code}`).attr('editing');
 
-    // Set sales-card (wrapper) attribute 'editing' to active '1'
-    $(`#sales-card-${project_code}`).attr("editing", "1")
+  if (edit_check == undefined || edit_check == "0") {
 
-    // Add Cancel and Save Changes Buttons
-    $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3">
-    <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-    <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="modal-btn-save">Save changes</button></div>`)
+    if (!$(`#sales-card-${project_code}`).attr("editing") || $(`#sales-card-${project_code}`).attr("editing", "0")) {
 
-    // Edit Card Styling for Editing formatting
-    $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
-    $(`#card-body-${project_code}`).removeClass("justify-content-between")
-    $(`#card-body-${project_code}`).removeClass("d-flex")
+      // Set sales-card (wrapper) attribute 'editing' to active '1'
+      $(`#sales-card-${project_code}`).attr("editing", "1")
 
-    // Wrap with forms and switch to inputs (Excludes Currency + Value)
-    fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
-    $.each(fields, function (i, item) {
+      // Add Cancel and Save Changes Buttons
+      $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3" id="card-footer-buttons-${project_code}">
+      <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
+      <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="modal-btn-save">Save changes</button></div>`)
 
-      // handles project_code, project_name, client_name
-      if (i < 3) {
-        if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
+      // Edit Card Styling for Editing formatting
+      $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
+      $(`#card-body-${project_code}`).removeClass("justify-content-between")
+      $(`#card-body-${project_code}`).removeClass("d-flex")
 
-        const input = $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
-        $(`#${item}_${project_code}`).replaceWith(input)
+      // Wrap with forms and switch to inputs (Excludes Currency + Value)
+      fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
+      $.each(fields, function (i, item) {
 
-        $(`#input_${item}_${project_code}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}_${project_code}"></div>`)
-        $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" style="color: #426285">${propertyToTitle(item)}</label>`)
-      }
+        // handles project_code, project_name, client_name
+        if (i < 3) {
+          if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
 
-      // handles project_detail, order_date, shpping_date (customer wanted date), payment_term
-      else {
-        if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
-        $(`#${item}_${project_code} > span`).remove()
+          const input = $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+          $(`#${item}_${project_code}`).replaceWith(input)
 
-        const input = (item == "project_detail") ? $(`<textarea class="form-control" id="input_${item}_${project_code}" name="${item}" style="height: 6em" required>></textarea>`).val($(`#${item}_${project_code}`).text()) : $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
-        $(`#${item}_${project_code}`).replaceWith(input)
+          $(`#input_${item}_${project_code}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}_${project_code}"></div>`)
 
-        $(`#input_${item}_${project_code}`).wrap(`<div class="form-group my-2" id="form-group-${item}_${project_code}"></div>`)
-        $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
-      }
-    })
+          $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" id="label-${item}-${project_code}" style="color: #426285">${propertyToTitle(item)}</label>`)
+        }
 
-    // Add Currency + Value Input
-    invoice_amount = $(`#invoice_amount_${project_code}`).text()
-    invoice_currency = invoice_amount.substr(0, 1)
-    invoice_value = invoice_amount.substr(1, invoice_amount.length)
+        // handles project_detail, order_date, shpping_date (customer wanted date), payment_term
+        else {
+          if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
+          $(`#${item}_${project_code} > span`).remove()
 
-    // Format extracted invoice_currency invoice_value into DOM elements
-    currency_value_input = `<div class="form-group my-2" id="form-group-currency_${project_code}">
+          const input = (item == "project_detail") ? $(`<textarea class="form-control" id="input_${item}_${project_code}" name="${item}" style="height: 6em" required>></textarea>`).val($(`#${item}_${project_code}`).text()) : $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+          $(`#${item}_${project_code}`).replaceWith(input)
+
+          $(`#input_${item}_${project_code}`).wrap(`<div class="form-group my-2" id="form-group-${item}_${project_code}"></div>`)
+          $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
+        }
+      })
+
+      // Add Currency + Value Input
+      invoice_amount = $(`#invoice_amount_${project_code}`).text()
+      invoice_currency = invoice_amount.substr(0, 1)
+      invoice_value = invoice_amount.substr(1, invoice_amount.length)
+
+      // Format extracted invoice_currency invoice_value into DOM elements
+      currency_value_input = `<div class="form-group my-2" id="form-group-currency_${project_code}">
       <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
       <select class="form-select edit-input" id="input_currency_${project_code}" name="currency" required>
         <option ${invoice_currency == 'RM' ? 'selected ' : ''}value="MYR">RM</option>
@@ -169,32 +174,32 @@ function enterEditMode(project_code) {
         <input type="text" class="form-control edit-input" id="input_value_${project_code}" name="value">
       </div>`
 
-    $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
-    $(`#input_value_${project_code}`).val(invoice_value)
+      $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
+      $(`#input_value_${project_code}`).val(invoice_value)
 
-    // Add Event Handlers to newly appended DOMS
-    $('.edit-input').on("keydown", function (e) {
-      if (e.keyCode == 13) {
-        var inputs = $(this).parents("form").eq(0).find(":input");
-        if (inputs[inputs.index(this) + 1] != null) {
-          inputs[inputs.index(this) + 1].focus();
+      // Add Event Handlers to newly appended DOMS
+      $('.edit-input').on("keydown", function (e) {
+        if (e.keyCode == 13) {
+          var inputs = $(this).parents("form").eq(0).find(":input");
+          if (inputs[inputs.index(this) + 1] != null) {
+            inputs[inputs.index(this) + 1].focus();
+          }
+          e.preventDefault();
+          return false;
         }
-        e.preventDefault();
-        return false;
-      }
-    })
+      })
 
-    // Cancel_edit button for sales editing hadler
-    $(`#cancel-edit-${project_code}`).on("click", function () {
-      id = $(this).attr("name")
-      if ($(`#sales-card-${id}`).attr("editing") == "1") {
-        getSale({ "project_code": String(project_code) }, leaveEditMode)
-      }
-    })
+      // Cancel_edit button for sales editing hadler
+      $(`#cancel-edit-${project_code}`).on("click", function () {
+        id = $(this).attr("name")
+        if ($(`#sales-card-${id}`).attr("editing") == "1") {
+          getSale({ "project_code": String(project_code) }, leaveEditMode)
+        }
+      })
 
-    // Autoresize by Jack Moore
-    autosize($(`#input_project_detail_${project_code}`))
-
+      // Autoresize by Jack Moore
+      autosize($(`#input_project_detail_${project_code}`))
+    }
   }
 }
 
@@ -214,7 +219,6 @@ function leaveEditMode(sale) {
   $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row0"></div>`)
   $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row1"></div>`)
 
-  console.log(sale)
   $.each(sale, function (field, value) {
     if (field == "project_code") {
       selector = `#input_project_code_${project_code}`
@@ -233,41 +237,19 @@ function leaveEditMode(sale) {
     else if (field == "project_detail" || field == "payment_term") {
       $(`#card-footer-${project_code}`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
     }
-    else if (field == "cancelled") {
-      // Do nothing
-    }
   })
-
-  // // Replace all input tags with appropriate values 
-  // for (const field in sale) {
-  //   }
-  //   else if (field == "project_name") {
-  //     selector = `#input_project_name_${sale.project_code}`
-  //     $(`form-group-project_name`).unwrap()
-  //     console.log(text_val)
-  //   }
-  //   else if (field == "invoice_amount") {
-  //     currency = $(`#input_currency_${sale.project_code} option:selected`).text()
-  //     amount = $(`#input_value_${sale.project_code}`).val()
-  //     console.log(currency + amount)
-  //   }
-  //   else if (field == "order_date") {
-  //     text_val = $(`#input_order_date_${sale.project_code}`).val()
-  //     console.log(text_val)
-  //   }
-  //   else if (field == "project_detail") {
-  //     text_val = $(`#input_project_detail_${sale.project_code}`).val()
-  //     console.log(text_val)
-  //   }
-  //   else {
-  //     text_val = $(`#input_${field}_${sale.project_code}`).val()
-  //     console.log(field, sale[field])
-  //   }
-  // }
-
   // Finally, set sales-card editing to false "0" and scroll into view 
   $(`#sales-card-${sale.project_code}`).attr("editing", 0)
   document.getElementById(`sales-card-${sale.project_code}`).scrollIntoView(false)
+
+
+  // Edit button for sales Card Handler
+  $(`#card-edit-${project_code}`).on("click", function () {
+    id = $(this).attr("name")
+    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+    enterEditMode(project_code)
+  })
+
 
 }
 
