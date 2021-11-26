@@ -209,7 +209,7 @@ function enterEditMode(project_code)
 
 function leaveEditMode(project_code)
 {
-  console.log("leaving edit for " + project_code)
+  console.log(getSale())
 }
 
 // UI Functionality: Entering search mode clears all displayed cards
