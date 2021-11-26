@@ -10,7 +10,7 @@ function searchSales(search_key) {
           for (const sale of response) {
             sale["searched"] = true
             sales_library.append(sale)
-            UI_addSale(sale, true)
+            UI_addSale(sale)
           }
         }
         else {
@@ -61,13 +61,7 @@ function postSale(new_sale) {
       success: function (response) {
         if (response.hasOwnProperty("error")) {
           Object.keys(response.error).forEach(key => {
-            error_src = key.split("_")
-            error_title = null
-            for (i = 0; i < error_src.length; i++)
-            {
-              error_src[i] = error_src[i].charAt(0).toUpperCase() + error_src[i].substr(1,error_src[i].length)
-            }
-            error_title = error_src.join(" ")
+            error_title = propertyToTitle(key)
             $("#modal-errors").prepend(`<div class="row text-left validation-error-text"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
             $(`input[name=${key}]`).css("border","0.1em solid #d82d4e")
           });

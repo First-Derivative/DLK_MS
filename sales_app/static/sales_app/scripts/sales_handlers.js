@@ -4,7 +4,7 @@ function startUpSales() {
   $.when(getSales(sales_library)).done(function(){
     for(const sale of sales_library.getLibrary())
     {
-      UI_addSale(sale, sale.cancelled)
+      UI_addSale(sale)
     }
   })
 }
@@ -52,56 +52,56 @@ $("#modal-btn-save").click(function () {
 
 
 // UI Functionality: Add Sale
-function UI_addSale(new_sale, search) {
+function UI_addSale(new_sale) {
 
   sales_card_template =
-    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="${search ? 'searched_sale' : ''}" name="${new_sale.project_code}">
-    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex justify-content-between">
-      <p>${new_sale.project_code} : ${new_sale.project_name} </p>
+    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
+    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between">
+      <p id="project_code_${new_sale.project_code}">${new_sale.project_code}</p>
       <div class="d-flex justify-content-between" style="width:4em">
         <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
         <img src="${droparrow_src}" width="24" height="24" class="hoverable header-img" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
       </div>
     </div>
-    <div class="card-body d-flex justify-content-between">
+    <div class="card-body d-flex justify-content-between" id="card-body-${new_sale.project_code}">
       <div class="card_row">
-        <p class="card-text">${new_sale.client_name}</p>
-        <p class="card-text value">${new_sale.invoice_amount}</p>
+        <p class="card-text" id="project_name_${new_sale.project_code}">${new_sale.project_name}</p>
+        <p class="card-text" id="client_name_${new_sale.project_code}">${new_sale.client_name}</p>
+        <p class="card-text value" id="invoice_amount_${new_sale.project_code}">${new_sale.invoice_amount}</p>
         
       </div>
-      <div class="card_row>
-        <p class="card-text"><span class="text-muted">Customer Order Date: </span>${new_sale.order_date}</p>
-        <p class="card-text"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date}</p>
+      <div class="card_row">
+        <p class="card-text" id="order_date_${new_sale.project_code}"><span class="text-muted">Customer Order Date: </span>${new_sale.order_date}</p>
+        <p class="card-text" id="shipping_date_${new_sale.project_code}"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sale.project_code}">
-      <p class="card-text"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
-      <p class="card-text"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
+      <p class="card-text" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
+      <p class="card-text" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
     </div>
   </div>`
 
   $('#sales_display').prepend(sales_card_template)
   dropdown_selector = "#card-dropdown-" + new_sale.project_code
-
+  
   $(dropdown_selector).on("click", function () {
-    id = $(this).attr('name')
+    id = $(this).attr("name")
     selector = "#card-footer-" + id
+    
+    if($(`#card-footer-${id}`).css('display') == "none"){$(`#card-footer-${id}`).show("fast")}
+    else{$(`#card-footer-${id}`).hide("fast")}
+  })
+  
+  
+  edit_selector = "#card-edit-" + new_sale.project_code
 
-    if($(`#card-footer-${id}`).css('display') == "none")
-    {
-      $(`#card-footer-${id}`).show("fast")
-    }
-    else
-    {
-      $(`#card-footer-${id}`).hide("fast")
-    }
+  $(edit_selector).on("click", function()
+  {
+    id = $(this).attr("name")
+    if($(`#card-footer-${id}`).css('display') == "none"){$(`#card-footer-${id}`).show("fast")}
 
-    // if ($(`#card-footer-${id}`).hasClass("hidden")) {
-    //   $(`#card-footer-${id}`).removeClass("hidden")
-    // }
-    // else {
-    //   $(`#card-footer-${id}`).addClass("hidden")
-    // }
+    enterEditMode(new_sale.project_code)
+
   })
 
 }
@@ -114,10 +114,84 @@ $("#reverse-list").click(function () {
   })
 })
 
-// UI Functionality: Reverse list
-function reverseList() 
+// UI Functionality: Selects a specific card to enterEditMode, allowing for inputs and POST to db
+function enterEditMode(project_code)
 {
+  if(!$(`#sales-card-${project_code}`).attr("editing"))
+  {
 
+    $(`#sales-card-${project_code}`).attr("editing", "1")
+
+    // Add Cancel and Save Changes Buttons
+    $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3">
+    <button type="button" class="btn sales_standard-btn" style="width:auto;" data-bs-dismiss="modal">Cancel</button>
+    <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Save changes</button></div>`)
+
+    // Edit Card Styling for Editing formatting
+    $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
+    $(`#card-body-${project_code}`).removeClass("justify-content-between")
+    $(`#card-body-${project_code}`).removeClass("d-flex")
+
+    // Wrap with forms and switch to inputs (Excludes Currency + Value)
+    fields = ["project_code","project_name","client_name","project_detail","order_date","shipping_date","payment_term"]
+    $.each(fields, function(i, item) {
+      if(i < 3)
+      {
+        if($(`#${item}_${project_code}`).parent().hasClass("card_row")) {$(`#${item}_${project_code}`).unwrap()}
+        
+        const input = $(`<input type="text" class="form-control edit-input" id="input_${item}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+        $(`#${item}_${project_code}`).replaceWith(input)
+        
+        $(`#input_${item}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}"></div>`)
+        $(`#form-group-${item}`).prepend(`<label for="input_${item}" class="sr-only ps-1 pb-2" style="color: #426285">${propertyToTitle(item)}</label>`)
+      }
+      else
+      {
+        if($(`#${item}_${project_code}`).parent().hasClass("card_row")){$(`#${item}_${project_code}`).unwrap()}
+        $(`#${item}_${project_code} > span`).remove()
+
+        const input = $(`<input type="text" class="form-control edit-input" id="input_${item}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
+        $(`#${item}_${project_code}`).replaceWith(input)
+        
+        
+        $(`#input_${item}`).wrap(`<div class="form-group mb-2" id="form-group-${item}"></div>`)
+        $(`#form-group-${item}`).prepend(`<label for="input_${item}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
+      }
+  })
+  
+  // Add Currency + Value Input
+  value_src = $(`#invoice_amount_${project_code}`).text()
+  value_amount = value_src.substr(1, value_src.length)
+  console.log(value_amount)
+  currency_value_input = `<div class="form-group mb-2" id="form-group-currency">
+  <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
+  <select class="form-select edit-input" id="input_currency" name="currency" required>
+  <option selected value="MYR">RM</option>
+  <option value="EUR">€</option>
+  <option value="USD">$</option>
+  </select></div>
+  <div class="form-group mb-2" id="form-group-value">
+  <label for="input_value" class="sr-only ps-1 pb-2" style="color: #426285">Amount</label>
+  <input type="text" class="form-control edit-input" id="input_value" name="value">
+  </div>`
+  
+  $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
+  $(`#input_value`).val(value_amount)
+
+  // Add Event Handlers to newly appended DOMS
+  $('.edit-input').on("keydown", function (e) {
+    if (e.keyCode == 13) {
+      var inputs = $(this).parents("form").eq(0).find(":input");
+      if (inputs[inputs.index(this) + 1] != null) {                    
+          inputs[inputs.index(this) + 1].focus();
+      }
+      e.preventDefault();
+      return false;
+    }
+  })
+  $("#input_project_detail").autoResize()
+    
+  }
 }
 
 // UI Functionality: Entering search mode clears all displayed cards
@@ -185,12 +259,12 @@ $("#input-cancelled").click(function () {
     {
       if(sale.searched)
       {
-        UI_addSale(sale, true)
+        UI_addSale(sale)
       }
     }
     else if(sale.cancelled)
     {
-      UI_addSale(sale, true)
+      UI_addSale(sale)
     }
   }
 })
@@ -205,3 +279,28 @@ function UI_removeAll()
 {
   $("#sales_display").empty();
 }
+
+function propertyToTitle(property)
+{
+  src = property.split("_")
+  title = null
+  for (i = 0; i < src.length; i++)
+  {
+    src[i] = src[i].charAt(0).toUpperCase() + src[i].substr(1,src[i].length)
+  }
+  title = src.join(" ")
+
+  return title
+}
+
+// UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'
+$('#modal-form-addSale input').keydown(function (e) {
+  if (e.keyCode == 13) {
+      var inputs = $(this).parents("form").eq(0).find(":input");
+      if (inputs[inputs.index(this) + 1] != null) {                    
+          inputs[inputs.index(this) + 1].focus();
+      }
+      e.preventDefault();
+      return false;
+  }
+});
