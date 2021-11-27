@@ -10,11 +10,10 @@ function startUpSales() {
 
 // UX Functionality: Add Sale
 $("#modal-btn-save").click(function () {
-  // Init
-  new_sales = { project_code: null, project_name: null, client_name: null, project_detail: null, value: null, order_date: null, shipping_date: null, payment_term: null, currency: null, cancelled: false }
-  $("div[class*=validation-error-text]").each(function () {
-    $(this).remove()
-  })
+
+  new_sales = {}
+
+  $("div[id*=modal-error-text]").remove()
 
   // Get & Assign Data
   let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
@@ -120,14 +119,14 @@ function enterEditMode(project_code) {
       // Add Cancel and Save Changes Buttons
       $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3" id="card-footer-buttons-${project_code}">
       <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-      <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="modal-btn-save">Save changes</button></div>`)
+      <button class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
       // Edit Card Styling for Editing formatting
       $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
       $(`#card-body-${project_code}`).removeClass("justify-content-between")
       $(`#card-body-${project_code}`).removeClass("d-flex")
 
-      // Wrap with forms and switch to inputs (Excludes Currency + Value)
+      // Replace p tags with inputs (Excludes Currency + Value)
       fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
       $.each(fields, function (i, item) {
 
@@ -189,11 +188,53 @@ function enterEditMode(project_code) {
         }
       })
 
-      // Cancel_edit button for sales editing hadler
+      // Cancel_edit button for sales editing handler
       $(`#cancel-edit-${project_code}`).on("click", function () {
         id = $(this).attr("name")
         if ($(`#sales-card-${id}`).attr("editing") == "1") {
+          console.log("calling getSale for some reason")
           getSale({ "project_code": String(project_code) }, leaveEditMode)
+        }
+      })
+
+      // Save Edit button for sales editing handler
+      $(`#save-edit-${project_code}`).on("click", function (e) {
+        // init
+        e.preventDefault();
+        id = $(this).attr("name")
+        $(`#error-text-${project_code}`).remove()
+
+        // Gathering & Formatting Data
+        sale = {}
+
+
+        // Get & Assign Data
+        let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
+        $.each(data_form, function (i, field) {
+          property = field.name
+          // if (property == "order_date") {
+          //   src = field.value
+          //   src = src.replace("/", "-")
+          //   src = src.replace("/", "-")
+          //   src_split = src.split("-")
+          //   src_split.reverse()
+          //   temp = src_split[2]
+          //   src_split[2] = src_split[1]
+          //   src_split[1] = temp
+
+          //   format_date = src_split.join("-")
+          //   sale[property] = format_date
+          // }
+          if (property == "cancelled") {
+            sale["cancelled"] = true
+          }
+          else {
+            sale[property] = field.value
+          }
+        })
+        console.log(sale)
+        if ($(`#sales-card-${id}`).attr("editing") == "1") {
+          editSale(sale, leaveEditMode)
         }
       })
 
@@ -241,7 +282,6 @@ function leaveEditMode(sale) {
   // Finally, set sales-card editing to false "0" and scroll into view 
   $(`#sales-card-${sale.project_code}`).attr("editing", 0)
   document.getElementById(`sales-card-${sale.project_code}`).scrollIntoView(false)
-
 
   // Edit button for sales Card Handler
   $(`#card-edit-${project_code}`).on("click", function () {

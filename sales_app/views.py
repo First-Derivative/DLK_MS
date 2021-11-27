@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import SalesSerializer
 
+# REST GET SALE API
 # @unauthenticated_check
 @api_view(['GET'])
 def getSale(request):
@@ -25,19 +26,20 @@ def getSale(request):
       
   return Response({})
     
-
-
+# REST SEARCH API
 class searchAPI(generics.ListCreateAPIView):
   search_fields = ['project_code', 'project_name', 'client_name']
   filter_backends = (filters.SearchFilter,)
   queryset = Sales.objects.all()
   serializer_class = SalesSerializer
 
+# GET SALES FRONTEND
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def salesPage(request):
   return render(request, "sales_app/sales.html",  {})
 
+# AUX SERIALIZERE
 def SerializeSale(sale):
   serial = {}
   serial["project_code"] = sale.project_code
@@ -52,6 +54,7 @@ def SerializeSale(sale):
 
   return serial
 
+# GET ALL SALES API
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def getSales(request):
@@ -62,12 +65,12 @@ def getSales(request):
 
     return JsonResponse({"sales":sales})
 
+# ADD NEW SALE
 #@unauthenticated_check 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["sales"])
 def addSales(request):
   post = request.POST
-  print(request.user.groups.all())
   
   # Validate postdata for duplication 
   try:
@@ -101,3 +104,42 @@ def addSales(request):
     #end of user-flow for succesful request: return status OK
     new_sale.save()
     return JsonResponse({"status":"OK"}) #consider sending new_sale back if necessary instead of status:OK
+
+# EDIT SALE
+#@unauthenticated_check 
+@method_check(allowed_methods=["POST"])
+@role_check(allowed_roles=["sales"])
+def editSale(request):
+  post = request.POST
+  
+  # Validate postdata for duplication 
+  try:
+    sale = Sales.objects.get(project_code=post["edit[project_code]"])
+    project_code = post["edit[project_code]"]
+    project_name = post["edit[project_name]"]
+    client_name = post["edit[client_name]"]
+    project_detail = post["edit[project_detail]"]
+    value = post["edit[value]"]
+    currency = post["edit[currency]"] 
+    order_date = post["edit[order_date]"]
+    shipping_date = post["edit[shipping_date]"]
+    payment_term = post["edit[payment_term]"]
+    
+    sale.project_code = project_code
+    sale.project_name = project_name
+    sale.client_name = client_name
+    sale.project_detail = project_detail
+    sale.value = value
+    sale.currency =currency
+    sale.order_date = order_date
+    sale.shipping_date = shipping_date
+    sale.payment_term = payment_term
+
+    sale.save()
+    return JsonResponse({"status":"OK"})
+
+  except Sales.DoesNotExist:
+  # Sale not found-> Return error
+    return JsonResponse({"error": {"sale_does_not_exist": "Sale with that project code does not exist. Your request has been recorded"}})
+
+    
