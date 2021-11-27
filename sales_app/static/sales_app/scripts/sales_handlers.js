@@ -252,6 +252,7 @@ function enterEditMode(project_code) {
 
       // Autoresize by Jack Moore
       autosize($(`#input_project_detail_${project_code}`))
+      $(`#input_project_detail_${project_code}`).css("height", "5em")
     }
   }
 }
