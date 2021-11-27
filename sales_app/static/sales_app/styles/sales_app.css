@@ -5,6 +5,12 @@
 
 #left_content > img {display: inline;}
 
+.edit-check-input
+{
+  height: 2em !important;
+  width: 2em !important;
+}
+
 .value
 {
   color: #383736;

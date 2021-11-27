@@ -124,16 +124,18 @@ def editSale(request):
     order_date = post["edit[order_date]"]
     shipping_date = post["edit[shipping_date]"]
     payment_term = post["edit[payment_term]"]
+    cancelled = True if post["edit[cancelled]"] == 'true' else False
     
     sale.project_code = project_code
     sale.project_name = project_name
     sale.client_name = client_name
     sale.project_detail = project_detail
     sale.value = value
-    sale.currency =currency
+    sale.currency = currency
     sale.order_date = order_date
     sale.shipping_date = shipping_date
     sale.payment_term = payment_term
+    sale.cancelled = cancelled
 
     sale.save()
     return JsonResponse({"status":"OK"})

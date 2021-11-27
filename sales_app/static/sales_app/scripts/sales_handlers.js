@@ -52,7 +52,7 @@ function UI_addSale(new_sale) {
 
   sales_card_template =
     `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
-    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between">
+    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_sale.project_code}">
       <p id="project_code_${new_sale.project_code}">${new_sale.project_code}</p>
       <div class="d-flex justify-content-between" style="width:4em">
         <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
@@ -97,7 +97,6 @@ function UI_addSale(new_sale) {
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
     enterEditMode(new_sale.project_code)
   })
-
 }
 
 // UX Functionality: Handler for #reverse-list button
@@ -117,11 +116,6 @@ function enterEditMode(project_code) {
 
       // Set sales-card (wrapper) attribute 'editing' to active '1'
       $(`#sales-card-${project_code}`).attr("editing", "1")
-
-      // Add Cancel and Save Changes Buttons
-      $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3" id="card-footer-buttons-${project_code}">
-      <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-      <button class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
       // Edit Card Styling for Editing formatting
       $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
@@ -174,9 +168,24 @@ function enterEditMode(project_code) {
         <label for="input_value" class="sr-only ps-1 pb-2" style="color: #426285">Amount</label>
         <input type="text" class="form-control edit-input" id="input_value_${project_code}" name="value">
       </div>`
-
+      // Replace invoice amount with inputs
       $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
       $(`#input_value_${project_code}`).val(invoice_value)
+
+      // Format and Append Cancelled Input
+      sale_cancelled = ($(`#sales-card-${project_code}`).hasClass('cancelled-card')) ? true : false
+      const cancelled_input = `<input class="form-check-input edit-input edit-check-input" style="margin-right: 1em" type="checkbox" value="" id="input_cancelled_${project_code}" name="cancelled" ${sale_cancelled ? 'checked' : ''}>`
+
+      // Add new cancelled DOM elements to card-footer
+      $(`#card-footer-${project_code}`).append(cancelled_input)
+      $(`#input_cancelled_${project_code}`).wrap(`<div class="form-group mb-2 d-flex align-items-center" id="form-group-cancelled_${project_code}"></div>`)
+
+      $(`#form-group-cancelled_${project_code}`).append(`<label class="form-check-label pt-1" for="input_cancelled_${project_code}" style="color: #426285;font-size:1.5em"> Cancelled Order? </label>`)
+
+      // Add Cancel and Save Changes Buttons
+      $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3" id="card-footer-buttons-${project_code}">
+      <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
+      <button class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
       // Add Event Handlers to newly appended DOMS
       $('.edit-input').on("keydown", function (e) {
@@ -208,7 +217,7 @@ function enterEditMode(project_code) {
 
         // Gathering & Formatting Data
         sale = {}
-
+        sale["cancelled"] = false
 
         // Get & Assign Data
         let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
@@ -234,6 +243,7 @@ function enterEditMode(project_code) {
             sale[property] = field.value
           }
         })
+
         console.log(sale)
         if ($(`#sales-card-${id}`).attr("editing") == "1") {
           editSale(sale, leaveEditMode)
@@ -248,11 +258,20 @@ function enterEditMode(project_code) {
 
 function leaveEditMode(sale) {
   project_code = sale.project_code
+  is_cancelled = sale.cancelled
 
   // Revert DOM and Styling to before Edit mode
   $(`#sales-card-${project_code}`).unwrap()
   $(`#card-body-${project_code}`).addClass("justify-content-between")
   $(`#card-body-${project_code}`).addClass("d-flex")
+  if (is_cancelled) {
+    $(`#sales-card-${project_code}`).addClass('cancelled-card')
+    $(`#sales-card-header-${project_code}`).addClass('cancelled-card-header')
+  }
+  if (!is_cancelled && $(`#sales-card-${project_code}`).hasClass('cancelled-card')) {
+    $(`#sales-card-${project_code}`).removeClass('cancelled-card')
+    $(`#sales-card-header-${project_code}`).removeClass('cancelled-card-header')
+  }
 
   // Empty card-body and card-footer
   $(`#card-body-${project_code}`).empty();
@@ -291,8 +310,6 @@ function leaveEditMode(sale) {
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
     enterEditMode(project_code)
   })
-
-
 }
 
 // UI Functionality: Entering search mode clears all displayed cards

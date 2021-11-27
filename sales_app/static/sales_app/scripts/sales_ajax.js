@@ -138,6 +138,7 @@ function editSale(sale, callback) {
           document.getElementById(`card-body-${sale.project_code}`).scrollIntoView(false)
         }
         else {
+          sale["invoice_amount"] = resolveCurrency(sale["currency"]) + sale["value"]
           callback(sale)
         }
       },
