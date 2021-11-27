@@ -13,7 +13,9 @@ $("#modal-btn-save").click(function () {
 
   new_sales = {}
 
-  $("div[id*=modal-error-text]").remove()
+  $("div[class*=validation-update-text]").each(function () {
+    $(this).remove()
+  })
 
   // Get & Assign Data
   let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
