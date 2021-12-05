@@ -86,7 +86,7 @@
 
           <div class="col-lg-5">
             <div class="form-floating">
-              <input type="text modal-input" class="form-control" name="client_name" id="modal-input-client_name" placeholder="Leonardo DiCaprio">
+              <input type="text" class="form-control modal-input" name="client_name" id="modal-input-client_name" placeholder="Leonardo DiCaprio">
               <label for="modal-input-client_name">Client Name</label>
             </div>
           </div>
@@ -152,7 +152,7 @@
           </div>
         </div>
       </div>
-    </div>
+     </div>
   </div>
 </div>
 {% endblock main_content %}
@@ -198,6 +198,7 @@
   const getSaleAPI = "{% url 'getSale_api' %}"
   const getSearchAPI = "{% url 'searchSales_api' %}" + "?search=0"
   const postSales_url = "{% url 'postSales_api' %}"
+  const editSale_url = "{% url 'editSales_api' %}"
   const edit_src = "{% static '/sales_app/icons/edit.png' %}"
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
   const token = "{{csrf_token}}"
@@ -205,7 +206,6 @@
   // Initiliaze parameters
   sales_library = new Library()
   search_mode = false
-  edit_mode = false
 
   // Startup Script
   startUpSales()

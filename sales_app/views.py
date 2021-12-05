@@ -5,23 +5,41 @@ from .models import Sales
 from ms_app.models import Currency, resolveCurrencyLabel
 from django.core.exceptions import ValidationError
 from rest_framework import generics, filters
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .serializers import SalesSerializer
 
-class salesAPI(generics.ListCreateAPIView):
-  queryset = Sales.objects.all()
-  serializer_class = SalesSerializer
+# REST GET SALE API
+# @unauthenticated_check
+@api_view(['GET'])
+def getSale(request):
+  project_code = request.query_params.get('project_code', None)
 
+  if(project_code):
+    sale = None
+    try:
+      sale = Sales.objects.get(project_code=project_code)
+      sale_serialized = SalesSerializer(sale)
+      return Response(sale_serialized.data) 
+    except Sales.DoesNotExist as e:
+      return JsonResponse({"error": {"not_found": "This is not the sale you're looking for"}})
+      
+  return Response({})
+    
+# REST SEARCH API
 class searchAPI(generics.ListCreateAPIView):
   search_fields = ['project_code', 'project_name', 'client_name']
   filter_backends = (filters.SearchFilter,)
   queryset = Sales.objects.all()
   serializer_class = SalesSerializer
 
+# GET SALES FRONTEND
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def salesPage(request):
   return render(request, "sales_app/sales.html",  {})
 
+# AUX SERIALIZERE
 def SerializeSale(sale):
   serial = {}
   serial["project_code"] = sale.project_code
@@ -36,6 +54,7 @@ def SerializeSale(sale):
 
   return serial
 
+# GET ALL SALES API
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def getSales(request):
@@ -46,42 +65,83 @@ def getSales(request):
 
     return JsonResponse({"sales":sales})
 
+# ADD NEW SALE
 #@unauthenticated_check 
+@method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["sales"])
 def addSales(request):
-  if(request.method == "POST"):
-    post = request.POST
+  post = request.POST
+  
+  # Validate postdata for duplication 
+  try:
+    sale = Sales.objects.get(project_code=post["data[project_code]"])
+    return JsonResponse({"error": {"duplication_error": "Sale with that project code already exists, please check for duplicate records"}})
+  # No Duplicate Found-> Create new Object
+  except Sales.DoesNotExist:
+    project_code = post["data[project_code]"]
+    project_name = post["data[project_name]"]
+    client_name = post["data[client_name]"]
+    project_detail = post["data[project_detail]"]
+    value = post["data[value]"]
+    order_date = post["data[order_date]"]
+    shipping_date = post["data[shipping_date]"]
+    payment_term = post["data[payment_term]"]
+    currency = post["data[currency]"] 
     
-    # Validate postdata for duplication 
+    #Double check that this logic works for view
+    for choice in Currency:
+      if choice.label == currency:
+        currency = choice
+        break
+    
+    #Instantiate and save new Sale object on DB
+    new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=False)
     try:
-      sale = Sales.objects.get(project_code=post["data[project_code]"])
-      return JsonResponse({"error": {"duplication_error": "Sale with that project code already exists, please check for duplicate records"}})
-    # No Duplicate Found-> Create new Object
-    except Sales.DoesNotExist:
-      project_code = post["data[project_code]"]
-      project_name = post["data[project_name]"]
-      client_name = post["data[client_name]"]
-      project_detail = post["data[project_detail]"]
-      value = post["data[value]"]
-      order_date = post["data[order_date]"]
-      shipping_date = post["data[shipping_date]"]
-      payment_term = post["data[payment_term]"]
-      currency = post["data[currency]"] 
-      
-      #Double check that this logic works for view
-      for choice in Currency:
-        if choice.label == currency:
-          currency = choice
-          break
-      
-      #Instantiate and save new Sale object on DB
-      new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=False)
-      try:
-        new_sale.full_clean()
-      except ValidationError as e:
-        return JsonResponse({"error": dict(e)})
+      new_sale.full_clean()
+    except ValidationError as e:
+      return JsonResponse({"error": dict(e)})
 
-      #end of user-flow for succesful request: return status OK
-      new_sale.save()
-      return JsonResponse({"status":"OK"}) #consider sending new_sale back if necessary instead of status:OK
-  return HttpResponseBadRequest("Bad Request not POST")
+    #end of user-flow for succesful request: return status OK
+    new_sale.save()
+    return JsonResponse({"status":"OK"}) #consider sending new_sale back if necessary instead of status:OK
+
+# EDIT SALE
+#@unauthenticated_check 
+@method_check(allowed_methods=["POST"])
+@role_check(allowed_roles=["sales"])
+def editSale(request):
+  post = request.POST
+  
+  # Validate postdata for duplication 
+  try:
+    sale = Sales.objects.get(project_code=post["edit[project_code]"])
+    project_code = post["edit[project_code]"]
+    project_name = post["edit[project_name]"]
+    client_name = post["edit[client_name]"]
+    project_detail = post["edit[project_detail]"]
+    value = post["edit[value]"]
+    currency = post["edit[currency]"] 
+    order_date = post["edit[order_date]"]
+    shipping_date = post["edit[shipping_date]"]
+    payment_term = post["edit[payment_term]"]
+    cancelled = True if post["edit[cancelled]"] == 'true' else False
+    
+    sale.project_code = project_code
+    sale.project_name = project_name
+    sale.client_name = client_name
+    sale.project_detail = project_detail
+    sale.value = value
+    sale.currency = currency
+    sale.order_date = order_date
+    sale.shipping_date = shipping_date
+    sale.payment_term = payment_term
+    sale.cancelled = cancelled
+
+    sale.save()
+    return JsonResponse({"status":"OK"})
+
+  except Sales.DoesNotExist:
+  # Sale not found-> Return error
+    return JsonResponse({"error": {"sale_does_not_exist": "Sale with that project code does not exist. Your request has been recorded"}})
+
+    
