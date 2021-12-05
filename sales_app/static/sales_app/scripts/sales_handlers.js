@@ -8,7 +8,7 @@ function startUpSales() {
   })
 }
 
-// UX Functionality: Add Sale
+// UX Functionality: Add Sale Handler
 $("#modal-btn-save").click(function () {
 
   new_sales = {}
@@ -180,12 +180,12 @@ function enterEditMode(project_code) {
       $(`#card-footer-${project_code}`).append(cancelled_input)
       $(`#input_cancelled_${project_code}`).wrap(`<div class="form-group mb-2 d-flex align-items-center" id="form-group-cancelled_${project_code}"></div>`)
 
-      $(`#form-group-cancelled_${project_code}`).append(`<label class="form-check-label pt-1" for="input_cancelled_${project_code}" style="color: #426285;font-size:1.5em"> Cancelled Order? </label>`)
+      $(`#form-group-cancelled_${project_code}`).append(`<label class="form-check-label pt-1" for="input_cancelled_${project_code}" style="color: #426285;font-size:1.15em"> Cancelled Order? </label>`)
 
       // Add Cancel and Save Changes Buttons
-      $(`#card-footer-${project_code}`).append(`<div class="d-flex flex-row justify-content-end mt-3" id="card-footer-buttons-${project_code}">
+      $(`#sales-card-${project_code}`).append(`<div class="d-flex flex-row justify-content-end m-3 sales_footer_buttons" id="card-footer-buttons-${project_code}">
       <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-      <button class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
+      <button class="btn sales_secondary-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
       // Add Event Handlers to newly appended DOMS
       $('.edit-input').on("keydown", function (e) {

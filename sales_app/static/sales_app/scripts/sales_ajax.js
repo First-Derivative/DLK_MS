@@ -118,24 +118,24 @@ function editSale(sale, callback) {
       type: "POST",
       headers: { "X-CSRFToken": token },
       url: editSale_url,
-      data: { "edit": sale },
+      data: sale,
       success: function (response) {
         start = 0
         if (response.hasOwnProperty("error")) {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             if (start == 0) {
-              $(`card-footer-buttons-${sale.project_code}`).insertBefore(`<div class="row text-left validation-update-text" id="error-text-${new_sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
+              $(`#card-footer-${sale.project_code}`).append(`<div class="row text-left validation-update-text mt-3" id="error-text-${sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
               $(`#input-${key}_${sale.project_code}[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
             else {
-              $(`#error-text-${new_sale.project_code}`).append(`<p style="color: #d82d4e">${error_title} : ${response.error[key]}</p>`)
+              $(`#error-text-${sale.project_code}`).append(`<p style="color: #d82d4e">${error_title} : ${response.error[key]}</p>`)
 
               $(`.modal-input[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
             start == 1
           })
-          document.getElementById(`card-body-${sale.project_code}`).scrollIntoView(false)
+          document.getElementById(`card-footer-${sale.project_code}`).scrollIntoView()
         }
         else {
           sale["invoice_amount"] = resolveCurrency(sale["currency"]) + sale["value"]

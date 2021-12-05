@@ -114,17 +114,21 @@ def editSale(request):
   
   # Validate postdata for duplication 
   try:
-    sale = Sales.objects.get(project_code=post["edit[project_code]"])
-    project_code = post["edit[project_code]"]
-    project_name = post["edit[project_name]"]
-    client_name = post["edit[client_name]"]
-    project_detail = post["edit[project_detail]"]
-    value = post["edit[value]"]
-    currency = post["edit[currency]"] 
-    order_date = post["edit[order_date]"]
-    shipping_date = post["edit[shipping_date]"]
-    payment_term = post["edit[payment_term]"]
-    cancelled = True if post["edit[cancelled]"] == 'true' else False
+    for key in post:
+      if(post[key] == "null"):
+        return JsonResponse({"error":{key:"null entered for {}".format(key)}})
+
+    sale = Sales.objects.get(project_code=post["project_code"])
+    project_code = post["project_code"]
+    project_name = post["project_name"]
+    client_name = post["client_name"]
+    project_detail = post["project_detail"]
+    value = post["value"]
+    currency = post["currency"] 
+    order_date = post["order_date"]
+    shipping_date = post["shipping_date"]
+    payment_term = post["payment_term"]
+    cancelled = True if post["cancelled"] == 'true' else False
     
     sale.project_code = project_code
     sale.project_name = project_name
