@@ -10,3 +10,7 @@ def validate_project_code(input):
 def validate_value(value):
   if(value < 0):
     raise ValidationError("{value} cannot be negative")
+
+def check_null(value):
+  if(value == "null" or "null" in value):
+    raise ValidationError("cannot be null")

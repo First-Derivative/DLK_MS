@@ -84,7 +84,7 @@ function postSale(new_sale) {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             if (start == 0) {
-              $("#modal-errors").prepend(`<div class="row text-left validation-update-text" id="modal-error-text-${new_sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
+              $("#modal-errors").prepend(`<div class="row text-left modal-validation-update-text" id="modal-error-text-${new_sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
               $(`.modal-input[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
             else {
@@ -98,7 +98,7 @@ function postSale(new_sale) {
         }
         if (response.hasOwnProperty("status")) {
           if (response.status == "OK") {
-            $("#modal-errors").prepend(`<div class="row text-left validation-update-text"><p style="color: #426285">New Sale Added!</p></div>`)
+            $("#modal-errors").prepend(`<div class="row text-left modal-validation-update-text"><p style="color: #426285">New Sale Added!</p></div>`)
             new_sale["invoice_amount"] = new_sale["currency"] + new_sale["value"]
             UI_addSale(new_sale)
           }
@@ -125,17 +125,17 @@ function editSale(sale, callback) {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             if (start == 0) {
-              $(`#card-footer-${sale.project_code}`).append(`<div class="row text-left validation-update-text mt-3" id="error-text-${sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
-              $(`#input-${key}_${sale.project_code}[name=${key}]`).css("border", "0.1em solid #d82d4e")
+              $(`#card-footer-${sale.project_code}`).append(`<div class="row text-left edit-validation-update-text mt-3" id="error-text-${sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
+              $(`#input_${key}_${sale.project_code}[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
             else {
               $(`#error-text-${sale.project_code}`).append(`<p style="color: #d82d4e">${error_title} : ${response.error[key]}</p>`)
 
-              $(`.modal-input[name=${key}]`).css("border", "0.1em solid #d82d4e")
+              $(`.input[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
             start == 1
           })
-          document.getElementById(`card-footer-${sale.project_code}`).scrollIntoView()
+          document.getElementById(`card-footer-${sale.project_code}`).scrollIntoView(false)
         }
         else {
           sale["invoice_amount"] = resolveCurrency(sale["currency"]) + sale["value"]

@@ -13,7 +13,7 @@ $("#modal-btn-save").click(function () {
 
   new_sales = {}
 
-  $("div[class*=validation-update-text]").each(function () {
+  $("div[class*=modal-validation-update-text]").each(function () {
     $(this).remove()
   })
 
@@ -174,7 +174,7 @@ function enterEditMode(project_code) {
 
       // Format and Append Cancelled Input
       sale_cancelled = ($(`#sales-card-${project_code}`).hasClass('cancelled-card')) ? true : false
-      const cancelled_input = `<input class="form-check-input edit-input edit-check-input" style="margin-right: 1em" type="checkbox" value="" id="input_cancelled_${project_code}" name="cancelled" ${sale_cancelled ? 'checked' : ''}>`
+      const cancelled_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_cancelled_${project_code}" name="cancelled" ${sale_cancelled ? 'checked' : ''}>`
 
       // Add new cancelled DOM elements to card-footer
       $(`#card-footer-${project_code}`).append(cancelled_input)
@@ -213,7 +213,9 @@ function enterEditMode(project_code) {
         // init
         e.preventDefault();
         id = $(this).attr("name")
-        $(`#error-text-${project_code}`).remove()
+        $(`div[id*=error-text-${id}]`).each(function () {
+          $(this).remove()
+        })
 
         // Gathering & Formatting Data
         sale = {}
@@ -265,6 +267,10 @@ function leaveEditMode(sale) {
   $(`#sales-card-${project_code}`).unwrap()
   $(`#card-body-${project_code}`).addClass("justify-content-between")
   $(`#card-body-${project_code}`).addClass("d-flex")
+  $("div[class*=edit-validation-update-text]").each(function () {
+    $(this).remove()
+  })
+
   if (is_cancelled) {
     $(`#sales-card-${project_code}`).addClass('cancelled-card')
     $(`#sales-card-header-${project_code}`).addClass('cancelled-card-header')
@@ -274,9 +280,10 @@ function leaveEditMode(sale) {
     $(`#sales-card-header-${project_code}`).removeClass('cancelled-card-header')
   }
 
-  // Empty card-body and card-footer
+  // Empty card-body, card-footer card-footer-buttons, 
   $(`#card-body-${project_code}`).empty();
   $(`#card-footer-${project_code}`).empty();
+  $(`#card-footer-buttons-${project_code}`).remove();
 
   // Add card_rows to card-body
   $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row0"></div>`)

@@ -114,9 +114,29 @@ def editSale(request):
   
   # Validate postdata for duplication 
   try:
-    for key in post:
-      if(post[key] == "null"):
-        return JsonResponse({"error":{key:"null entered for {}".format(key)}})
+    
+    try:
+          # Creating Temp Sale before full clean
+      temp_project_code = post["project_code"]
+      temp_project_name = post["project_name"]
+      temp_client_name = post["client_name"]
+      temp_project_detail = post["project_detail"]
+      temp_value = post["value"]
+      temp_order_date = post["order_date"]
+      temp_shipping_date = post["shipping_date"]
+      temp_payment_term = post["payment_term"]
+      temp_currency = post["currency"] 
+      for choice in Currency:
+        if choice.label == temp_currency:
+          temp_currency = choice
+          break
+      
+      temp_sale = Sales(project_code=temp_project_code, project_name=temp_project_name, client_name=temp_client_name, project_detail=temp_project_detail, value=temp_value, currency=temp_currency, order_date=temp_order_date, shipping_date=temp_shipping_date, payment_term=temp_payment_term, cancelled=False)
+      temp_sale.full_clean()
+
+    except ValidationError as e:
+      return JsonResponse({"error": dict(e)})
+
 
     sale = Sales.objects.get(project_code=post["project_code"])
     project_code = post["project_code"]
@@ -146,6 +166,6 @@ def editSale(request):
 
   except Sales.DoesNotExist:
   # Sale not found-> Return error
-    return JsonResponse({"error": {"sale_does_not_exist": "Sale with that project code does not exist. Your request has been recorded"}})
+    return JsonResponse({"error": {"sale_does_not_exist": "Sale with that project code does not exist. Your request has been flagged as suspicious"}})
 
     
