@@ -154,7 +154,7 @@ function enterEditMode(project_code) {
       // Add Currency + Value Input
       invoice_amount = $(`#invoice_amount_${project_code}`).text()
       invoice_currency = invoice_amount.substr(0, 1)
-      invoice_value = invoice_amount.substr(1, invoice_amount.length)
+      invoice_value = (invoice_currency == "R") ? invoice_amount.substr(2, invoice_amount.length) : invoice_amount.substr(1, invoice_amount.length)
 
       // Format extracted invoice_currency invoice_value into DOM elements
       currency_value_input = `<div class="form-group my-2" id="form-group-currency_${project_code}">
