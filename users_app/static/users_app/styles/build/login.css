@@ -19,8 +19,20 @@
 }
 
 #login_column {
+  width: 100%;
+  min-width: 20em;
   border: 0.2em solid #4d4b4a;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px, rgba(17, 17, 26, 0.1) 0px 24px 80px;
 }
+
+@media all and (max-width: 500px){
+  #login_column 
+  {
+    box-shadow: none;
+    min-width: 0px;
+    border: 0px;
+  }
+}
+
 
 /*# sourceMappingURL=login.css.map */

@@ -40,10 +40,7 @@ ul,li {list-style-type: none;}
   margin-left: 2.5em;
 }
 
-.nav_footer
-{
-  margin-left: 10em;
-}
+
 
 .standard-btn
 {
@@ -103,3 +100,9 @@ ul,li {list-style-type: none;}
 }
 
 #accounts_tab_text{padding:0em;}
+
+#profile_icon
+{
+  max-width: 100%;
+  height: auto;
+}

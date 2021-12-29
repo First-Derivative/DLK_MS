@@ -13,13 +13,13 @@ class LoginForm(ModelForm):
   email = forms.CharField(max_length=50,widget=forms.TextInput(attrs={
     "class": "form-control login_input",
     "id": "login_email",
-    "placeholder": "email"
+    "placeholder": "Email"
   }))
 
   password = forms.CharField(widget=forms.PasswordInput(attrs={
     "class": "form-control login_input",
     "id": "login_password",
-    "placeholder": "password"
+    "placeholder": "Password"
   }))
 
   # field cleaning and login auth

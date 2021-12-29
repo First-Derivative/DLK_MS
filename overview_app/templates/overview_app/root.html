@@ -58,8 +58,15 @@
           </ul>
         </li>
       </ul>
-      <div class="nav_footer">
-        <li class="nav-item" id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" class="img-thumbnail " alt="Profile"></a></li>
+      <div class="nav_footer" style="max-width: 25vw;">
+        <div class="row flex" style="align-items:center;">
+          <div class="col p-3">
+            <li id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" id="profile_icon" alt="Profile"></a></li>
+          </div>
+          <div class="col p-3">
+            <button type="button" class="btn btn-outline-danger" id="logout_button">logout</button>
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -83,8 +90,15 @@
     </div>
   </div>
 
+  <script>
+    $("#logout_button").click(function()
+    {
+      window.location.replace("{% url 'user_logout' %}");
+    })
+  </script>
   {% block scripts %}
   {% endblock scripts %}
+
 </body>
 
 </html>
