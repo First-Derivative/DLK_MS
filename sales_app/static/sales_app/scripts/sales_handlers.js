@@ -12,6 +12,8 @@ function startUpSales() {
 $("#modal-btn-save").click(function () {
 
   new_sales = {}
+  new_sales["cancelled"] = false
+  new_sales["completed"] = false
 
   $("div[class*=modal-validation-update-text]").each(function () {
     $(this).remove()
@@ -37,6 +39,9 @@ $("#modal-btn-save").click(function () {
     else if (property == "cancelled") {
       new_sales["cancelled"] = true
     }
+    else if(property == "completed") {
+      new_sales["completed"] = true
+    }
     else {
       new_sales[property] = field.value
 
@@ -49,6 +54,7 @@ $("#modal-btn-save").click(function () {
 
 // UI Functionality: Add Sale
 function UI_addSale(new_sale) {
+  
 
   sales_card_template =
     `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''} ${new_sale.completed ? 'completed-card' : ''}"  id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
@@ -68,12 +74,13 @@ function UI_addSale(new_sale) {
       </div>
       <div class="card_row">
         <p class="card-text" id="order_date_${new_sale.project_code}"><span class="text-muted">Customer Order Date: </span>${new_sale.order_date}</p>
-        <p class="card-text" id="shipping_date_${new_sale.project_code}"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date}</p>
+        <p class="card-text ${new_sale.shipping_date == null ? 'missing_text' : ''}" id="shipping_date_${new_sale.project_code}"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sale.project_code}">
-      <p class="card-text" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
-      <p class="card-text" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
+      <p class="card-text ${new_sale.project_detail == null ? 'missing_text' : ''}" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
+      <p class="card-text ${new_sale.payment_term == null ? 'missing_text' : ''}" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
+      <br>
       <p class="card-text" id="cancelled_${new_sale.project_code}"><span class="text-muted">Cancelled: </span>${new_sale.cancelled ? 'True' : 'False'}</p>
       <p class="card-text" id="completed_${new_sale.project_code}"><span class="text-muted">Completed: </span>${new_sale.completed ? 'True' : 'False'}</p>
     </div>
@@ -163,13 +170,13 @@ function enterEditMode(project_code) {
       // Add Currency + Value Input
       invoice_amount = $(`#invoice_amount_${project_code}`).text()
       invoice_currency = invoice_amount.substr(0, 1)
-      invoice_value = (invoice_currency == "R") ? invoice_amount.substr(2, invoice_amount.length) : invoice_amount.substr(1, invoice_amount.length)
+      invoice_value = invoice_amount.replace(/[^\d.-]/g, '')
 
       // Format extracted invoice_currency invoice_value into DOM elements
       currency_value_input = `<div class="form-group my-2" id="form-group-currency_${project_code}">
       <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
       <select class="form-select edit-input" id="input_currency_${project_code}" name="currency" required>
-        <option ${invoice_currency == 'RM' ? 'selected ' : ''}value="MYR">RM</option>
+        <option ${invoice_currency == 'R' ? 'selected ' : ''}value="MYR">RM</option>
         <option ${invoice_currency == '€' ? 'selected ' : ''}value="EUR">€</option>
         <option ${invoice_currency == '$' ? 'selected ' : ''}value="USD">$</option>
       </select></div>

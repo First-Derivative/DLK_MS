@@ -188,6 +188,12 @@ div:hover > #input-helper
 {
   color: black;
 }
+
+.missing_text 
+{
+  color: red;
+}
+
 /* 
 .sales_footer_buttons
 {
