@@ -1,6 +1,5 @@
 from django.db import models
 from ms_app.models import Currency
-from sales_app.models import Sales
 
 class Purchases(models.Model):
   purchases_id = models.BigAutoField(primary_key=True)
@@ -13,10 +12,8 @@ class Purchases(models.Model):
   currency = models.CharField(max_length=5, choices=Currency.choices, default=Currency.MYR)
   expected_date = models.DateField(verbose_name="Expected Paymenet Date")
   supplier_date = models.DateField(verbose_name="Supplier Delivary Date")
-
   cancelled = models.BooleanField(default=False)
-
-  
+  completed = models.BooleanField(default=False)
 
   @property
   def amount(self):

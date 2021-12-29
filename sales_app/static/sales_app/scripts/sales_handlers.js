@@ -51,8 +51,8 @@ $("#modal-btn-save").click(function () {
 function UI_addSale(new_sale) {
 
   sales_card_template =
-    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''}" id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
-    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_sale.project_code}">
+    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''} ${new_sale.completed ? 'completed-card' : ''}"  id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
+    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} ${new_sale.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_sale.project_code}">
       <p id="project_code_${new_sale.project_code}">${new_sale.project_code}</p>
       <div class="d-flex justify-content-between" style="width:4em">
         <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
@@ -74,11 +74,15 @@ function UI_addSale(new_sale) {
     <div class="card-footer" id="card-footer-${new_sale.project_code}">
       <p class="card-text" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
       <p class="card-text" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
+      <p class="card-text" id="cancelled_${new_sale.project_code}"><span class="text-muted">Cancelled: </span>${new_sale.cancelled ? 'True' : 'False'}</p>
+      <p class="card-text" id="completed_${new_sale.project_code}"><span class="text-muted">Completed: </span>${new_sale.completed ? 'True' : 'False'}</p>
     </div>
   </div>`
 
   // Prepend new_sale Card to DOM
   $('#sales_display').prepend(sales_card_template)
+  // Set new_sale card css to display none
+  $(`#card-footer-${new_sale.project_code}`).css("display","none")
 
   // Dropdown for sales Card Handler
   dropdown_selector = "#card-dropdown-" + new_sale.project_code
@@ -86,9 +90,14 @@ function UI_addSale(new_sale) {
     id = $(this).attr("name")
     selector = "#card-footer-" + id
 
-    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+    if ($(`#card-footer-${id}`).css('display') == "none")
+    { 
+      $(`#card-footer-${id}`).show("fast") 
+    }
     else { $(`#card-footer-${id}`).hide("fast") }
   })
+
+
 
   // Edit button for sales Card Handler
   edit_selector = "#card-edit-" + new_sale.project_code
@@ -119,8 +128,8 @@ function enterEditMode(project_code) {
 
       // Edit Card Styling for Editing formatting
       $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
-      $(`#card-body-${project_code}`).removeClass("justify-content-between")
-      $(`#card-body-${project_code}`).removeClass("d-flex")
+      $(`#card-body-${project_code}`).removeClass(["d-flex","justify-content-between"])
+      $(`#card-footer-${project_code}`).css("display","block")
 
       // Replace p tags with inputs (Excludes Currency + Value)
       fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
@@ -172,20 +181,26 @@ function enterEditMode(project_code) {
       $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
       $(`#input_value_${project_code}`).val(invoice_value)
 
-      // Format and Append Cancelled Input
+      // Format and Append Cancelled & Completed Input
       sale_cancelled = ($(`#sales-card-${project_code}`).hasClass('cancelled-card')) ? true : false
       const cancelled_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_cancelled_${project_code}" name="cancelled" ${sale_cancelled ? 'checked' : ''}>`
+      sale_completed = ($(`#sales-card-${project_code}`).hasClass('completed-card')) ? true : false
+      const completed_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_completed_${project_code}" name="completed" ${sale_completed ? 'checked' : ''}>`
 
-      // Add new cancelled DOM elements to card-footer
-      $(`#card-footer-${project_code}`).append(cancelled_input)
+      // Add new Cancelled & Completed DOM elements to card-footer
+      $(`#cancelled_${project_code}`).replaceWith(cancelled_input)
+      $(`#completed_${project_code}`).replaceWith(completed_input)
+
       $(`#input_cancelled_${project_code}`).wrap(`<div class="form-group mb-2 d-flex align-items-center" id="form-group-cancelled_${project_code}"></div>`)
+      $(`#input_completed_${project_code}`).wrap(`<div class="form-group mb-2 d-flex align-items-center" id="form-group-completed_${project_code}"></div>`)
 
       $(`#form-group-cancelled_${project_code}`).append(`<label class="form-check-label pt-1" for="input_cancelled_${project_code}" style="color: #426285;font-size:1.15em"> Cancelled Order? </label>`)
+      $(`#form-group-completed_${project_code}`).append(`<label class="form-check-label pt-1" for="input_completed_${project_code}" style="color: #426285;font-size:1.15em"> Completed Order? </label>`)
 
       // Add Cancel and Save Changes Buttons
       $(`#sales-card-${project_code}`).append(`<div class="d-flex flex-row justify-content-end m-3 sales_footer_buttons" id="card-footer-buttons-${project_code}">
       <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-      <button class="btn sales_secondary-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
+      <button class="btn sales_standard-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
       // Add Event Handlers to newly appended DOMS
       $('.edit-input').on("keydown", function (e) {
@@ -220,6 +235,7 @@ function enterEditMode(project_code) {
         // Gathering & Formatting Data
         sale = {}
         sale["cancelled"] = false
+        sale["completed"] = false
 
         // Get & Assign Data
         let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
@@ -240,6 +256,9 @@ function enterEditMode(project_code) {
           // }
           if (property == "cancelled") {
             sale["cancelled"] = true
+          }
+          else if (property == "completed") {
+            sale["completed"] = true
           }
           else {
             sale[property] = field.value
@@ -262,23 +281,35 @@ function enterEditMode(project_code) {
 function leaveEditMode(sale) {
   project_code = sale.project_code
   is_cancelled = sale.cancelled
+  is_completed = sale.completed
 
+  // Reset sales-card & sales-card-header classes
+  $(`#sales-card-${project_code}`).removeClass()
+  $(`#sales-card-header-${project_code}`).removeClass()
+  
   // Revert DOM and Styling to before Edit mode
   $(`#sales-card-${project_code}`).unwrap()
-  $(`#card-body-${project_code}`).addClass("justify-content-between")
-  $(`#card-body-${project_code}`).addClass("d-flex")
+  $(`#sales-card-${project_code}`).addClass("card")
+  $(`#sales-card-header-${project_code}`).addClass(["card-header", "d-flex", "flex-row", "justify-content-between"])
+  $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
+  $(`#card-footer-${project_code}`).css("display","flex")
+
+  if(is_cancelled)
+  {
+    $(`#sales-card-${project_code}`).addClass("cancelled-card")
+    $(`#sales-card-header-${project_code}`).addClass("cancelled-card-header")
+  }
+
+  if(is_completed)
+  {
+    $(`#sales-card-${project_code}`).addClass("completed-card")
+    $(`#sales-card-header-${project_code}`).addClass("completed-card-header")
+  }
+
+  // Remove excess validation texts
   $("div[class*=edit-validation-update-text]").each(function () {
     $(this).remove()
   })
-
-  if (is_cancelled) {
-    $(`#sales-card-${project_code}`).addClass('cancelled-card')
-    $(`#sales-card-header-${project_code}`).addClass('cancelled-card-header')
-  }
-  if (!is_cancelled && $(`#sales-card-${project_code}`).hasClass('cancelled-card')) {
-    $(`#sales-card-${project_code}`).removeClass('cancelled-card')
-    $(`#sales-card-header-${project_code}`).removeClass('cancelled-card-header')
-  }
 
   // Empty card-body, card-footer card-footer-buttons, 
   $(`#card-body-${project_code}`).empty();
@@ -308,6 +339,10 @@ function leaveEditMode(sale) {
       $(`#card-footer-${project_code}`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
     }
   })
+  // Append Cancelled & Completed at the end
+  $(`#card-footer-${project_code}`).append(`<p class="card-text" id="cancelled_${project_code}"><span class="text-muted">Cancelled: </span>${is_cancelled ? 'True' : 'False'}</p>`)
+  $(`#card-footer-${project_code}`).append(`<p class="card-text" id="completed_${project_code}"><span class="text-muted">Completed: </span>${is_completed ? 'True' : 'False'}</p>`)
+
   // Finally, set sales-card editing to false "0" and scroll into view 
   $(`#sales-card-${sale.project_code}`).attr("editing", 0)
   document.getElementById(`sales-card-${sale.project_code}`).scrollIntoView(false)
@@ -352,7 +387,7 @@ $("#left_content_form").on("keypress", function (event) {
     }
     const input_value = $("#input-search").val()
     searchSales(input_value)
-    $("#sales_display").append(`<div class="text-center" id="search-text"><h5>Searching for ${input_value}...</h5></div>`)
+    $("#sales_display").append(`<div class="text-center"><h5 id="search-text">Searching for ${input_value}...</h5></div>`)
     return false;
   }
 })
@@ -387,6 +422,17 @@ $("#input-cancelled").click(function () {
     else if (sale.cancelled) {
       UI_addSale(sale)
     }
+  }
+})
+
+// UX Functionality: Show Completed Order Toggle
+$('#input-completed').click(function() {
+  if(!$(this).is(":checked"))
+  {
+    $("div[class*=completed-card]").each(function () {
+      $(this).remove()
+    })
+    return
   }
 })
 

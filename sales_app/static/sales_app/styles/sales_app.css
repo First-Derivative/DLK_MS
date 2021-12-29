@@ -56,6 +56,17 @@
   background-color: #d82d4e;
 }
 
+.completed-card
+{
+  border: 0.15em solid #24cf4a;
+  background-color: #24cf4a;
+}
+
+.completed-card-header
+{
+  background-color: #24cf4a;
+}
+
 .card-body
 {
   font-size: 0.8em;
@@ -64,8 +75,9 @@
 .card-footer
 {
   font-size: 0.8em;
-  display: none;
+  display: flex;
   background-color: white;
+  justify-content: space-between;
 }
 
 #body_wrapper

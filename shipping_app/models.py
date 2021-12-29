@@ -10,5 +10,5 @@ class Shipping(models.Model):
   customer = models.CharField(max_length=500)
   status = models.CharField(null=True, blank=True,max_length=100)
   remark = models.CharField(null=True, blank=True,max_length=100)
-
   cancelled = models.BooleanField(default=False)
+  completed = models.BooleanField(default=False)

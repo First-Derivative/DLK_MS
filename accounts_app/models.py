@@ -16,3 +16,4 @@ class PaymentStatus(models.Model):
   due_date = models.DateField(blank=True, null=True)
   value = models.DecimalField(max_digits=12, decimal_places=2)
   status = models.CharField(max_length=100)
+  completed = models.BooleanField(default=False)

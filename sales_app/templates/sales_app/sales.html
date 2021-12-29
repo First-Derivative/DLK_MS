@@ -22,14 +22,14 @@
       </div>
 
       <div class="col mb-3">
-          <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
+        <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
         <label class="form-check-label" for="input-cancelled">
           Show Cancelled Orders
         </label>
       </div>
 
-      <div class="col">
-          <input class="form-check-input" type="checkbox" value="" id="input-completed">
+      <div class="col mb-3">
+        <input class="form-check-input" type="checkbox" value="" id="input-completed" checked>
         <label class="form-check-label" for="input-completed">
           Show Completed Orders
         </label>
@@ -37,8 +37,8 @@
       
     </form>
     
-    {% comment %}
     <!-- If User has sales Permissions -->
+    {% comment %}     
     {% if perms.sales %} 
     <div class="d-flex flex-row">
       <p class="hoverable" id="add_sale"><img src="{% static 'sales_app/icons/add.png' %}" class="mr-3" alt="Add Sale"> Add Sale</p>

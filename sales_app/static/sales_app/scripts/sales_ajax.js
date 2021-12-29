@@ -14,7 +14,7 @@ function searchSales(search_key) {
           }
         }
         else {
-          $("#search-text").append(`<h5>No results for ${search_key}</h5>`)
+          $("#search-text").text(`No results for ${search_key}`)
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {

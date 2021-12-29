@@ -14,6 +14,7 @@ class Sales(models.Model):
   shipping_date = models.CharField(max_length=100,null=True, validators=[check_null]) 
   payment_term = models.CharField(max_length=100, validators=[check_null])
   cancelled = models.BooleanField(default=False)
+  completed = models.BooleanField(default=False)
 
   # created_at = models.DateTimeField(auto_now_add=True)
   # updated_at = models.DateTimeField(auto_now=True)

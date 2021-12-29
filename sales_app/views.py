@@ -51,6 +51,7 @@ def SerializeSale(sale):
   serial["shipping_date"] = sale.shipping_date
   serial["payment_term"] = sale.payment_term
   serial["cancelled"] = sale.cancelled
+  serial["completed"] = sale.completed
 
   return serial
 
@@ -116,7 +117,10 @@ def editSale(request):
   try:
     
     try:
-          # Creating Temp Sale before full clean
+
+      print("in edit sales")
+
+      # Creating Temp Sale before full clean
       temp_project_code = post["project_code"]
       temp_project_name = post["project_name"]
       temp_client_name = post["client_name"]
@@ -126,12 +130,17 @@ def editSale(request):
       temp_shipping_date = post["shipping_date"]
       temp_payment_term = post["payment_term"]
       temp_currency = post["currency"] 
+      temp_cancelled = True if (post["cancelled"] == "true") else False
+      temp_completed = True if (post["completed"] == "true") else False
+
+      print("temp values are {a}, {b}".format(a=temp_cancelled, b=temp_completed))
+
       for choice in Currency:
         if choice.label == temp_currency:
           temp_currency = choice
           break
       
-      temp_sale = Sales(project_code=temp_project_code, project_name=temp_project_name, client_name=temp_client_name, project_detail=temp_project_detail, value=temp_value, currency=temp_currency, order_date=temp_order_date, shipping_date=temp_shipping_date, payment_term=temp_payment_term, cancelled=False)
+      temp_sale = Sales(project_code=temp_project_code, project_name=temp_project_name, client_name=temp_client_name, project_detail=temp_project_detail, value=temp_value, currency=temp_currency, order_date=temp_order_date, shipping_date=temp_shipping_date, payment_term=temp_payment_term, cancelled=temp_cancelled, completed=temp_completed)
       temp_sale.full_clean()
 
     except ValidationError as e:
@@ -139,16 +148,18 @@ def editSale(request):
 
 
     sale = Sales.objects.get(project_code=post["project_code"])
-    project_code = post["project_code"]
-    project_name = post["project_name"]
-    client_name = post["client_name"]
-    project_detail = post["project_detail"]
-    value = post["value"]
-    currency = post["currency"] 
-    order_date = post["order_date"]
-    shipping_date = post["shipping_date"]
-    payment_term = post["payment_term"]
-    cancelled = True if post["cancelled"] == 'true' else False
+    project_code = temp_project_code
+    project_name = temp_project_name
+    client_name = temp_client_name
+    project_detail = temp_project_detail
+    value = temp_value
+    currency = temp_currency
+    order_date = temp_order_date
+    shipping_date = temp_shipping_date
+    payment_term = temp_payment_term
+    cancelled = temp_cancelled
+    completed = temp_completed
+    print("nominal values are {a}, {b}".format(a=cancelled, b=completed))
     
     sale.project_code = project_code
     sale.project_name = project_name
@@ -160,12 +171,13 @@ def editSale(request):
     sale.shipping_date = shipping_date
     sale.payment_term = payment_term
     sale.cancelled = cancelled
+    sale.completed = completed
 
     sale.save()
     return JsonResponse({"status":"OK"})
 
   except Sales.DoesNotExist:
-  # Sale not found-> Return error
+    # Sale not found-> Return error
     return JsonResponse({"error": {"sale_does_not_exist": "Sale with that project code does not exist. Your request has been flagged as suspicious"}})
 
     

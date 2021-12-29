@@ -8,5 +8,5 @@ class Operations(models.Model):
   client_name = models.CharField(max_length=100)
   status = models.CharField(null=True, blank=True,max_length=600,verbose_name="Production Status")
   finish_detail = models.CharField(null=True, blank=True, max_length=100)
-
   cancelled = models.BooleanField(default=False)
+  completed = models.BooleanField(default=False)
