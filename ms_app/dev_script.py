@@ -1,4 +1,5 @@
 from sales_app.models import Sales
+from operations_app.models import Operations
 from ms_app.models import *
 import os
 import gspread
@@ -57,7 +58,7 @@ def readSheet(sheet):
     completed = None
 
     # Read and Store Sales with gSpread
-    for i in range(start_row, end_row):
+    for i in range(start_row, end_row+1):
       project_code = sales.cell(i,1).value.replace(" ","-")
       project_name = sales.cell(i,2).value
       client_name = sales.cell(i,3).value
@@ -73,6 +74,26 @@ def readSheet(sheet):
       print("Adding {}...".format(new_sale))
       new_sale.save()
       time.sleep(60)
+  elif(sheet == "OPERATION"):
+    operation = db.worksheet(sheet)
+    start_row = 4
+    end_row = 20
+    
+    for i in range(start_row,end_row+1):
+      active_row = operation.row_values(i)
+      
+      project_code = active_row[0].replace(" ","-")
+      project_name = active_row[1]
+      client_name = active_row[2]
+      status = active_row[3]
+      finish_detail = active_row[7]
+      cancelled = True if (active_row[8] == "TRUE") else False
+
+      new_operation = Operations(project_code=project_code, project_name=project_name, client_name=client_name, status=status, finish_detail=finish_detail,cancelled=cancelled)
+      print("Adding {}...".format(new_operation))
+      new_operation.save()
+      time.sleep(10)
+
 
 
 def resolveInvoiceAmount(invoice):
@@ -96,4 +117,4 @@ def resolveDate(date):
   return None
 
 # reset_database()
-readSheet("SALES")
+readSheet("OPERATION")

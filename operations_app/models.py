@@ -9,4 +9,10 @@ class Operations(models.Model):
   status = models.CharField(null=True, blank=True,max_length=600,verbose_name="Production Status")
   finish_detail = models.CharField(null=True, blank=True, max_length=100)
   cancelled = models.BooleanField(default=False)
-  completed = models.BooleanField(default=False)
+
+  class Meta:
+    verbose_name = "Operations"
+    verbose_name_plural = "Operations"
+
+  def __str__(self):
+    return "{a} {b}".format(a=self.project_code, b=self.project_name)
