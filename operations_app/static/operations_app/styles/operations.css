@@ -1,4 +1,8 @@
 /* CARD  */
+
+.missing_text {color: red;}
+.header-img{filter: invert(100%);}
+
 .card
 {
   display: flex;
@@ -124,7 +128,8 @@
   color: white;
 }
 
-.operations_left_content-btn
+.operations_content-btn
 {
-  width: 9em;
+  /* width: 9em; */
+  width: 100%;
 }

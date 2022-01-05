@@ -1,88 +1,75 @@
 // Get Operations
-function getOperations(obj)
-{
+function getOperations(obj) {
   $.ajax(
-  {
-    type: "GET",
-    url: getOperations_url,
-    success: function(response)
     {
-      operations = request.operations
-      operations_count = operations.length
-      operations.reverse()
+      type: "GET",
+      url: getOperations_url,
+      success: function (response) {
+        operations = request.operations
+        operations_count = operations.length
+        operations.reverse()
 
-      for(i=0; operations_count; i++)
-      {
-        content = opreations.pop()
-        addOpeartions(content)
+        for (i = 0; operations_count; i++) {
+          content = opreations.pop()
+          addOpeartions(content)
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Debugging case
+        alert("textStatus: " + textStatus + " " + errorThrown)
       }
-    },
-    error: function(jqXHR, textStatus, errorThrown)
-    {
-      // Debugging case
-      alert("textStatus: " + textStatus + " " + errorThrown)
-    }
-  })
+    })
 }
 
 // GetAll Operations
-function getAllOperations(callback)
-{
+function getAllOperations(callback) {
   $.ajax(
-  {
-    type: "GET",
-    url: getAllOperations_url,
-    success: function(response)
     {
-      operations = response.operations
-      operations_count = operations.length
-      operations.reverse()
+      type: "GET",
+      url: getAllOperations_url,
+      success: function (response) {
+        operations = response.operations
+        operations_count = operations.length
+        operations.reverse()
 
-      for(i=0; operations_count; i++)
-      {
-        content = operations.pop()
-        // addOpeartions(content)
-        callback(content)
+        for (i = 0; operations_count; i++) {
+          content = operations.pop()
+          // addOpeartions(content)
+          callback(content)
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Debugging case
+        alert("textStatus: " + textStatus + " " + errorThrown)
       }
-    },
-    error: function(jqXHR, textStatus, errorThrown)
-    {
-      // Debugging case
-      alert("textStatus: " + textStatus + " " + errorThrown)
-    }
-  })
+    })
 }
 
 // Post Operations
-function postOperations(new_operations)
-{ 
+function postOperations(new_operations) {
   $.ajax(
-  {
-    type: "POST",
-    headers: 
     {
-      "X-CSRFToken": Token
-    },
-    url: postOperations_url,
-    data: 
-    {
-      'data': new_operations
-    },
-    success: function(response)
-    {
-      if(response.error)
+      type: "POST",
+      headers:
       {
-        alert(response.error)
-      }
-      else
+        "X-CSRFToken": Token
+      },
+      url: postOperations_url,
+      data:
       {
-        addOperation(new_operations)
+        'data': new_operations
+      },
+      success: function (response) {
+        if (response.error) {
+          alert(response.error)
+        }
+        else {
+          addOperation(new_operations)
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Debugging case
+        alert("textStatus: " + textStatus + " " + errorThrown)
       }
-    },
-    error: function(jqXHR, textStatus, errorThrown)
-    {
-      // Debugging case
-      alert("textStatus: " + textStatus + " " + errorThrown)
-    }
-  })
+    })
 }
