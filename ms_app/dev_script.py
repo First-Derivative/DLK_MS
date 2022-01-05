@@ -73,7 +73,7 @@ def readSheet(sheet):
 
       print("Adding {}...".format(new_sale))
       new_sale.save()
-      time.sleep(60)
+      time.sleep(10)
   elif(sheet == "OPERATION"):
     operation = db.worksheet(sheet)
     start_row = 4
@@ -117,4 +117,5 @@ def resolveDate(date):
   return None
 
 # reset_database()
-readSheet("OPERATION")
+# readSheet("SALES")
+# readSheet("OPERATION")
