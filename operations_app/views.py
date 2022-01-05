@@ -1,18 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import Operations
+from .serializers import OperationsSerializer
 from ms_app.decorators import *
 
-def serializeOperations(operation):
-  serial = {}
-  serial["project_code"] = operation.project_code
-  serial["project_name"] = operation.project_name
-  serial["client_name"] = operation.client_name
-  serial["status"] = operation.status
-  serial["finish_detail"] = operation.finish_detail
-  serial["cancelled"] = operation.cancelled
+# Operations App Frontend
+@unauthenticated_check
+def operationsPage(request):
+  return render(request, "operations_app/operations.html", {})
 
-  return serial
 
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
@@ -20,9 +16,20 @@ def getOperations(request):
   unserialized_operations = Operations.objects.all()
   operations = []
   for operation in unserialized_operations:
-    operations.append(serializeOperations(operations))
+    operations.append(OperationsSerializer(operations).data)
   
   return JsonResponse({"operations":operations})
+
+@method_check(allowed_methods=["GET"])
+@unauthenticated_check
+def getAllOperations(request):
+  operations = Operations.objects.all()
+  serial = []
+  for operation in operations:
+    serial.append(OperationsSerializer(operation).data)
+
+  print(serial)
+  return JsonResponse({"operations":serial})
 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["opreations"])

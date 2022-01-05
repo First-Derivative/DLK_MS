@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block app_stylsheet %}
-<link href="{% static '/ms_app/styles/root.css' %}" rel="stylesheet">
 <link href="{% static '/sales_app/styles/sales_app.css' %}" rel="stylesheet">
 {% endblock app_stylsheet %}
 
@@ -38,15 +37,6 @@
     
   </form>
   
-  <!-- If User has sales Permissions -->
-
-  {% if perms.sales %} 
-  <div class="d-flex flex-row">
-    <p class="hoverable" id="add_sale"><img src="{% static '/icons/add.png' %}" class="mr-3" alt="Add Sale"> Add Sale</p>
-  </div>
-  {% endif %}
-
-  <!-- If User has sales Permissions -->
 </div>
   {% comment %} <p>Add Sale</p> {% endcomment %}
 {% endblock left_content%}
@@ -206,6 +196,8 @@
   const postSales_url = "{% url 'postSales_api' %}"
   const editSale_url = "{% url 'editSales_api' %}"
   const edit_src = "{% static '/sales_app/icons/edit.png' %}"
+  const alertedHD_src = "{% static '/sales_app/icons/alert_HD.png' %}"
+  const alerted_src = "{% static '/sales_app/icons/info.png' %}"
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
   const token = "{{csrf_token}}"
 

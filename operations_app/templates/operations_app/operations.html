@@ -1,11 +1,11 @@
-{% extend "overview/root.html"%}
+{% extends "overview_app/root.html" %}
 {% load static %}
 
 {% block app_stylsheet %}
-  <link href="{% static '/operations/styles/operations.css' %}" rel="stylesheet">
+  <link href="{% static '/operations_app/styles/operations.css' %}" rel="stylesheet">
 {% endblock app_stylsheet %}
 
-{% block left content%}
+{% block left_content %}
 
 <div class="d-flex flex-column {%comment%} position-fixed {%endcomment%}">
   <form class="search_wrapper mb-3" id="left_content_form">
@@ -48,9 +48,9 @@
 
   <!-- If User has sales Permissions -->
 </div>
-{% endblock left content%}
+{% endblock left_content%}
 
-{% block maincontent %}
+{% block main_content %}
 <div class="" id="operations_display"></div>
 
 <!-- MODAL  -->
@@ -158,4 +158,55 @@
      </div>
   </div>
 </div>
-{% endblock maincontent%}
+{% endblock main_content%}
+
+{% block right_content %}
+
+  <div class="d-flex flex-row mb-3">
+    {% if perms.operations_app %}
+    <div class="col-xl-2"></div> 
+    <div class="col-xl-8">
+      <button type="button" class="btn operations_standard-btn operations_left_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addOperation">
+        Add Operation
+      </button>
+    </div>
+    <div class="col-xl-2"></div> 
+    {% endif %}
+  </div>
+  <div class="d-flex flex-row">
+    <div class="col-xl-2"></div> 
+    <div class="col-xl-8">
+      <button type="button" class="btn operations_standard-btn operations_left_content-btn" id="reverse-list">
+        Reverse List
+      </button>
+    </div>
+    <div class="col-xl-2"></div> 
+  </div>
+
+{% endblock right_content %}
+
+{% block scripts %}
+  <!-- Static Imports -->
+  <script>
+  const getAllOperations_url = "{% url 'getAllOperations_API' %}"
+  const alertedHD_src = "{% static 'sales_app/icons/alert_HD.png'%}"
+  const edit_src = "{% static 'sales_app/icons/edit.png'%}"
+  </script>
+
+  <!-- Dependency Imports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Operations Scripts -->
+  <script src="{% static 'operations_app/scripts/operations_ajax.js'%}"></script>
+  <script src="{% static 'operations_app/scripts/operations_handler.js'%}"></script>
+  
+  <!-- Startup Scripts -->
+  <script>
+    $.when(getAllOperations(addOperations)).done(function () {
+      console.log("added operations")
+    })
+  </script>
+
+{% endblock scripts %}

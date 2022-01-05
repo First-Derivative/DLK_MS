@@ -1,0 +1,130 @@
+/* CARD  */
+.card
+{
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.6em;
+  background-color: #4d4b4a;
+  border: 0.15em solid #4d4b4a;
+}
+
+
+.alert-card 
+{
+  position: fixed;
+  padding: 2em;
+  width: 7em !important;
+  height: 3em !important;
+}
+
+.card-header
+{
+  font-size: 1em;
+  height: 2.6em;
+  color: white;
+  background-color: #383736;
+}
+
+.card-expand
+{
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.cancelled-card
+{
+  border: 0.15em solid #d82d4e;
+  background-color: #d82d4e;
+}
+
+.cancelled-card-header
+{
+  background-color: #d82d4e;
+}
+
+.completed-card
+{
+  border: 0.15em solid #24cf4a;
+  background-color: #24cf4a;
+}
+
+.completed-card-header
+{
+  background-color: #24cf4a;
+}
+
+.card-body
+{
+  font-size: 0.8em;
+  background-color: white;
+}
+.card-footer
+{
+  font-size: 0.8em;
+  display: flex;
+  background-color: white;
+  justify-content: space-between;
+}
+
+/* Search   */
+
+.search_wrapper
+{
+  /* height: 2.3em; */
+  width: inherit;
+}
+
+.search_input
+{
+  border: 0.2em solid #4d4b4a;
+}
+
+.search_input::placeholder{color: #4d4b4a;}
+
+.search_input:focus, .search_input:focus::placeholder
+{
+  color: white;
+  background-color: #383736;
+}
+
+#input-helper
+{
+  transition: opacity 0.8s ease-out;
+  opacity: 0;
+  overflow: hidden;
+  height: 0;
+}
+
+#left_content > img {display: inline;}
+
+/* Buttons */
+
+.operations_standard-btn
+{
+  background-color: #4d4b4a;
+  color: white;
+  width: 100%;
+}
+
+.operations_standard-btn:hover
+{
+  background-color: #383736;
+  color:white;
+}
+
+.operations_secondary-btn
+{
+  background-color: #d82d4e;
+  color: white;
+}
+
+.operations_secondary-btn:hover
+{
+  background-color: #b8233f;
+  color: white;
+}
+
+.operations_left_content-btn
+{
+  width: 9em;
+}

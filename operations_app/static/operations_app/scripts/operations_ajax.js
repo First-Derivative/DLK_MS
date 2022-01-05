@@ -25,6 +25,34 @@ function getOperations(obj)
   })
 }
 
+// GetAll Operations
+function getAllOperations(callback)
+{
+  $.ajax(
+  {
+    type: "GET",
+    url: getAllOperations_url,
+    success: function(response)
+    {
+      operations = response.operations
+      operations_count = operations.length
+      operations.reverse()
+
+      for(i=0; operations_count; i++)
+      {
+        content = operations.pop()
+        // addOpeartions(content)
+        callback(content)
+      }
+    },
+    error: function(jqXHR, textStatus, errorThrown)
+    {
+      // Debugging case
+      alert("textStatus: " + textStatus + " " + errorThrown)
+    }
+  })
+}
+
 // Post Operations
 function postOperations(new_operations)
 { 
