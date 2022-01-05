@@ -175,9 +175,9 @@ div:hover > #input-helper
   color: white;
 }
 
-.sales_left_content-btn
+.sales_content-btn
 {
-  width: 9em;
+  width: 100%;
 }
 
 .form-floating
