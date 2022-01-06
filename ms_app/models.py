@@ -14,5 +14,5 @@ def resolveCurrencyLabel(currency):
 
 def resolveCurrency(currency):
   for choice in Currency:
-    if(choice.label == currency):
+    if(choice.label == currency or choice == currency):
       return choice

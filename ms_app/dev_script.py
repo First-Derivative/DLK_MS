@@ -1,5 +1,7 @@
 from sales_app.models import Sales
 from operations_app.models import Operations
+from shipping_app.models import Shipping
+from purchases_app.models import Purchases
 from ms_app.models import *
 import os
 import gspread
@@ -43,33 +45,24 @@ def readSheet(sheet):
     sales = db.worksheet(sheet)
     start_row = 5
     end_row = 20
-    end_column = 8
 
-    project_code = None
-    project_name = None
-    client_name = None
-    project_detail = ""
-    value = None
-    currency = None
-    order_date = None
-    shipping_date = None
-    payment_term = None
-    cancelled = None
-    completed = None
-
-    # Read and Store Sales with gSpread
     for i in range(start_row, end_row+1):
-      project_code = sales.cell(i,1).value.replace(" ","-")
-      project_name = sales.cell(i,2).value
-      client_name = sales.cell(i,3).value
-      project_detail = sales.cell(i,4).value
-      invoice_amount = sales.cell(i,5).value
+      active_row = sales.row_values(i)
+
+      project_code = active_row[0]
+      project_name = active_row[1]
+      client_name = active_row[2]
+      project_detail = active_row[3]
+      invoice_amount = active_row[4]
+      order_date = resolveDate(active_row[5],"american")
+      shipping_date = active_row[6]
+      payment_term = active_row[7]
+      cancelled = active_row[14]
+      completed = active_row[15]
+
       currency, value = resolveInvoiceAmount(invoice_amount)
-      order_date = resolveDate(sales.cell(i,6).value)
-      shipping_date = sales.cell(i,7).value
-      payment_term = sales.cell(i,8).value
-      
-      new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,completed=False)
+
+      new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,cancelled=cancelled, completed=completed)
 
       print("Adding {}...".format(new_sale))
       new_sale.save()
@@ -93,6 +86,53 @@ def readSheet(sheet):
       print("Adding {}...".format(new_operation))
       new_operation.save()
       time.sleep(10)
+  elif(sheet == "SHIPPING"):
+    shipping = db.worksheet(sheet)
+    start_row = 6
+    end_row = 22
+
+    for i in range(start_row, end_row+1):
+      active_row = shipping.row_values(i)
+
+      project_code = active_row[0].replace(" ", "-")
+      project_name = active_row[1]
+      client_name = active_row[2]
+      germany = active_row[3]
+      customer = active_row[4]
+      charges = active_row[5]
+      remarks = active_row[6]
+      cancelled = True if (active_row[7] == "TRUE") else False
+      completed = True if (active_row[8] == "TRUE") else False
+
+      new_shipping = Shipping(project_code=project_code, project_name=project_name, client_name=client_name, germany=germany, customer=customer, charges=charges, remarks=remarks, cancelled=cancelled, completed=completed)
+      print("Adding {}...".format(new_shipping))
+      new_shipping.save()
+      time.sleep(10)
+  elif(sheet == "PURCHASING"):
+    purchases = db.worksheet(sheet)
+    start_row = 5
+    end_row = 37
+
+    for i in range(start_row, end_row+1):
+      active_row = purchases.row_values(i)
+
+      purchase_order = active_row[0]
+      project_code = active_row[5]
+      po_date = resolveDate(active_row[1],"american") if i <= 15 else resolveDate(active_row[1])
+      supplier_name = active_row[2]
+      purchased_items = active_row[3]
+      invoice_amount = active_row[4]
+      expected_date = active_row[6]
+      supplier_date = active_row[7]
+
+      currency, value = resolveInvoiceAmount(invoice_amount)
+      print(invoice_amount)
+      print(currency, value)
+      new_purchases = Purchases(purchase_order=purchase_order, project_code=project_code, po_date=po_date, supplier_name=supplier_name, purchased_items=purchased_items, currency=currency, value=value, expected_date=expected_date, supplier_date=supplier_date)
+      print("Adding {}...".format(new_purchases))
+      new_purchases.save()
+      time.sleep(10)
+
 
 
 
@@ -105,17 +145,29 @@ def resolveInvoiceAmount(invoice):
 
   return resolveCurrency(format_invoice[0]), format_invoice[1].replace(",", "")
 
-def resolveDate(date):
+def resolveDate(date,format="british"):
   if(date):
-    date_unbound = date.split("/")
+    raw_date = date.split("/")
 
-    if(len(date_unbound[0]) == 1):
-      date_unbound[0] = "0"+date_unbound[0]
+    for i in range(0,len(raw_date)):
+      if(len(raw_date[i]) == 1):
+        raw_date[i] = "0"+raw_date[i]
 
-    new_date = [date_unbound[2],"-",date_unbound[0],"-", date_unbound[1]]
-    return "".join(new_date)
+    print(raw_date)
+    if(format.lower() == "us" or format.lower() == "american"):
+      
+      # American Format Input : MM/DD/YYYY -> Output: YYYY-MM-DD
+      new_date = [raw_date[2], "-", raw_date[0],"-", raw_date[1]]
+      return "".join(new_date)
+
+    else:
+      # British Format Input : DD/MM/YYYY -> Output: YYYY-MM-DD
+      new_date = [raw_date[2],"-",raw_date[1],"-", raw_date[0]]
+      return "".join(new_date)
   return None
 
 # reset_database()
 # readSheet("SALES")
 # readSheet("OPERATION")
+# readSheet("SHIPPING")
+readSheet("PURCHASING")
