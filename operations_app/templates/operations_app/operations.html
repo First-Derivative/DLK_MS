@@ -29,17 +29,6 @@
     </div>
 
   </form>
-  
-  <!-- If User has operations Permissions -->
-  {% comment %}     
-  {% if perms.operations %} 
-  <div class="d-flex flex-row">
-    <p class="hoverable" id="add_sale"><img src="{% static 'sales_app/icons/add.png' %}" class="mr-3" alt="Add Sale"> Add Sale</p>
-  </div>
-  {% endif %}
-  {% endcomment %}
-  
-  <!-- If User has sales Permissions -->
 </div>
 {% endblock left_content%}
 
@@ -159,7 +148,7 @@
   {% if perms.operations_app %}
   <div class="col-xl">
     <button type="button" class="btn operations_standard-btn p-3 operations_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addOperation">
-      <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
+      <img src="{% static 'operation_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
       Add Operation
     </button>
   </div>
@@ -168,7 +157,7 @@
 <div class="d-flex flex-row">
   <div class="col-xl">
     <button type="button" class="btn operations_standard-btn p-3 operations_content-btn" id="reverse-list">
-      <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
+      <img src="{% static 'operation_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
       Reverse List
     </button>
   </div>
