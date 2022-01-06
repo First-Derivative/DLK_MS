@@ -2,18 +2,11 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from ms_app.decorators import *
 from .models import Shipping
+from .serializers import ShippingSerializer
 
-def serializeShipping(shipment):
-  serial = {}
-  serial["project_code"] = shipment.project_code
-  serial["project_name"] = shipment.project_name
-  serial["client_name"] = shipment.client_name
-  serial["customer"] = shipment.customer
-  serial["status"] = shipment.status
-  serial["remark"] = shipment.remark
-  serial["cancelled"] = shipment.cancelled
-
-  return serial
+@unauthenticated_check
+def shippingPage(request):
+  return render(request, "shipping_app/shipping.html", {})
 
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
@@ -21,8 +14,19 @@ def getShipping(request):
   unserialized_shipping = Shipping.objects.all()
   shipping = []
   for shipment in unserialized_shipping:
-    shipping.append(serializeShipping(shipment))
+    print(shipment)
+    # shipping.append(serializeShipping(shipment))
   return JsonResponse({"shipping":shipping})
+
+@method_check(allowed_methods=["GET"])
+@unauthenticated_check
+def getAllShipping(request):
+  shipping = Shipping.objects.all()
+  serial = []
+  for operation in shipping:
+    serial.append(ShippingSerializer(operation).data)
+
+  return JsonResponse({"shipping":serial})
 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["shipping"])

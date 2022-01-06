@@ -1,0 +1,209 @@
+{% extends "overview_app/root.html" %}
+{% load static %}
+
+{% block app_stylesheet %}
+  <link href="{% static '/shipping_app/styles/shipping.css' %}" rel="stylesheet">
+{% endblock app_stylesheet %}
+
+{% block left_content %}
+
+<div class="d-flex flex-column {%comment%} position-fixed {%endcomment%}">
+  <form class="search_wrapper mb-3" id="left_content_form">
+
+    <div class="col mb-3">
+      <input type="text" class="search_input form-control" value="" placeholder="Search..." id="input-search">
+      <p class="mt-1" style="font-size: 75%;margin-left: 0.25em" id="input-helper">press enter to start search</p>
+    </div>
+
+    <div>
+      <button type="button" class="btn shipping_standard-btn col mb-3" id="input-search-clear">
+        Clear Search Results
+      </button>
+    </div>
+
+    <div class="col mb-3">
+      <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
+      <label class="form-check-label" for="input-cancelled">
+        Show Cancelled Orders
+      </label>
+    </div>
+
+    <div class="col mb-3">
+      <input class="form-check-input" type="checkbox" value="" id="input-completed" checked>
+      <label class="form-check-label" for="input-completed">
+        Show Completed Orders
+      </label>
+    </div>
+
+  </form>
+</div>
+  <!-- If User has shipping Permissions -->
+  {% comment %}     
+  {% if perms.shipping %} 
+  <div class="d-flex flex-row">
+    <p class="hoverable" id="add_shipping"><img src="{% static 'sales_app/icons/add.png' %}" class="mr-3" alt="Add Shipping"> Add Sale</p>
+  </div>
+  {% endif %}
+  {% endcomment %}
+  
+{% endblock left_content %}
+
+{% block main_content %}
+<div class="" id="shipping_display"></div>
+
+<!-- MODAL  -->
+<div class="modal" tabindex="-1" id="modal_addShipping">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Shipping Entry</h5>
+        <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row gx-3 px-3 mt-3" id="modal-form-addShipping" name="addShipping_form">
+          
+          <div class="col-lg-3">
+            <div class="form-floating">
+              <input type="text" class="form-control modal-input" name="project_code" id="modal-input-project_code" placeholder="DLK-21-0040">
+              <label for="modal-input-project_code">Project Code</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-4">
+            <div class="form-floating">
+              <input type="text" class="form-control modal-input" name="project_name" id="modal-input-project_name" placeholder="Project Scorsese">
+              <label for="modal-input-project_name">Project Name</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-5">
+            <div class="form-floating">
+              <input type="text" class="form-control modal-input" name="client_name" id="modal-input-client_name" placeholder="Leonardo DiCaprio">
+              <label for="modal-input-client_name">Client Name</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-12">
+            <div class="form-floating">
+              <textarea class="form-control modal-input modal-form-project_detail" name="project_detail" placeholder="Project Detail" id="modal-input-project_detail"></textarea>
+              <label for="modal-input-project_detail">Project Detail</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-2 align-items-center">
+            <select class="form-select modal-input" style="height: 3.5em;" id="modal-input-currency" name="currency" required>
+              <option selected value="MYR">RM</option>
+              <option value="EUR">€</option>
+              <option value="USD">$</option>
+            </select>
+          </div>
+          
+          <div class="col-lg-5">
+            <div class="form-floating">
+              <input type="text" class="form-control modal-input" id="modal-input-amount" name="value" placeholder="20000">
+              <label for="modal-input-amount">Amount</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-5">
+            <div class="form-floating">
+              <input type="textarea" class="form-control modal-input modal-form-payment_term" name="payment_term" id="modal-input-project_name" placeholder="Project Detail">
+              <label for="modal-input-payment_term">Payment Term</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-6 date_wrapper">
+            <div class="input-group date">
+              <input type="text" class="form-control modal-input" id="modal-input-order_date" name="order_date" placeholder="Order Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+            </div>
+          </div>
+          
+          <div class="col-lg-6">
+            <div class="form-floating">
+              <input type="textarea" class="form-control modal-input modal-form-shipping_date" name="shipping_date" id="modal-input-shipping_date" placeholder="CWD">
+              <label for="modal-input-shipping_date">Customer Wanted Date</label>
+            </div>
+          </div>
+          
+          <div class="col-lg">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" name="cancelled" id="modal-input-cancelled">
+              <label class="form-check-label" for="modal-input-cancelled">
+                Cancelled Order?
+              </label>
+            </div>
+          </div>
+          
+          <div class="col-lg">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" name="completed" id="modal-input-completed">
+              <label class="form-check-label" for="modal-input-completed">
+                Completed Order?
+              </label>
+            </div>
+          </div>
+          
+        </form>
+      </div>
+      <div class="modal-footer p-3" style="border: none">
+        <div class="col px-3" id="modal-errors">
+          <div class="d-flex flex-row justify-content-end mt-3">
+            <button type="button" class="btn standard-btn" style="width:auto;" data-bs-dismiss="modal">Close</button>
+            <button  class="btn secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Add Shipping</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main_content%}
+
+{% block right_content %}
+
+<div class="d-flex flex-row mb-3">
+  {% if perms.operations_app %}
+  <div class="col-xl">
+    <button type="button" class="btn shipping_standard-btn p-3 operations_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addOperation">
+      <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
+      Add Operation
+    </button>
+  </div>
+  {% endif %}
+</div>
+<div class="d-flex flex-row">
+  <div class="col-xl">
+    <button type="button" class="btn shipping_standard-btn p-3 operations_content-btn" id="reverse-list">
+      <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
+      Reverse List
+    </button>
+  </div>
+</div>
+
+{% endblock right_content%}
+
+{% block scripts %}
+<script>
+  const getAllShipping_url = "{% url 'getAllShipping_API' %}"
+  const alertedHD_src = "{% static 'sales_app/icons/alert_HD.png'%}"
+  const edit_src = "{% static 'sales_app/icons/edit.png'%}"
+  const alerted_src = "{% static '/sales_app/icons/info.png' %}"
+  const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
+  const token = "{{csrf_token}}"
+</script>
+
+<!-- Dependency Imports -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<!-- Shipping Scripts -->
+<script src="{% static 'shipping_app/scripts/shipping_ajax.js'%}"></script>
+<script src="{% static 'shipping_app/scripts/shipping_handlers.js'%}"></script>
+
+<!-- Startup Scripts -->
+<script>
+  $.when(getAllShipping(addShipping)).done(function () {
+  })
+</script>
+
+{% endblock scripts %}
