@@ -23,8 +23,8 @@
   <!-- Jquery JS-->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-  {% block app_stylsheet %}
-  {% endblock app_stylsheet %}
+  {% block app_stylesheet %}
+  {% endblock app_stylesheet %}
 
   {% comment %}
   <link rel="icon" href="{% static '/main/images/icons/website_icon_1.png'%}">
@@ -46,7 +46,7 @@
         <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
         <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a class="" href="{% url 'sales' %}">Sales</li>
         <li class="nav-item"><a class="" href="#">Purchases</li>
-        <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="#">Shipping</li>
+        <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
         <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
         <li class="nav-item dropdown" id="accounts_tab">
           <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
