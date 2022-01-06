@@ -60,20 +60,18 @@ function UI_addSale(new_sale) {
     if (new_sale[field[0]] === null) { alerted = true }
   }
 
-  alerted_tag = `<img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-edit-${new_sale.project_code}" style="padding-bottom: 0.2em;margin-right: 0.5em" name="${new_sale.project_code}" alt="Needs Entry">`
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-edit-${new_sale.project_code}" style="padding-bottom: 0.2em" name="${new_sale.project_code}" alt="Needs Entry"></div>`
 
   sales_card_template =
     `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''} ${new_sale.completed ? 'completed-card' : ''}"  id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
     <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} ${new_sale.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_sale.project_code}">
       <p id="project_code_${new_sale.project_code}">${new_sale.project_code}</p>
-      <div class="d-flex justify-content-between" style="width:7em">
-      <div class="col">
+      <div class="d-flex justify-content-between" id="card-header-icons">
       ${alerted ? alerted_tag : ''}
-      </div>
       <div class="col">
         <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
       </div>
-      <div class="col">
+      <div class="col" style="padding-right:0em;">
         <img src="${droparrow_src}" width="24" height="24" class="hoverable header-img" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
       </div>
       </div>

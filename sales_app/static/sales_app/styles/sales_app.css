@@ -19,6 +19,12 @@
   font-weight: bold;
 }
 
+#card-header-icons > div.col
+{
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
 .card
 {
   display: flex;
@@ -84,20 +90,6 @@
   display: flex;
   background-color: white;
   justify-content: space-between;
-}
-
-#body_wrapper
-{
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-
-#body_wrapper > .card-text
-{
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-right: 1em;
 }
 
 .card_row
