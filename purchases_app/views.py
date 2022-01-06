@@ -1,35 +1,25 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from ms_app.decorators import *
-from .models import Purchases
 from ms_app.models import Currency, resolveCurrencyLabel
-
-
-def serializePurchase(purchase):
-  serial = {}
-  serial["purchase_code"] = purchase.purchase_code
-  serial["project_code"] = purchase.project_code
-  serial["po_date"] = purchase.po_date
-  serial["supplier_name"] = purchase.supplier_name
-  serial["purchased_items"] = purchase.purchased_items
-  serial["value"] = purchase.value
-  serial["currency"] = resolveCurrencyLabel(purchase.currency)
-  serial["expected_date"] = purchase.expected_date
-  serial["supplier_date"] = purchase.supplier_date
-  serial["cancelled"] = purchase.cancelled
-
-  return serial
-
+from .models import Purchases
+from .serializers import PurchasesSerializer
 
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
-def getPurchases(request):
-  unserialized_purchases = Purchases.objects.all()
-  purchases = []
-  for purchase in unserialized_purchases:
-    purchases.append(serializePurchase(purchase))
-  
-  return JsonResponse({"purchases":purchases})
+def purchasesPage(request):
+  return render(request, "purchases_app/purchases.html", {})
+
+def getAllPurchases(request):
+  purchases = Purchases.objects.all()
+  serial = []
+  for purchase in purchases:
+    serial.append(PurchasesSerializer(purchase).data)
+
+  if(len(serial) != 0):
+    return JsonResponse({"purchases":serial})
+
+  return JsonResponse({"error":"database empty"})
 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["purchases"])
