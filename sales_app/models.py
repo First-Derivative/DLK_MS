@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.db import models
 from ms_app.models import Currency, resolveCurrencyLabel
 from .validators import *
@@ -16,8 +17,8 @@ class Sales(models.Model):
   cancelled = models.BooleanField(default=False)
   completed = models.BooleanField(default=False)
 
-  # created_at = models.DateTimeField(auto_now_add=True)
-  # updated_at = models.DateTimeField(auto_now=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
 
   # DJango Model DT Format: YYYY-MM-DD
   # Website Input DT Format: DD/MM/YYYY
