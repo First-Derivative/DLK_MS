@@ -26,15 +26,15 @@ function addOperations(new_operations) {
     if (new_operations[field[0]] === '') { alerted = true }
   }
 
-  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-edit-${new_operations.project_code}" style="padding-bottom: 0.2em;margin-right: 0.5em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
 
   operations_card_template =
     `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="sales-card-${new_operations.project_code}" name="${new_operations.project_code}">
     <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_operations.project_code}">
       <p id="project_code_${new_operations.project_code}">${new_operations.project_code}</p>
-      <div class="d-flex justify-content-between" ">
+      <div class="d-flex justify-content-between" id="card-header-icons">
         ${alerted ? alerted_tag : ''}
-        <div class="col">
+        <div class="col" style="padding-right:0em;">
           <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_operations.project_code}" name="${new_operations.project_code}" alt="Edit Entry">
         </div>
       </div>

@@ -3,6 +3,12 @@
 .missing_text {color: red;}
 .header-img{filter: invert(100%);}
 
+#card-header-icons > div.col
+{
+  padding-right: 0.5em;
+  padding-left: 0.5em;
+}
+
 .card
 {
   display: flex;

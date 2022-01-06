@@ -1,9 +1,9 @@
 {% extends "overview_app/root.html" %}
 {% load static %}
 
-{% block app_stylsheet %}
+{% block app_stylesheet %}
   <link href="{% static '/operations_app/styles/operations.css' %}" rel="stylesheet">
-{% endblock app_stylsheet %}
+{% endblock app_stylesheet %}
 
 {% block left_content %}
 
@@ -30,9 +30,9 @@
 
   </form>
   
-  <!-- If User has sales Permissions -->
+  <!-- If User has operations Permissions -->
   {% comment %}     
-  {% if perms.sales %} 
+  {% if perms.operations %} 
   <div class="d-flex flex-row">
     <p class="hoverable" id="add_sale"><img src="{% static 'sales_app/icons/add.png' %}" class="mr-3" alt="Add Sale"> Add Sale</p>
   </div>
@@ -47,15 +47,15 @@
 <div class="" id="operations_display"></div>
 
 <!-- MODAL  -->
-<div class="modal" tabindex="-1" id="modal_addSale">
+<div class="modal" tabindex="-1" id="modal_addOperation">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Add New Sale Entry</h5>
+        <h5 class="modal-title">Add New Operation Entry</h5>
         <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="row gx-3 px-3 mt-3" id="modal-form-addSale" name="addSale_form">
+        <form class="row gx-3 px-3 mt-3" id="modal-form-addOperation" name="addOperation_form">
           
           <div class="col-lg-3">
             <div class="form-floating">
@@ -144,7 +144,7 @@
         <div class="col px-3" id="modal-errors">
           <div class="d-flex flex-row justify-content-end mt-3">
             <button type="button" class="btn standard-btn" style="width:auto;" data-bs-dismiss="modal">Close</button>
-            <button  class="btn secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Add Sale</button>
+            <button  class="btn secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Add Operation</button>
           </div>
         </div>
       </div>
@@ -182,7 +182,8 @@
   const getAllOperations_url = "{% url 'getAllOperations_API' %}"
   const alertedHD_src = "{% static 'sales_app/icons/alert_HD.png'%}"
   const edit_src = "{% static 'sales_app/icons/edit.png'%}"
-  </script>
+  const token = "{{csrf_token}}"
+</script>
 
 <!-- Dependency Imports -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -198,6 +199,6 @@
   $.when(getAllOperations(addOperations)).done(function () {
     console.log("added operations")
   })
-  </script>
+</script>
 
 {% endblock scripts %}
