@@ -10,16 +10,6 @@ def shippingPage(request):
 
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
-def getShipping(request):
-  unserialized_shipping = Shipping.objects.all()
-  shipping = []
-  for shipment in unserialized_shipping:
-    print(shipment)
-    # shipping.append(serializeShipping(shipment))
-  return JsonResponse({"shipping":shipping})
-
-@method_check(allowed_methods=["GET"])
-@unauthenticated_check
 def getAllShipping(request):
   shipping = Shipping.objects.all()
   serial = []
