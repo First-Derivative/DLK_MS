@@ -48,7 +48,7 @@ function addShipping(new_shipping) {
   </div>`
 
   // Prepend new_shipping Card to DOM
-  $('#shipping_display').prepend(shipping_card_template)
+  $('#shipping_display').append(shipping_card_template)
   // Set new_shipping card css to display none
   $(`#card-footer-${new_shipping.project_code}`).css("display", "none")
 
@@ -64,8 +64,6 @@ function addShipping(new_shipping) {
     else { $(`#card-footer-${id}`).hide("fast") }
   })
 
-
-
   // Edit button for shipping Card Handler
   edit_selector = "#card-edit-" + new_shipping.project_code
   $(edit_selector).on("click", function () {
@@ -74,4 +72,76 @@ function addShipping(new_shipping) {
     // enterEditMode(new_shipping.project_code)
   })
 
+}
+
+// UI Functionality: Remove all Shipping Cards
+function removeAllShipping()
+{
+  $(`.card`).each(function () {
+    $(this).off()
+  })
+  $("#shipping_display").empty()
+}
+
+function removeShipping(shipping_id)
+{
+  $(`div[id*='${shipping_id}']`).off() // unbinds handlers
+  $(`div[id*='${shipping_id}']`).remove()
+}
+
+// UX Functionality: Enter 'search mode' on enter key
+$("#left_content_form").on("keypress", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 13)  {// Enter Key
+    event.preventDefault();
+
+    if (!search_mode) { // check if already in search mode, if false then enter and start search
+      enterSearch()
+    }
+    else {
+      removeAllShipping()
+    }
+
+    const search_header_template = `
+    <div class="row" id="searchHeader">
+      <div class="header_title">
+      </div>
+      <div class="header_subtitle">
+      </div>
+    </div>
+    `
+    $("#shipping_display").prepend(search_header_template)
+    
+    const input_value = $("#input-search").val()
+    searchShipping(input_value)
+    return false;
+  }
+})
+
+// UX Functionality: Leave 'search mode' ALT Trigger:  escape key
+$("#left_content_form").on("keyup", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 27) {
+    if (search_mode) { leaveSearch() } // check if already out of search mode
+  }
+})
+
+// Enter Search
+function enterSearch()
+{
+  search_mode = true
+  removeAllShipping()
+  return true
+}
+
+// Leave Search
+function leaveSearch()
+{
+  search_mode = false
+  removeAllShipping()
+
+  // Startup line from html template
+  $.when(getAllShipping(addShipping)).done(function () {
+    $("#input-search").val("")
+  })
 }

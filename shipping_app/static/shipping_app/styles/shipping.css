@@ -1,3 +1,16 @@
+/* Search Results */
+
+#searchHeader
+{
+  background-color: #b8b2a3;
+  padding: 1em;
+  margin-bottom: 0.7em;
+  margin-left: 0.1em;
+  font-size: 1.3em;
+  border-radius: 0.7em;
+  max-width: 15em;
+}
+
 /* CARD  */
 
 .missing_text {color: red;}
@@ -21,15 +34,6 @@
   margin-bottom: 0.6em;
   background-color: #4d4b4a;
   border: 0.15em solid #4d4b4a;
-}
-
-
-.alert-card 
-{
-  position: fixed;
-  padding: 2em;
-  width: 7em !important;
-  height: 3em !important;
 }
 
 .card-header

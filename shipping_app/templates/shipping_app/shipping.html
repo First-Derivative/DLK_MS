@@ -183,12 +183,17 @@
 
 {% block scripts %}
 <script>
+  const getSearch_url = "{% url 'searchShipping_API' %}" + "?search=0"
   const getAllShipping_url = "{% url 'getAllShipping_API' %}"
   const alertedHD_src = "{% static 'sales_app/icons/alert_HD.png'%}"
   const edit_src = "{% static 'sales_app/icons/edit.png'%}"
   const alerted_src = "{% static '/sales_app/icons/info.png' %}"
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
   const token = "{{csrf_token}}"
+
+  //Environment Variables 
+  let search_mode = false
+
 </script>
 
 <!-- Dependency Imports -->

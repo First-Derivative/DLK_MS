@@ -1,13 +1,23 @@
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
+from rest_framework import generics, filters
 from ms_app.decorators import *
 from .models import Shipping
 from .serializers import ShippingSerializer
 
+# GET Shipping Page
 @unauthenticated_check
 def shippingPage(request):
   return render(request, "shipping_app/shipping.html", {})
 
+# GET (Search) Shipping
+class searchAPI(generics.ListCreateAPIView):
+  search_fields = ['project_code', 'project_name', 'client_name']
+  filter_backends = (filters.SearchFilter,)
+  queryset = Shipping.objects.all()
+  serializer_class = ShippingSerializer
+
+# GET (ALL) Shipping 
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
 def getAllShipping(request):
@@ -18,6 +28,7 @@ def getAllShipping(request):
 
   return JsonResponse({"shipping":serial})
 
+# POST Shipping
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles=["shipping"])
 def addShipping(request):
