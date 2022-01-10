@@ -13,12 +13,12 @@ def reset_database():
   all_dir = os.listdir(path)
   sorted_dir = []
   for i in range(len(all_dir)):
-    if("_app" in all_dir[i]):
+    if(("_app" in all_dir[i]) and all_dir[i] != "ms_app" ):
       sorted_dir.append(all_dir[i])
   
   os.system('rm db.sqlite3')
 
-  for i in range(8):
+  for i in range(6):
 
     # Move to select _app folder
     os.chdir(os.path.join(home, sorted_dir[i]))
@@ -54,11 +54,11 @@ def readSheet(sheet):
       client_name = active_row[2]
       project_detail = active_row[3]
       invoice_amount = active_row[4]
-      order_date = resolveDate(active_row[5],"american")
+      order_date = resolveDate(active_row[5],"american") # double check model for null value support
       shipping_date = active_row[6]
       payment_term = active_row[7]
-      cancelled = active_row[14]
-      completed = active_row[15]
+      cancelled = True if (active_row[14] == "TRUE") else False 
+      completed = True if (active_row[15] == "TRUE") else False 
 
       currency, value = resolveInvoiceAmount(invoice_amount)
 
@@ -166,8 +166,17 @@ def resolveDate(date,format="british"):
       return "".join(new_date)
   return None
 
+# print("===== Reseting Database =====")
 # reset_database()
+
+# print("===== Reading SALES =====")
 # readSheet("SALES")
-# readSheet("OPERATION")
-# readSheet("SHIPPING")
+
+print("===== Reading OPERATION =====")
+readSheet("OPERATION")
+
+print("===== Reading SHIPPING =====")
+readSheet("SHIPPING")
+
+print("===== Reading PURCHASING =====")
 readSheet("PURCHASING")
