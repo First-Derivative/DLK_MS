@@ -19,14 +19,6 @@
 }
 
 
-.alert-card 
-{
-  position: fixed;
-  padding: 2em;
-  width: 7em !important;
-  height: 3em !important;
-}
-
 .card-header
 {
   font-size: 1em;
