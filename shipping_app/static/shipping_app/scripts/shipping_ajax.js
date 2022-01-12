@@ -2,18 +2,17 @@
 function searchShipping(query, library)
 {
   $.ajax(
-  {
-    type: "GET",
-    url: getSearch_url.replace(0, query),
-    success: function(response)
     {
-  
+      type: "GET",
+      url: getSearch_url.replace(0, query),
+      success: function(response)
+      {
+      $("#input-search-clear").addClass("shipping_standard-btn-danger")
+        
       if(response.length){
         for (const shipping of response)
         {
           $(".header_title").text(`Found ${response.length} results...`)
-          // $("#input-search-clear").css("background-color","#dc4245")
-          $("#input-search-clear").addClass("shipping_standard-btn-danger")
           
           shipping["searched"] = true
           addShipping(shipping)
