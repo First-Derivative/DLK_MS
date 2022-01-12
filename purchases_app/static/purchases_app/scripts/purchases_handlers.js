@@ -51,10 +51,10 @@ function addPurchases(new_purchases) {
   // Prepend new_purchases Card to DOM
   $('#purchases_display').prepend(purchases_card_template)
   // Set new_purchases card css to display none
-  $(`#card-footer-${new_purchases.project_code}`).css("display", "none")
+  $(`#card-footer-${new_purchases.purchase_order}`).css("display", "none")
 
   // Dropdown for purchases Card Handler
-  dropdown_selector = "#card-dropdown-" + new_purchases.project_code
+  dropdown_selector = "#card-dropdown-" + new_purchases.purchase_order
   $(dropdown_selector).on("click", function () {
     id = $(this).attr("name")
     selector = "#card-footer-" + id
@@ -68,7 +68,7 @@ function addPurchases(new_purchases) {
 
 
   // Edit button for purchases Card Handler
-  edit_selector = "#card-edit-" + new_purchases.project_code
+  edit_selector = "#card-edit-" + new_purchases.purchase_order
   $(edit_selector).on("click", function () {
     id = $(this).attr("name")
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
