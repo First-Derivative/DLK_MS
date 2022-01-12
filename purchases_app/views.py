@@ -1,15 +1,25 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework import generics, filters
 from ms_app.decorators import *
 from ms_app.models import Currency, resolveCurrencyLabel
 from .models import Purchases
 from .serializers import PurchasesSerializer
 
+# Purchases Page
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
 def purchasesPage(request):
   return render(request, "purchases_app/purchases.html", {})
 
+# GET (Search) Purchases
+class searchAPI(generics.ListCreateAPIView):
+  search_fields = ['project_code','supplier_name', "purchased_items", "po_date"]
+  filter_backends = (filters.SearchFilter,)
+  queryset = Purchases.objects.all()
+  serializer_class = PurchasesSerializer
+
+# Get All Purchases
 def getAllPurchases(request):
   purchases = Purchases.objects.all()
   serial = []

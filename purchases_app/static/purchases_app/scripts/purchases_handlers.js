@@ -1,11 +1,21 @@
-// UI Functionality: Add Purchases Card
-function addPurchases(new_purchases) {
-  alerted = false
-  for (const field of Object.entries(new_purchases)) {
-    console.log(new_purchases[field[0]])
-    if (new_purchases[field[0]] == (undefined || '')) { console.log("alerted"); alerted = true }
-  }
+// ===== AUXILIARY FUNCTIONS =====
+function start(){
+  cache.clearLibrary()
+  $.when(getAllPurchases(addPurchases)).done(function () {
+  })
+}
 
+// ===== UI ADD/REMOVE =====
+
+// UI Functionality: Add Purchases Card
+function addPurchases(new_purchases, prepend=false) {
+  if($(`.card[name*='${new_purchases.purchase_order}']`).length > 0){
+    return
+  }
+  
+  alerted = false
+  if(new_purchases.supplier_name_isNull || new_purchases.supplier_date_isNull || new_purchases.po_date_isNull || new_purchases.expected_date_isNull) { alerted = true }
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_purchases.project_code}" style="padding-bottom: 0.2em" name="${new_purchases.project_code}" alt="Needs Entry"></div>`
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_purchases.project_code}" style="padding-bottom: 0.2em" name="${new_purchases.project_code}" alt="Needs Entry"></div>`
 
   purchases_card_template =
@@ -33,23 +43,25 @@ function addPurchases(new_purchases) {
       </div>
 
       <div class="card_row">
-        <p class="card-text ${(new_purchases.po_date == null || new_purchases.po_date == '') ? 'missing_text' : ''}" id="po_date_${new_purchases.purchase_order}" id="po_date_${new_purchases.purchase_order}"><span class="text-muted">Purchase Order Date: </span>${new_purchases.po_date == undefined ? 'null' : new_purchases.po_date}</p>
+        <p class="card-text ${new_purchases.po_date_isNull ? 'missing_text' : ''}" id="po_date_${new_purchases.purchase_order}" id="po_date_${new_purchases.purchase_order}"><span class="text-muted">Purchase Order Date: </span>${new_purchases.po_date_isNull? 'null' : new_purchases.po_date}</p>
 
-        <p class="card-text ${(new_purchases.supplier_name === '') ? 'missing_text' : ''}" id="supplier_name_${new_purchases.purchase_order}"><span class="text-muted">Purchases From Germany: </span>${new_purchases.supplier_name == '' ? 'null' : new_purchases.supplier_name}</p>
+        <p class="card-text ${new_purchases.supplier_name_isNull ? 'missing_text' : ''}" id="supplier_name_${new_purchases.purchase_order}"><span class="text-muted">Purchases From: </span>${new_purchases.supplier_name_isNull ? 'null' : new_purchases.supplier_name}</p>
 
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_purchases.purchase_order}">
 
-      <p class="card-text ${(new_purchases.expected_date == '') ? 'missing_text' : ''}" id="expected_date_${new_purchases.purchase_order}"><span class="text-muted">Expected Payment Date: </span>${(new_purchases.expected_date == '') ? 'null' : new_purchases.expected_date}</p>
+      <p class="card-text ${new_purchases.expected_date_isNull ? 'missing_text' : ''}" id="expected_date_${new_purchases.purchase_order}"><span class="text-muted">Expected Payment Date: </span>${new_purchases.expected_date_isNull ? 'null' : new_purchases.expected_date}</p>
 
-      <p class="card-text ${(new_purchases.supplier_date == '') ? 'missing_text' : ''}" id="supplier_date_${new_purchases.purchase_order}"><span class="text-muted">Supplier Delivary Date: </span>${(new_purchases.supplier_date == '') ? 'null' : new_purchases.supplier_date}</p>
+      <p class="card-text ${new_purchases.supplier_date_isNull ? 'missing_text' : ''}" id="supplier_date_${new_purchases.purchase_order}"><span class="text-muted">Supplier Delivary Date: </span>${new_purchases.supplier_date_isNull ? 'null' : new_purchases.supplier_date}</p>
 
     </div>
   </div>`
 
-  // Prepend new_purchases Card to DOM
-  $('#purchases_display').prepend(purchases_card_template)
+  // Adding New Purchases Card to page
+  if(prepend){ $('#purchases_display').prepend(purchases_card_template) }
+  else{ $('#purchases_display').append(purchases_card_template) }
+
   // Set new_purchases card css to display none
   $(`#card-footer-${new_purchases.purchase_order}`).css("display", "none")
 
@@ -65,8 +77,6 @@ function addPurchases(new_purchases) {
     else { $(`#card-footer-${id}`).hide("fast") }
   })
 
-
-
   // Edit button for purchases Card Handler
   edit_selector = "#card-edit-" + new_purchases.purchase_order
   $(edit_selector).on("click", function () {
@@ -76,3 +86,87 @@ function addPurchases(new_purchases) {
   })
 
 }
+
+// UI Functionality: Remove all Purchases Cards
+function removeAllPurchases()
+{
+  $(`.card`).each(function () {
+    $(this).off()
+  })
+  $("#purchases_display").empty()
+}
+
+function removePurchases(purchase_order)
+{
+  $(`div[id*='${purchase_order}']`).off() // unbinds handlers
+  $(`div[id*='${purchase_order}']`).remove()
+}
+
+// ===== SEARCH FEAURE =====
+
+// UX Functionality: Enter 'search mode' on enter key
+$("#left_content_form").on("keypress", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 13)  {// Enter Key
+    event.preventDefault();
+    
+    if (!search_mode) { // check if already in search mode, if false then enter and start search
+      enterSearch()
+    }
+    else {
+      removeAllPurchases()
+    }
+    
+    const search_header_template = `
+    <div class="row" id="searchHeader">
+    <div class="header_title">
+    </div>
+    </div>
+    `
+    $("#purchases_display").prepend(search_header_template)
+    
+    const input_value = $("#input-search").val()
+    searchPurchases(input_value, cache)
+    return false;
+  }
+})
+
+// UX Functionality: Leave 'search mode' on clear button press
+$("#input-search-clear").click(function(){
+  leaveSearch()
+})
+
+// UX Functionality: Leave 'search mode' ALT Trigger:  escape key
+$("#left_content_form").on("keyup", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 27) {
+    if (search_mode) { leaveSearch() } // check if already out of search mode
+  }
+})
+
+// Enter Search
+function enterSearch()
+{
+  search_mode = true
+  removeAllPurchases()
+  return true
+}
+
+// Leave Search
+function leaveSearch()
+{
+  if ( $("#input-search-clear").hasClass("purchases_standard-btn-danger") ){ $("#input-search-clear").removeClass("purchases_standard-btn-danger")}
+  $("#input-search").val("")
+  search_mode = false
+  removeAllPurchases()
+  start()
+}
+
+// ===== FILTERING TOGGLES =====
+
+// Reverse List Button
+$("#reverse-list").click(function () {
+  $("#purchases_display").children().each(function () {
+    $("#purchases_display").prepend($(this))
+  })
+})

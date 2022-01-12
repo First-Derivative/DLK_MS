@@ -1,24 +1,36 @@
-// Get Purchases
-function getPurchases(obj) {
+// GET Search API
+function searchPurchases(query, library)
+{
+  library.clearLibrary()
   $.ajax(
     {
       type: "GET",
-      url: getPurchases_url,
-      succes: function (response) {
-        purchases = request.purchases
-        purchases_count = purchases.length
-        purchases.reverse()
-
-        for (i = 0; i < purchases_count; i++) {
-          content = purchases.pop()
-          addPurchase(content)
+      url: getSearch_url.replace(0, query),
+      success: function(response)
+      {
+      $("#input-search-clear").addClass("purchases_standard-btn-danger")
+        
+      if(response.length){
+        for (const purchases of response)
+        {
+          $(".header_title").text(`Found ${response.length} results...`)
+          
+          purchases["searched"] = true
+          library.append(purchases)
+          addPurchases(purchases)
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
       }
-    })
+      else
+      {
+        $(".header_title").text(`No results for ${query}`)
+      }
+    },
+    error: function (jqXHR, textStatus, errorThrown) {
+      // Debugging case
+      alert("textStatus: " + textStatus + " " + errorThrown)
+    }
+
+  })
 }
 
 function getAllPurchases(callback) {
