@@ -44,7 +44,7 @@
         <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="row gx-3 px-3 mt-3" id="modal-form-addOperation" name="addOperation_form">
+        <form class="row gx-3 px-3 mt-3" id="modal-form-addOperations" name="addOperation_form">
           
           <div class="col-lg-3">
             <div class="form-floating">
@@ -93,7 +93,9 @@
         </form>
       </div>
       <div class="modal-footer p-3" style="border: none">
-        <div class="col px-3" id="modal-errors">
+        <div class="col px-3">
+          <div id="modal-errors">
+          </div>
           <div class="d-flex flex-row justify-content-end mt-3">
             <button type="button" class="btn standard-btn" style="width:auto;" data-bs-dismiss="modal">Close</button>
             <button  class="btn secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Add Operation</button>
@@ -141,6 +143,7 @@
 
 <!-- Static Imports -->
 <script>
+  const postNewOperations_url = "{% url 'postNewOperations_API' %}"
   const getSearch_url = "{% url 'searchOperations_API' %}"
   const getAllOperations_url = "{% url 'getAllOperations_API' %}"
   const alertedHD_src = "{% static 'sales_app/icons/alert_HD.png'%}"

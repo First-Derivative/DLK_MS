@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import generics, filters
@@ -17,17 +18,7 @@ class searchAPI(generics.ListCreateAPIView):
   queryset = Operations.objects.all()
   serializer_class = OperationsSerializer
 
-
-# @method_check(allowed_methods=["GET"])
-# @unauthenticated_check
-# def getOperations(request):
-#   unserialized_operations = Operations.objects.all()
-#   operations = []
-#   for operation in unserialized_operations:
-#     operations.append(OperationsSerializer(operation).data)
-  
-#   return JsonResponse({"operations":operations})
-
+# GET All Operations
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
 def getAllOperations(request):
@@ -38,25 +29,29 @@ def getAllOperations(request):
 
   return JsonResponse({"operations":serial})
 
+# POST New Operations
 @method_check(allowed_methods=["POST"])
-@role_check(allowed_roles=["opreations"])
+@role_check(allowed_roles="operations")
 def addOperations(request):
   post = request.POST
 
   # Validate postdata for duplication 
   try:
-    shipping = Operations.objects.get(project_code=post["data[project_code]"])
-    return JsonResponse({"error":"Operations order with that shipping code already exists, please check for duplicate records"})
+    operations = Operations.objects.get(project_code=post["data[project_code]"])
+    return JsonResponse({"error":{"duplicate_project_code":"Operations order with that shipping code already exists, please check for duplicate records"}})
+
   # No Duplicate Found-> Create new Object
   except Operations.DoesNotExist:
-    project_code = post["data[project_code]"]
-    project_name = post["data[project_name]"]
-    client_name = post["data[client_name]"]
-    status = post["data[status]"]
-    finish_detail = post["data[finish_detail]"]
-
+    # format true/false from checkbox value
+    cancelled = True if post["data[cancelled]"] == 'true' else False
+    
     # Instantiate and save new Shipping object on DB
-    new_operations = Operations(project_code=project_code, project_name=project_name, client_name=client_name, status=status, finish_detail=finish_detail, cancelled=False)
-    #end of user-flow for succesful request: return status OK
+    new_operations = Operations(project_code=post["data[project_code]"], project_name=post["data[project_name]"], client_name=post["data[client_name]"], status=post["data[status]"], finish_detail=post["data[finish_detail]"], cancelled=cancelled)
+    try:
+      new_operations.full_clean()
+    except ValidationError as e:
+      return JsonResponse({"error":dict(e)})
+    
+    new_operations.save()
     return JsonResponse({"status":"OK"})
 

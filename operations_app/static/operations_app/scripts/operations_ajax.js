@@ -84,19 +84,25 @@ function postOperations(new_operations) {
       type: "POST",
       headers:
       {
-        "X-CSRFToken": Token
+        "X-CSRFToken": token
       },
-      url: postOperations_url,
+      url: postNewOperations_url,
       data:
       {
         'data': new_operations
       },
       success: function (response) {
-        if (response.error) {
-          alert(response.error)
+        if (response.error) { // error handling
+          Object.keys(response.error).forEach(key => 
+          { 
+            title = propertyToTitle(key)
+            error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${response.error[key]}</p></div>`
+            $("#modal-errors").prepend(error_text_template)
+            $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+          })
         }
         else {
-          addOperation(new_operations)
+          addOperations(new_operations,true)
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {

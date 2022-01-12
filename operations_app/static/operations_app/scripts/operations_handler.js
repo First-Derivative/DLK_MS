@@ -7,6 +7,16 @@ function start() {
   })
 }
 
+function propertyToTitle(property)
+{
+  format = property.split("_")
+  for( i = 0; i < format.length; i ++)
+  {
+    format[i] = format[i].charAt(0).toUpperCase() + format[i].substr(1, format[i].length)
+  }
+  return format.join(" ")
+}
+
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Operations
@@ -20,8 +30,8 @@ function addOperations(new_operations, prepend=false) {
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
 
   operations_card_template =
-    `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="sales-card-${new_operations.project_code}" name="${new_operations.project_code}">
-    <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_operations.project_code}">
+    `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="operations-card-${new_operations.project_code}" name="${new_operations.project_code}">
+    <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="operations-card-header-${new_operations.project_code}">
       <p id="project_code_${new_operations.project_code}">${new_operations.project_code}</p>
       <div class="d-flex justify-content-between" id="card-header-icons">
         ${alerted ? alerted_tag : ''}
@@ -48,7 +58,7 @@ function addOperations(new_operations, prepend=false) {
   else{ $('#operations_display').append(operations_card_template) }
 
   /*
-  // Edit button for sales Card Handler
+  // Edit button for operations Card Handler
   edit_selector = "#card-edit-" + new_sale.project_code
   $(edit_selector).on("click", function () {
     id = $(this).attr("name")
@@ -73,6 +83,34 @@ function removeOperations(project_code)
   $(`div[id*='${project_code}']`).off() // unbinds handlers
   $(`div[id*='${project_code}']`).remove()
 }
+
+// ===== ADD ENTRY FEATURE =====
+
+// Add Operations Handler
+$("#modal-btn-save").click(function () {
+
+  new_operations = {}
+  new_operations["cancelled"] = false
+
+  $("input[class*=input-error-highlight]").each(function () {
+    $(this).removeClass("input-error-highlight")
+  })
+
+  $("#modal-errors").empty()
+
+  // Get & Assign Data
+  let data_form = $(`form[id=modal-form-addOperations]`).serializeArray()
+  $.each(data_form, function (i, field) {
+    property = field.name
+    if (property == "cancelled") {
+      new_operations["cancelled"] = true
+    }
+    else {
+      new_operations[property] = field.value
+    }
+  })
+  postOperations(new_operations)
+})
 
 // ===== SEARCH FEAURE =====
 
