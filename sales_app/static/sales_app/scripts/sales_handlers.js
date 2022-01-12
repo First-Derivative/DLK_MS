@@ -55,9 +55,8 @@ $("#modal-btn-save").click(function () {
 // UI Functionality: Add Sale
 function UI_addSale(new_sale) {
   alerted = false
-
   for (const field of Object.entries(new_sale)) {
-    if (new_sale[field[0]] === null) { alerted = true }
+    if (new_sale[field[0]] === '') { alerted = true; }
   }
 
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-edit-${new_sale.project_code}" style="padding-bottom: 0.2em" name="${new_sale.project_code}" alt="Needs Entry"></div>`
@@ -85,12 +84,12 @@ function UI_addSale(new_sale) {
       </div>
       <div class="card_row">
         <p class="card-text" id="order_date_${new_sale.project_code}"><span class="text-muted">Customer Order Date: </span>${new_sale.order_date}</p>
-        <p class="card-text ${(new_sale.shipping_date == null || new_sale.shipping_date == 'null') ? 'missing_text' : ''}" id="shipping_date_${new_sale.project_code}"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date}</p>
+        <p class="card-text ${(new_sale.shipping_date == '') ? 'missing_text' : ''}" id="shipping_date_${new_sale.project_code}"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date == '' ? 'null' : new_sale.shipping_date}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sale.project_code}">
-      <p class="card-text ${(new_sale.project_detail == null || new_sale.project_detail == 'null') ? 'missing_text' : ''}" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail}</p>
-      <p class="card-text ${(new_sale.payment_term == null || new_sale.payment_term == 'null') ? 'missing_text' : ''}" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term}</p>
+      <p class="card-text ${(new_sale.project_detail == '') ? 'missing_text' : ''}" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail == '' ? 'null': new_sale.project_detail}</p>
+      <p class="card-text ${ new_sale.payment_term_isNull ? 'missing_text' : ''}" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${ new_sale.payment_term_isNull ?  'null': new_sale.payment_term }</p>
       <br>
       <p class="card-text" id="cancelled_${new_sale.project_code}"><span class="text-muted">Cancelled: </span>${new_sale.cancelled ? 'True' : 'False'}</p>
       <p class="card-text" id="completed_${new_sale.project_code}"><span class="text-muted">Completed: </span>${new_sale.completed ? 'True' : 'False'}</p>
@@ -107,7 +106,6 @@ function UI_addSale(new_sale) {
   $(dropdown_selector).on("click", function () {
     id = $(this).attr("name")
     selector = "#card-footer-" + id
-
     if ($(`#card-footer-${id}`).css('display') == "none") {
       $(`#card-footer-${id}`).show("fast")
     }

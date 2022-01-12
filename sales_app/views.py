@@ -39,22 +39,6 @@ class searchAPI(generics.ListCreateAPIView):
 def salesPage(request):
   return render(request, "sales_app/sales.html",  {})
 
-# AUX SERIALIZERE
-def SerializeSale(sale):
-  serial = {}
-  serial["project_code"] = sale.project_code
-  serial["project_name"] = sale.project_name
-  serial["client_name"] = sale.client_name
-  serial["project_detail"] = sale.project_detail
-  serial["invoice_amount"] = sale.invoice_amount
-  serial["order_date"] = sale.order_date
-  serial["shipping_date"] = sale.shipping_date
-  serial["payment_term"] = sale.payment_term
-  serial["cancelled"] = sale.cancelled
-  serial["completed"] = sale.completed
-
-  return serial
-
 # GET ALL SALES API
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
@@ -62,7 +46,7 @@ def getSales(request):
     unserialized_sales = Sales.objects.all()
     sales = []
     for sale in unserialized_sales:
-      sales.append(SerializeSale(sale))
+      sales.append(SalesSerializer(sale).data)
 
     return JsonResponse({"sales":sales})
 

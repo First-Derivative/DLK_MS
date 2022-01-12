@@ -32,5 +32,11 @@ class Sales(models.Model):
     currency_label = resolveCurrencyLabel(self.currency)
     return "{a}{b}".format(a=currency_label, b=self.value)
 
+  @property
+  def payment_term_isNull(self):
+    if(self.payment_term.lower() == "null" or self.payment_term.lower() == ""):
+      return True
+    return False
+
   def __str__(self):
     return "{a} {b}".format(a=self.project_code, b=self.project_name)
