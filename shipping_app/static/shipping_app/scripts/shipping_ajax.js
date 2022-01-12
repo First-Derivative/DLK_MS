@@ -1,5 +1,5 @@
 // GET Search API
-function searchShipping(query)
+function searchShipping(query, library)
 {
   $.ajax(
   {
@@ -12,13 +12,16 @@ function searchShipping(query)
         for (const shipping of response)
         {
           $(".header_title").text(`Found ${response.length} results...`)
+          // $("#input-search-clear").css("background-color","#dc4245")
+          $("#input-search-clear").addClass("shipping_standard-btn-danger")
+          
           shipping["searched"] = true
           addShipping(shipping)
         }
       }
       else
       {
-        $(".header_subtitle").text(`No results for ${query}`)
+        $(".header_title").text(`No results for ${query}`)
       }
     },
     error: function (jqXHR, textStatus, errorThrown) {
@@ -30,19 +33,19 @@ function searchShipping(query)
 }
 
 // GET Shipping & Display
-function getShipping(obj) {
+function getShipping(library, callback) {
   $.ajax(
     {
       type: "GET",
       url: getShipping_url,
       success: function (response) {
-        shipping = request.shipping
+        shipping = response.shipping
         shipping_count = shipping.length
 
-        shipping.reverse() // reverse array for performance
         for (i = 0; i < shipping_count; i++) {
           content = shipping.pop()
-          addShipping(content)
+          library.push(content)
+          callback(content)
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -53,7 +56,7 @@ function getShipping(obj) {
 }
 
 // GET: All Shipping 
-function getAllShipping(callback) {
+function getAllShipping(library, callback) {
   $.ajax(
     {
       type: "GET",
@@ -62,9 +65,9 @@ function getAllShipping(callback) {
         shipping = response.shipping
         shipping_count = shipping.length
 
-        shipping.reverse() // reverse sales array for performance
         for (i = 0; i < shipping_count; i++) {
           content = shipping.pop()
+          library.append(content)
           callback(content)
         }
       },

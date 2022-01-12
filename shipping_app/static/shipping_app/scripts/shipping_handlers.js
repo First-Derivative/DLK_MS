@@ -1,11 +1,15 @@
+// StartUp Script
+function start(){
+  cache.clearLibrary()
+  $.when(getAllShipping(cache, addShipping)).done(function () {
+  })
+}
+
 // UI Functionality: Add Shipping Card
 function addShipping(new_shipping) {
   alerted = false
-  for (const field of Object.entries(new_shipping)) {
-    console.log(new_shipping[field[0]])
-    if (new_shipping[field[0]] == (undefined || '')) { console.log("alerted"); alerted = true }
-  }
 
+  if(new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_shipping.project_code}" style="padding-bottom: 0.2em" name="${new_shipping.project_code}" alt="Needs Entry"></div>`
 
   shipping_card_template =
@@ -31,15 +35,15 @@ function addShipping(new_shipping) {
       </div>
 
       <div class="card_row">
-        <p class="card-text ${(new_shipping.charges == null || new_shipping.charges == '') ? 'missing_text' : ''}" id="charges_${new_shipping.project_code}" id="charges_${new_shipping.project_code}"><span class="text-muted">Charges: </span>${new_shipping.charges == undefined ? 'null' : new_shipping.charges}</p>
+        <p class="card-text ${new_shipping.charges_isNull ? 'missing_text' : ''}" id="charges_${new_shipping.project_code}" id="charges_${new_shipping.project_code}"><span class="text-muted">Charges: </span>${new_shipping.charges == undefined ? 'null' : new_shipping.charges}</p>
 
-        <p class="card-text ${(new_shipping.germany === '') ? 'missing_text' : ''}" id="germany_${new_shipping.project_code}"><span class="text-muted">Shipping From Germany: </span>${new_shipping.germany == '' ? 'null' : new_shipping.germany}</p>
+        <p class="card-text ${new_shipping.germany_isNull ? 'missing_text' : ''}" id="germany_${new_shipping.project_code}"><span class="text-muted">Shipping From Germany: </span>${new_shipping.germany_isNull ? 'null' : new_shipping.germany}</p>
 
-        <p class="card-text ${(new_shipping.customer == null || new_shipping.customer == '') ? 'missing_text' : ''}" id="customer_${new_shipping.project_code}"><span class="text-muted">Shipping From Customer: </span>${new_shipping.customer == '' ? 'null' : new_shipping.customer}</p>
+        <p class="card-text ${new_shipping.customer_isNull ? 'missing_text' : ''}" id="customer_${new_shipping.project_code}"><span class="text-muted">Shipping From Customer: </span>${new_shipping.customer_isNull ? 'null' : new_shipping.customer}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_shipping.project_code}">
-      <p class="card-text ${(new_shipping.remarks == '') ? 'missing_text' : ''}" id="remarks_${new_shipping.project_code}"><span class="text-muted">Remarks: </span>${(new_shipping.remarks == '') ? 'null' : new_shipping.remarks}</p>
+      <p class="card-text ${new_shipping.remarks_isNull ? 'missing_text' : ''}" id="remarks_${new_shipping.project_code}"><span class="text-muted">Remarks: </span>${new_shipping.remarks_isNull ? 'null' : new_shipping.remarks}</p>
 
       <p class="card-text" id="cancelled_${new_shipping.project_code}"><span class="text-muted">Cancelled: </span>${new_shipping.cancelled ? 'True' : 'False'}</p>
 
@@ -106,14 +110,12 @@ $("#left_content_form").on("keypress", function (event) {
     <div class="row" id="searchHeader">
       <div class="header_title">
       </div>
-      <div class="header_subtitle">
-      </div>
     </div>
     `
     $("#shipping_display").prepend(search_header_template)
     
     const input_value = $("#input-search").val()
-    searchShipping(input_value)
+    searchShipping(input_value, cache)
     return false;
   }
 })
@@ -124,6 +126,13 @@ $("#left_content_form").on("keyup", function (event) {
   if (keyPressed === 27) {
     if (search_mode) { leaveSearch() } // check if already out of search mode
   }
+})
+
+// UX Functionality: Leave 'search mode' on clear button press
+$("#input-search-clear").click(function(){
+  $(this).removeClass("shipping_standard-btn-danger")
+  $("#input-search").val("")
+  leaveSearch()
 })
 
 // Enter Search
@@ -139,9 +148,5 @@ function leaveSearch()
 {
   search_mode = false
   removeAllShipping()
-
-  // Startup line from html template
-  $.when(getAllShipping(addShipping)).done(function () {
-    $("#input-search").val("")
-  })
+  start()
 }

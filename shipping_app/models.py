@@ -1,4 +1,3 @@
-from re import L
 from django.db import models
 
 class Shipping(models.Model):
@@ -12,6 +11,30 @@ class Shipping(models.Model):
   remarks = models.CharField(null=True, blank=False,max_length=100)
   cancelled = models.BooleanField(default=False)
   completed = models.BooleanField(default=False)
+
+  @property
+  def germany_isNull(self):
+    if( self.germany == "" or self.germany.lower() == "null"):
+      return True
+    return False
+    
+  @property
+  def customer_isNull(self):
+    if( self.customer == "" or self.customer.lower() == "null"):
+      return True
+    return False
+  
+  @property
+  def charges_isNull(self):
+    if( self.charges == "" or self.charges.lower() == "null"):
+      return True
+    return False
+
+  @property
+  def remarks_isNull(self):
+    if( self.remarks == "" or self.remarks.lower() == "null"):
+      return True
+    return False
 
   def __str__(self):
     return "{a} {b}".format(a=self.project_code, b=self.project_name)

@@ -2,13 +2,22 @@
 
 #searchHeader
 {
-  background-color: #b8b2a3;
+  background-color: #f9c132;
   padding: 1em;
   margin-bottom: 0.7em;
   margin-left: 0.1em;
   font-size: 1.3em;
   border-radius: 0.7em;
-  max-width: 15em;
+  max-width: 16em;
+}
+
+.searchHeader_short{padding-bottom: 0.3em}
+
+.header_subtitle
+{
+  margin-top: 0.5em;
+  font-size: 0.5em;
+  font-style: italic;
 }
 
 /* CARD  */
@@ -125,11 +134,16 @@
   width: 100%;
 }
 
-.shipping_standard-btn:hover
+.shipping_standard-btn-danger
 {
-  background-color: #383736;
-  color:white;
+  background-color: #dc4245;
+  color: white;
+  width: 100%;
 }
+
+
+.shipping_standard-btn:hover{background-color: #383736; color: white;}
+.shipping_standard-btn-danger:hover{ background-color: #bb373b; color: white;}
 
 .shipping_secondary-btn
 {
