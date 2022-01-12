@@ -1,9 +1,13 @@
+// ===== AUXILIARY FUNCTIONS =====
+
 // StartUp Script
 function start(){
   cache.clearLibrary()
   $.when(getAllShipping(cache, addShipping)).done(function () {
   })
 }
+
+// ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Shipping Card
 function addShipping(new_shipping) {
@@ -93,23 +97,26 @@ function removeShipping(shipping_id)
   $(`div[id*='${shipping_id}']`).remove()
 }
 
+
+// ===== SEARCH FEAURE =====
+
 // UX Functionality: Enter 'search mode' on enter key
 $("#left_content_form").on("keypress", function (event) {
   keyPressed = event.keyCode || event.which;
   if (keyPressed === 13)  {// Enter Key
     event.preventDefault();
-
+    
     if (!search_mode) { // check if already in search mode, if false then enter and start search
       enterSearch()
     }
     else {
       removeAllShipping()
     }
-
+    
     const search_header_template = `
     <div class="row" id="searchHeader">
-      <div class="header_title">
-      </div>
+    <div class="header_title">
+    </div>
     </div>
     `
     $("#shipping_display").prepend(search_header_template)
@@ -120,19 +127,19 @@ $("#left_content_form").on("keypress", function (event) {
   }
 })
 
+// UX Functionality: Leave 'search mode' on clear button press
+$("#input-search-clear").click(function(){
+  $(this).removeClass("shipping_standard-btn-danger")
+  $("#input-search").val("")
+  leaveSearch()
+})
+
 // UX Functionality: Leave 'search mode' ALT Trigger:  escape key
 $("#left_content_form").on("keyup", function (event) {
   keyPressed = event.keyCode || event.which;
   if (keyPressed === 27) {
     if (search_mode) { leaveSearch() } // check if already out of search mode
   }
-})
-
-// UX Functionality: Leave 'search mode' on clear button press
-$("#input-search-clear").click(function(){
-  $(this).removeClass("shipping_standard-btn-danger")
-  $("#input-search").val("")
-  leaveSearch()
 })
 
 // Enter Search
@@ -150,3 +157,27 @@ function leaveSearch()
   removeAllShipping()
   start()
 }
+
+// ===== FILTERING TOGGLES =====
+
+// Cancelled Toggle
+$("#input-cancelled").click(function ()
+{
+  if (!$(this).is(":checked"))
+  {
+    $("div[class*=cancelled-card]").each(function ()
+    {
+      $(this).remove()
+    })
+    return
+  }
+  console.log("reading cache")
+  for (const shipping of cache.allCancelled)
+  {
+    if(!search_mode) //not in search mode 
+    {
+      addShipping(shipping)
+    }
+    else{ if (shipping.searched) { addShipping(shipping) }}
+  }
+})
