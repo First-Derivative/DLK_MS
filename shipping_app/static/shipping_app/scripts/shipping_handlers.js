@@ -136,8 +136,6 @@ $("#left_content_form").on("keypress", function (event) {
 
 // UX Functionality: Leave 'search mode' on clear button press
 $("#input-search-clear").click(function(){
-  $(this).removeClass("shipping_standard-btn-danger")
-  $("#input-search").val("")
   leaveSearch()
 })
 
@@ -160,6 +158,8 @@ function enterSearch()
 // Leave Search
 function leaveSearch()
 {
+  if ( $("#input-search-clear").hasClass("shipping_standard-btn-danger") ){ $("#input-search-clear").removeClass("shipping_standard-btn-danger")}
+  $("input-search").val("")
   search_mode = false
   removeAllShipping()
   start()
