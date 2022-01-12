@@ -208,3 +208,10 @@ $("#input-completed").click(function ()
     else{ if (shipping.searched) { addShipping(shipping) }}
   }
 })
+
+// Reverse List Button
+$("#reverse-list").click(function () {
+  $("#shipping_display").children().each(function () {
+    $("#shipping_display").prepend($(this))
+  })
+})
