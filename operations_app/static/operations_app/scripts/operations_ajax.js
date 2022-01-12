@@ -22,7 +22,7 @@ function getOperations(obj) {
 }
 
 // GetAll Operations
-function getAllOperations(callback) {
+function getAllOperations(library, callback) {
   $.ajax(
     {
       type: "GET",
@@ -30,11 +30,10 @@ function getAllOperations(callback) {
       success: function (response) {
         operations = response.operations
         operations_count = operations.length
-        operations.reverse()
-
-        for (i = 0; operations_count; i++) {
+        
+        for (i = 0; i < operations_count; i++) {
           content = operations.pop()
-          // addOpeartions(content)
+          library.append(content)
           callback(content)
         }
       },

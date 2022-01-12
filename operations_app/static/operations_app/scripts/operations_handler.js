@@ -1,31 +1,22 @@
+// ===== AUXILIARY FUNCTIONS =====
 
-/*
-// Post Operations Handler
-$("postOperations_confirm").click(function()
-{
-  // Init
-  new_operations = {project_code=null, project_name=null, client_name=null, status=null, finish_detail=null, cancelled=null}
-
-  // Get & Assign Data
-  let form_data = $("form").serializeArray()
-  $.each(form_data, function(i, field)
-  {
-    property = field.name
-    new_operations.property = field.value
+// StartUp Script
+function start(library) {
+  library.clearLibrary()
+  $.when(getAllOperations(library,addOperations)).done(function () {
   })
+}
 
-  // Calls Ajax postOperations
-  postOperations(new_operations)
-})
-*/
+// ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Operations
-function addOperations(new_operations) {
+function addOperations(new_operations, prepend=false) {
   alerted = false
-  for (const field of Object.entries(new_operations)) {
-    if (new_operations[field[0]] === '') { alerted = true }
+  if($(`.card[name*='${new_operations.project_code}']`).length > 0){
+    return
   }
 
+  if(new_operations.status_isNull || new_operations.finish_detail_isNull ) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
 
   operations_card_template =
@@ -43,17 +34,18 @@ function addOperations(new_operations) {
       <div class="card_row">
         <p class="card-text" id="project_name_${new_operations.project_code}">${new_operations.project_name}</p>
         <p class="card-text" id="client_name_${new_operations.project_code}">${new_operations.client_name}</p>
-        <p class="card-text" id="finish_detail_${new_operations.project_code}">${new_operations.finish_detail}</p>
+        <p class="card-text ${ new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="finish_detail_${new_operations.project_code}"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${(new_operations.status == '') ? 'missing_text' : ''}" id="status_${new_operations.project_code}"><span class="text-muted ">Status: </span>${new_operations.status == '' ? 'null' : ''}</p>
+        <p class="card-text ${ new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
         <p class="card-text" id="cancelled_${new_operations.project_code}"><span class="text-muted">Cancelled: </span>${new_operations.cancelled ? 'True' : 'False'}</p>
       </div>
     </div>
   </div>`
 
-  // Prepend new_sale Card to DOM
-  $('#operations_display').prepend(operations_card_template)
+  // Adding New Operations Card to page
+  if(prepend){ $('#operations_display').prepend(operations_card_template) }
+  else{ $('#operations_display').append(operations_card_template) }
 
   /*
   // Edit button for sales Card Handler
