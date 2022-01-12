@@ -10,7 +10,7 @@ function start(){
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Shipping Card
-function addShipping(new_shipping) {
+function addShipping(new_shipping, prepend=false) {
   alerted = false
 
   if(new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
@@ -55,8 +55,10 @@ function addShipping(new_shipping) {
     </div>
   </div>`
 
-  // Prepend new_shipping Card to DOM
-  $('#shipping_display').append(shipping_card_template)
+  // Adding New Shipping Card to page
+  if(prepend){ $('#shipping_display').prepend(shipping_card_template) }
+  else{ $('#shipping_display').append(shipping_card_template) }
+
   // Set new_shipping card css to display none
   $(`#card-footer-${new_shipping.project_code}`).css("display", "none")
 
@@ -176,8 +178,8 @@ $("#input-cancelled").click(function ()
   {
     if(!search_mode) //not in search mode 
     {
-      addShipping(shipping)
+      addShipping(shipping, true)
     }
-    else{ if (shipping.searched) { addShipping(shipping) }}
+    else{ if (shipping.searched) { addShipping(shipping, true) }}
   }
 })
