@@ -49,7 +49,7 @@ def readSheet(sheet):
     for i in range(start_row, end_row+1):
       active_row = sales.row_values(i)
 
-      project_code = active_row[0]
+      project_code = active_row[0].replace(" ","-")
       project_name = active_row[1]
       client_name = active_row[2]
       project_detail = active_row[3]
