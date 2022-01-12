@@ -18,6 +18,13 @@ class Library {
     return this.output
   }
 
+  get allCompleted()
+  {
+    this.output = []
+    for (const item of this.index) { if (item.completed) { this.output.push(item) }}
+    return this.output
+  }
+
   append(shipping)
   {
     this.index.push(shipping)

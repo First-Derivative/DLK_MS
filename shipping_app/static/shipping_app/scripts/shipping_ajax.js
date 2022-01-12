@@ -1,6 +1,7 @@
 // GET Search API
 function searchShipping(query, library)
 {
+  library.clearLibrary()
   $.ajax(
     {
       type: "GET",
@@ -15,6 +16,7 @@ function searchShipping(query, library)
           $(".header_title").text(`Found ${response.length} results...`)
           
           shipping["searched"] = true
+          library.append(shipping)
           addShipping(shipping)
         }
       }

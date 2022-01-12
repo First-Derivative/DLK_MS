@@ -11,6 +11,11 @@ function start(){
 
 // UI Functionality: Add Shipping Card
 function addShipping(new_shipping, prepend=false) {
+
+  if($(`.card[name*='${new_shipping.project_code}']`).length > 0){
+    return
+  }
+
   alerted = false
 
   if(new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
@@ -173,13 +178,33 @@ $("#input-cancelled").click(function ()
     })
     return
   }
-  console.log("reading cache")
   for (const shipping of cache.allCancelled)
   {
     if(!search_mode) //not in search mode 
     {
       addShipping(shipping, true)
     }
-    else{ if (shipping.searched) { addShipping(shipping, true) }}
+    else{ if (shipping.searched) { addShipping(shipping) }}
+  }
+})
+
+// Completed Toggle
+$("#input-completed").click(function ()
+{
+  if (!$(this).is(":checked"))
+  {
+    $("div[class*=completed-card]").each(function ()
+    {
+      $(this).remove()
+    })
+    return
+  }
+  for (const shipping of cache.allCompleted)
+  {
+    if(!search_mode) //not in search mode 
+    {
+      addShipping(shipping, true)
+    }
+    else{ if (shipping.searched) { addShipping(shipping) }}
   }
 })
