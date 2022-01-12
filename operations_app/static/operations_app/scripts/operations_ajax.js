@@ -1,3 +1,36 @@
+// GET Search API
+function searchOperations(query, library)
+{
+  library.clearLibrary()
+  $.ajax({
+    type: "GET",
+    url: getSearch_url.replace(0, query),
+    success: function(response)
+    {
+    $("#input-search-clear").addClass("operations_standard-btn-danger")
+      
+    if(response.length){
+      for (const operations of response)
+      {
+        $(".header_title").text(`Found ${response.length} results...`)
+        
+        operations["searched"] = true
+        library.append(operations)
+        addOperations(operations)
+      }
+    }
+    else
+    {
+      $(".header_title").text(`No results for ${query}`)
+    }
+  },
+  error: function (jqXHR, textStatus, errorThrown) {
+    // Debugging case
+    alert("textStatus: " + textStatus + " " + errorThrown)
+  }
+  })
+}
+
 // Get Operations
 function getOperations(obj) {
   $.ajax(
@@ -30,7 +63,7 @@ function getAllOperations(library, callback) {
       success: function (response) {
         operations = response.operations
         operations_count = operations.length
-        
+
         for (i = 0; i < operations_count; i++) {
           content = operations.pop()
           library.append(content)

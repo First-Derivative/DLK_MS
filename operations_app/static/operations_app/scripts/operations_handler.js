@@ -1,9 +1,9 @@
 // ===== AUXILIARY FUNCTIONS =====
 
 // StartUp Script
-function start(library) {
-  library.clearLibrary()
-  $.when(getAllOperations(library,addOperations)).done(function () {
+function start() {
+  cache.clearLibrary()
+  $.when(getAllOperations(cache,addOperations)).done(function () {
   })
 }
 
@@ -57,3 +57,111 @@ function addOperations(new_operations, prepend=false) {
   })
   */
 }
+
+// Remove All Operation Cards
+function removeAllOperations()
+{
+  $(`.card`).each(function () {
+    $(this).off()
+  })
+  $("#operations_display").empty()
+}
+
+// Remove Single Operation Card
+function removeOperations(project_code)
+{
+  $(`div[id*='${project_code}']`).off() // unbinds handlers
+  $(`div[id*='${project_code}']`).remove()
+}
+
+// ===== SEARCH FEAURE =====
+
+// UX Functionality: Enter 'search mode' on enter key
+$("#left_content_form").on("keypress", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 13)  {// Enter Key
+    event.preventDefault();
+    
+    if (!search_mode) { // check if already in search mode, if false then enter and start search
+      enterSearch()
+    }
+    else {
+      removeAllOperations()
+    }
+    
+    const search_header_template = `
+    <div class="row" id="searchHeader">
+    <div class="header_title">
+    </div>
+    </div>
+    `
+    $("#operations_display").prepend(search_header_template)
+    
+    const input_value = $("#input-search").val()
+    searchOperations(input_value, cache)
+    return false;
+  }
+})
+
+// UX Functionality: Leave 'search mode' on clear button press
+$("#input-search-clear").click(function(){
+  $(this).removeClass("operations_standard-btn-danger")
+  $("#input-search").val("")
+  leaveSearch()
+})
+
+// UX Functionality: Leave 'search mode' ALT Trigger:  escape key
+$("#left_content_form").on("keyup", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 27) {
+    if (search_mode) { leaveSearch() } // check if already out of search mode
+  }
+})
+
+// Enter Search
+function enterSearch()
+{
+  search_mode = true
+  removeAllOperations()
+  return true
+}
+
+// Leave Search
+function leaveSearch()
+{
+  if ( $("#input-search-clear").hasClass("operations_standard-btn-danger") ){ $("#input-search-clear").removeClass("operations_standard-btn-danger")}
+  $("input-search").val("")
+  search_mode = false
+  removeAllOperations()
+  start()
+}
+
+// ===== FILTERING TOGGLES =====
+
+// Cancelled Toggle
+$("#input-cancelled").click(function ()
+{
+  if (!$(this).is(":checked"))
+  {
+    $("div[class*=cancelled-card]").each(function ()
+    {
+      $(this).remove()
+    })
+    return
+  }
+  for (const operations of cache.allCancelled)
+  {
+    if(!search_mode) //not in search mode 
+    {
+      addOperations(operations, true)
+    }
+    else{ if (operations.searched) { addOperations(operations) }}
+  }
+})
+
+// Reverse List Button
+$("#reverse-list").click(function () {
+  $("#operations_display").children().each(function () {
+    $("#operations_display").prepend($(this))
+  })
+})

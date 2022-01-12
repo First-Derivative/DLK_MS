@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework import generics, filters
 from .models import Operations
 from .serializers import OperationsSerializer
 from ms_app.decorators import *
@@ -9,16 +10,23 @@ from ms_app.decorators import *
 def operationsPage(request):
   return render(request, "operations_app/operations.html", {})
 
+# GET (Search) Operations
+class searchAPI(generics.ListCreateAPIView):
+  search_fields = ['project_code', 'project_name', 'client_name']
+  filter_backends = (filters.SearchFilter,)
+  queryset = Operations.objects.all()
+  serializer_class = OperationsSerializer
 
-@method_check(allowed_methods=["GET"])
-@unauthenticated_check
-def getOperations(request):
-  unserialized_operations = Operations.objects.all()
-  operations = []
-  for operation in unserialized_operations:
-    operations.append(OperationsSerializer(operations).data)
+
+# @method_check(allowed_methods=["GET"])
+# @unauthenticated_check
+# def getOperations(request):
+#   unserialized_operations = Operations.objects.all()
+#   operations = []
+#   for operation in unserialized_operations:
+#     operations.append(OperationsSerializer(operation).data)
   
-  return JsonResponse({"operations":operations})
+#   return JsonResponse({"operations":operations})
 
 @method_check(allowed_methods=["GET"])
 @unauthenticated_check
@@ -28,7 +36,6 @@ def getAllOperations(request):
   for operation in operations:
     serial.append(OperationsSerializer(operation).data)
 
-  print(serial)
   return JsonResponse({"operations":serial})
 
 @method_check(allowed_methods=["POST"])
