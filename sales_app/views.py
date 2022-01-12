@@ -72,6 +72,7 @@ def addSales(request):
     shipping_date = post["data[shipping_date]"]
     payment_term = post["data[payment_term]"]
     currency = post["data[currency]"] 
+    cancelled = post["data[cancelled]"]
     
     #Double check that this logic works for view
     for choice in Currency:
@@ -80,7 +81,7 @@ def addSales(request):
         break
     
     #Instantiate and save new Sale object on DB
-    new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=False)
+    new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled)
     try:
       new_sale.full_clean()
     except ValidationError as e:

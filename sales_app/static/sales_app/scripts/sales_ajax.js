@@ -121,7 +121,8 @@ function editSale(sale, callback) {
       data: sale,
       success: function (response) {
         start = 0
-        if (response.hasOwnProperty("error")) {
+        if (response.hasOwnProperty("error"))
+        {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             if (start == 0) {
@@ -137,7 +138,8 @@ function editSale(sale, callback) {
           })
           document.getElementById(`card-footer-${sale.project_code}`).scrollIntoView(false)
         }
-        else {
+        else
+        {
           sale["invoice_amount"] = resolveCurrency(sale["currency"]) + sale["value"]
           callback(sale)
         }
