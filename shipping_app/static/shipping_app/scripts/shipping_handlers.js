@@ -159,7 +159,7 @@ function enterSearch()
 function leaveSearch()
 {
   if ( $("#input-search-clear").hasClass("shipping_standard-btn-danger") ){ $("#input-search-clear").removeClass("shipping_standard-btn-danger")}
-  $("input-search").val("")
+  $("#input-search").val("")
   search_mode = false
   removeAllShipping()
   start()

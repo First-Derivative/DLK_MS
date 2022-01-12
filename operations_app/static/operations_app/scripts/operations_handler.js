@@ -130,7 +130,7 @@ function enterSearch()
 function leaveSearch()
 {
   if ( $("#input-search-clear").hasClass("operations_standard-btn-danger") ){ $("#input-search-clear").removeClass("operations_standard-btn-danger")}
-  $("input-search").val("")
+  $("#input-search").val("")
   search_mode = false
   removeAllOperations()
   start()
