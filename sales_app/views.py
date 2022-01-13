@@ -53,7 +53,7 @@ def getSales(request):
 # ADD NEW SALE
 #@unauthenticated_check 
 @method_check(allowed_methods=["POST"])
-@role_check(allowed_roles=["sales"])
+@role_check(allowed_roles="sales")
 def addSales(request):
   post = request.POST
   
@@ -72,7 +72,7 @@ def addSales(request):
     shipping_date = post["data[shipping_date]"]
     payment_term = post["data[payment_term]"]
     currency = post["data[currency]"] 
-    cancelled = post["data[cancelled]"]
+    cancelled = True if post["data[cancelled]"] == 'true' else False
     
     #Double check that this logic works for view
     for choice in Currency:
@@ -94,7 +94,7 @@ def addSales(request):
 # EDIT SALE
 #@unauthenticated_check 
 @method_check(allowed_methods=["POST"])
-@role_check(allowed_roles=["sales"])
+@role_check(allowed_roles="sales")
 def editSale(request):
   post = request.POST
   

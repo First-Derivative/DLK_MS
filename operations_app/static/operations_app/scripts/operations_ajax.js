@@ -78,7 +78,7 @@ function getAllOperations(library, callback) {
 }
 
 // Post Operations
-function postOperations(new_operations) {
+function postOperations(library, new_operations) {
   $.ajax(
     {
       type: "POST",
@@ -102,7 +102,9 @@ function postOperations(new_operations) {
           })
         }
         else {
+          library.append(new_operations)
           addOperations(new_operations,true)
+          $("#modal-btn-close").trigger( "click" );
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {

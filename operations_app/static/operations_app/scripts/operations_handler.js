@@ -109,7 +109,7 @@ $("#modal-btn-save").click(function () {
       new_operations[property] = field.value
     }
   })
-  postOperations(new_operations)
+  postOperations(cache,new_operations)
 })
 
 // ===== SEARCH FEAURE =====

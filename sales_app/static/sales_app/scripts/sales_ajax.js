@@ -94,13 +94,12 @@ function postSale(new_sale) {
             }
             start = 1
           })
-          document.getElementById("modal-form-addSale").scrollIntoView(false)
         }
         if (response.hasOwnProperty("status")) {
           if (response.status == "OK") {
-            $("#modal-errors").prepend(`<div class="row text-left modal-validation-update-text"><p style="color: #426285">New Sale Added!</p></div>`)
             new_sale["invoice_amount"] = new_sale["currency"] + new_sale["value"]
             UI_addSale(new_sale)
+            $("#modal-btn-close").trigger( "click" )
           }
         }
       },

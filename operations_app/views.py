@@ -45,8 +45,9 @@ def addOperations(request):
     # format true/false from checkbox value
     cancelled = True if post["data[cancelled]"] == 'true' else False
     
-    # Instantiate and save new Shipping object on DB
+    # Instantiate New Operations from Post Data
     new_operations = Operations(project_code=post["data[project_code]"], project_name=post["data[project_name]"], client_name=post["data[client_name]"], status=post["data[status]"], finish_detail=post["data[finish_detail]"], cancelled=cancelled)
+    print(new_operations)
     try:
       new_operations.full_clean()
     except ValidationError as e:
