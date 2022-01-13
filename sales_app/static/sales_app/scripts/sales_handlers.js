@@ -49,7 +49,7 @@ $("#modal-btn-save").click(function () {
   })
 
   // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
-  postSale(new_sales)
+  postSale(sales_library, new_sales)
 })
 
 // UI Functionality: Add Sale

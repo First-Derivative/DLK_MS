@@ -71,7 +71,7 @@ function getSales(library) {
 }
 
 // Post (new) Sale
-function postSale(new_sale) {
+function postSale(library, new_sale) {
   $.ajax(
     {
       type: "POST",
@@ -98,6 +98,7 @@ function postSale(new_sale) {
         if (response.hasOwnProperty("status")) {
           if (response.status == "OK") {
             new_sale["invoice_amount"] = new_sale["currency"] + new_sale["value"]
+            library.append(new_sale)
             UI_addSale(new_sale)
             $("#modal-btn-close").trigger( "click" )
           }
