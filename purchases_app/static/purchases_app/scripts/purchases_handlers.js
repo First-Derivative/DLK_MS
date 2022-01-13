@@ -5,6 +5,25 @@ function start(){
   })
 }
 
+function propertyToTitle(property)
+{
+  format = property.split("_")
+  for( i = 0; i < format.length; i ++)
+  {
+    format[i] = format[i].charAt(0).toUpperCase() + format[i].substr(1, format[i].length)
+  }
+  return format.join(" ")
+}
+
+function resolveCurrency(currency) {
+  switch (currency) {
+    case "MYR": return "RM";
+    case "EUR": return "€";
+    case "USD": return "$";
+    default: return "ERROR";
+  }
+}
+
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Purchases Card
@@ -102,6 +121,44 @@ function removePurchases(purchase_order)
   $(`div[id*='${purchase_order}']`).remove()
 }
 
+// ===== ADD ENTRY FEATURE =====
+
+// Add Purchases Handler
+$("#modal-btn-save").click(function () {
+
+  new_purchases = {}
+
+  $("input[class*=input-error-highlight]").each(function () {
+    $(this).removeClass("input-error-highlight")
+  })
+
+  $("#modal-errors").empty()
+
+  // Get & Assign Data
+  let data_form = $(`form[id=modal-form-addPurchases]`).serializeArray()
+  $.each(data_form, function (i, field) {
+    property = field.name
+    if( property == "po_date" )
+    {
+      // Client: MM/DD/YYYY -> Server: YYYY-MM-DD
+      raw = field.value
+      raw = raw.replace("/", "-")
+      raw = raw.replace("/", "-")
+      raw_array = raw.split("-")
+
+      raw_array.reverse()
+      temp = raw_array[1]
+      raw_array[1] = raw_array[2]
+      raw_array[2] = temp
+      
+      formatted_date = raw_array.join("-")
+      new_purchases[property] = formatted_date
+    }
+    else{ new_purchases[property] = field.value }
+    
+  })
+  postPurchases(cache, new_purchases)
+})
 // ===== SEARCH FEAURE =====
 
 // UX Functionality: Enter 'search mode' on enter key

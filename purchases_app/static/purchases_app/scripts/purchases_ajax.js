@@ -33,6 +33,7 @@ function searchPurchases(query, library)
   })
 }
 
+// GET All Purchases
 function getAllPurchases(callback) {
   $.ajax(
     {
@@ -55,9 +56,8 @@ function getAllPurchases(callback) {
     })
 }
 
-
-// Post New Purchases
-function postPurchase(new_purchase) {
+// POST New Purchases
+function postPurchases(library, new_purchase) {
   $.ajax(
     {
       type: "POST",
@@ -65,17 +65,26 @@ function postPurchase(new_purchase) {
       {
         "X-CSRFToken": token
       },
-      url: postPurchase_url,
+      url: postNewPurchases_url,
       data:
       {
         'data': new_purchase
       },
       success: function (response) {
         if (response.error) {
-          alert(response.error)
+          Object.keys(response.error).forEach(key => 
+            { 
+              title = propertyToTitle(key)
+              error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${response.error[key]}</p></div>`
+              $("#modal-errors").prepend(error_text_template)
+              $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+            })
         }
         else {
-          addPurchase(new_purchase)
+          new_purchase["invoice_amount"] = new_purchase["currency"] + new_purchase["value"]
+          library.append(new_purchase)
+          addPurchases(new_purchase, true)
+          $("#modal-btn-close").trigger( "click" );
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {

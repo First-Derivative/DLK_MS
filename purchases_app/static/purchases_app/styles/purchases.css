@@ -22,7 +22,6 @@
 
 .search_wrapper
 {
-  /* height: 2.3em; */
   width: inherit;
 }
 
@@ -155,8 +154,47 @@
   color: white;
 }
 
-.purchases_content-btn
+.purchases_content-btn { width: 100%; }
+
+/* Modal */
+
+.modal-header
 {
-  /* width: 9em; */
-  width: 100%;
+  background-color: #383736;
+  color: white;
+}
+
+.modal-close-btn, .btn-close
+{
+  filter: invert(100%);
+}
+
+#modal-input-project_detail, #modal-input-order_date
+{
+  height: 3.625em ;
+}
+
+#modal-input-order_date::placeholder
+{
+  color: black;
+}
+
+.form-floating
+{
+  margin-bottom: 1.5em;
+}
+
+.error-text
+{
+  color: red;
+}
+
+.edit-validation-update-text
+{
+  /* margin-bottom: 1.5em; */
+}
+
+.input-error-highlight
+{
+  border: 0.1em solid #d82d4e;
 }

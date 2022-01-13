@@ -45,33 +45,26 @@
           
           <div class="col-lg-3">
             <div class="form-floating">
+              <input type="text" class="form-control modal-input" name="purchase_order" id="modal-input-purchase_order" placeholder="Project Scorsese">
+              <label for="modal-input-purchase_order">Purchase Order</label>
+            </div>
+          </div>
+
+          <div class="col-lg-3">
+            <div class="form-floating">
               <input type="text" class="form-control modal-input" name="project_code" id="modal-input-project_code" placeholder="DLK-21-0040">
               <label for="modal-input-project_code">Project Code</label>
             </div>
           </div>
           
-          <div class="col-lg-4">
+          <div class="col-lg-6">
             <div class="form-floating">
-              <input type="text" class="form-control modal-input" name="project_name" id="modal-input-project_name" placeholder="Project Scorsese">
-              <label for="modal-input-project_name">Project Name</label>
+              <input type="text" class="form-control modal-input" name="purchased_items" id="modal-input-purchased_items" placeholder="Leonardo DiCaprio">
+              <label for="modal-input-purchased_items">Purchased Items</label>
             </div>
           </div>
           
-          <div class="col-lg-5">
-            <div class="form-floating">
-              <input type="text" class="form-control modal-input" name="client_name" id="modal-input-client_name" placeholder="Leonardo DiCaprio">
-              <label for="modal-input-client_name">Client Name</label>
-            </div>
-          </div>
-          
-          <div class="col-lg-12">
-            <div class="form-floating">
-              <textarea class="form-control modal-input modal-form-project_detail" name="project_detail" placeholder="Project Detail" id="modal-input-project_detail"></textarea>
-              <label for="modal-input-project_detail">Project Detail</label>
-            </div>
-          </div>
-          
-          <div class="col-lg-2 align-items-center">
+          <div class="col-lg-3 align-items-center">
             <select class="form-select modal-input" style="height: 3.5em;" id="modal-input-currency" name="currency" required>
               <option selected value="MYR">RM</option>
               <option value="EUR">€</option>
@@ -79,39 +72,49 @@
             </select>
           </div>
           
-          <div class="col-lg-5">
+          <div class="col-lg-3">
             <div class="form-floating">
-              <input type="text" class="form-control modal-input" id="modal-input-amount" name="value" placeholder="20000">
-              <label for="modal-input-amount">Amount</label>
-            </div>
-          </div>
-          
-          <div class="col-lg-5">
-            <div class="form-floating">
-              <input type="textarea" class="form-control modal-input modal-form-payment_term" name="payment_term" id="modal-input-project_name" placeholder="Project Detail">
-              <label for="modal-input-payment_term">Payment Term</label>
-            </div>
-          </div>
-          
-          <div class="col-lg-6 date_wrapper">
-            <div class="input-group date">
-              <input type="text" class="form-control modal-input" id="modal-input-order_date" name="order_date" placeholder="Order Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              <input type="text" class="form-control modal-input" id="modal-input-value" name="value" placeholder="20000">
+              <label for="modal-input-value">Amount</label>
             </div>
           </div>
           
           <div class="col-lg-6">
             <div class="form-floating">
-              <input type="textarea" class="form-control modal-input modal-form-purchases_date" name="purchases_date" id="modal-input-purchases_date" placeholder="CWD">
-              <label for="modal-input-purchases_date">Customer Wanted Date</label>
+              <input type="text" class="form-control modal-input modal-form-supplier_name" name="supplier_name" id="modal-input-supplier_name" placeholder="Project Detail">
+              <label for="modal-input-supplier_name">Supplier Name</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-4 date_wrapper">
+            <div class="form-floating date">
+              <input type="text" class="form-control modal-input" id="modal-input-po_date" name="po_date" placeholder="Order Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              <label for="modal-input-po_date">Order Date</label>
+            </div>
+          </div>
+          
+          <div class="col-lg-4">
+            <div class="form-floating">
+              <input type="text" class="form-control modal-input modal-form-supplier_date" name="supplier_date" id="modal-input-supplier_date" placeholder="Project Detail">
+              <label for="modal-input-supplier_date">Supplier Date</label>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="form-floating">
+              <input type="text" class="form-control modal-input modal-form-expected_date" name="expected_date" id="modal-input-expected_date" placeholder="Project Detail">
+              <label for="modal-input-expected_date">Expected Date</label>
             </div>
           </div>
 
         </form>
       </div>
       <div class="modal-footer p-3" style="border: none">
-        <div class="col px-3" id="modal-errors">
+        <div class="col px-3">
+          <div id="modal-errors">
+          </div>
           <div class="d-flex flex-row justify-content-end mt-3">
-            <button type="button" class="btn standard-btn" style="width:auto;" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn standard-btn" style="width:auto;" id="modal-btn-close" data-bs-dismiss="modal">Close</button>
             <button  class="btn secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Add Purchases</button>
           </div>
         </div>
@@ -161,6 +164,7 @@
 <script>
   const getSearch_url = "{% url 'searchPurchases_API' %}" + "?search=0"
   const getAllPurchases_url = "{% url 'getAllPurchases_API' %}"
+  const postNewPurchases_url = "{% url 'postNewPurchases_API' %}"
   const alertedHD_src = "{% static 'sales_app/icons/alert_HD.png'%}"
   const edit_src = "{% static 'sales_app/icons/edit.png'%}"
   const droparrow_src = "{% static '/sales_app/icons/arrow.png' %}"
@@ -172,10 +176,15 @@
 
 </script>
 
-
 <!-- Startup Scripts -->
 <script>
   start()
+  // Datepicker Utility for modal order date
+  $('.date').datepicker({
+    todayBtn: "linked",
+    clearBtn: true,
+    orientation: "top auto"
+  })
 </script>
 
 {% endblock scripts %}

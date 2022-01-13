@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework import generics, filters
@@ -32,35 +33,35 @@ def getAllPurchases(request):
   return JsonResponse({"error":"database empty"})
 
 @method_check(allowed_methods=["POST"])
-@role_check(allowed_roles=["purchases"])
-def addPurchase(request):
-  post = request.post
+@role_check(allowed_roles="purchases")
+def postNewPurchases(request):
+  post = request.POST
 
   # Validate postdata for duplication 
   try:
-    purchase = Purchases.objects.get(purchase_code=post["data[purchase_code]"])
-    return JsonResponse({"error":"Purchase with that purchase code already exists, please check for duplicate records"})
+    purchase = Purchases.objects.get(purchase_order=post["data[purchase_order]"])
+    return JsonResponse({"error":{"duplicate_purchase_order":"Purchase with that purchase order already exists, please check for duplicate records"}})
+  
   # No Duplicate Found-> Create new Object
   except Purchases.DoesNotExist:
-    purchase_code = post["data[purchase_code]"]
-    project_code = post["data[project_code]"]
-    po_date = post["data[po_date]"]
-    supplier_name = post["data[supplier_name]"]
-    purchased_items = post["data[purchased_items]"]
-    value = post["data[value]"]
-    currency = post["data[currency]"]
-    expected_date = post["data[expected_date]"]
-    supplier_date = post["data[supplier_date]"]
 
-    # Resolving Currency
+    # Formatting Data for DB
+    currency = post["data[currency]"]
     for choice in Currency:
       if choice.label == currency:
         currency = choice
         break
 
     # Instantiate and save new Purchases object on DB
-    new_purchase = Purchases(purchase_code=purchase_code, project_code=project_code, po_date=po_date, supplier_name=supplier_name, purchased_items=purchased_items, value=value, currency=currency, expected_date=expected_date, supplier_date=supplier_date, cancelled=False)
+    new_purchase = Purchases(purchase_order=post["data[purchase_order]"], project_code=post["data[project_code]"], 
+    po_date=post["data[po_date]"], supplier_name=post["data[supplier_name]"], purchased_items=post["data[purchased_items]"], 
+    value=post["data[value]"], currency=currency, expected_date=post["data[expected_date]"], supplier_date=post["data[supplier_date]"])
+    
+    try: 
+      new_purchase.full_clean()
+    except ValidationError as e:
+      return JsonResponse({"error":dict(e)})
+
     new_purchase.save()
 
-    #end of user-flow for succesful request: return status OK
     return JsonResponse({"status":"OK"})
