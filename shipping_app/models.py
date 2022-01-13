@@ -1,9 +1,10 @@
 from django.db import models
+from .validators import *
 
 class Shipping(models.Model):
   shipping_id = models.BigAutoField(primary_key=True)
-  project_code = models.CharField(max_length=20)
-  project_name = models.CharField(max_length=80)
+  project_code = models.CharField(max_length=20, validators=[validate_project_code])
+  project_name = models.CharField(null=True, blank=False, max_length=80)
   client_name = models.CharField(max_length=100)
   germany = models.CharField(null=True, blank=False, max_length=500)
   customer = models.CharField(null=True, blank=False,max_length=500)

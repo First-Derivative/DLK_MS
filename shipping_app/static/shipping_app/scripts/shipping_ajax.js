@@ -80,7 +80,7 @@ function getAllShipping(library, callback) {
 }
 
 // Post (new)
-function postShipping(new_shipping) {
+function postShipping(library, new_shipping) {
   $.ajax(
     {
       type: "POST",
@@ -88,21 +88,28 @@ function postShipping(new_shipping) {
       {
         "X-CSRFToken": token
       },
-      url: postShipping_url,
+      url: postNewShipping_url,
       data:
       {
         "data": new_shipping
       },
       success: function (response) {
         if (response.error) {
-          alert(response.error)
+          Object.keys(response.error).forEach(key => 
+            { 
+              title = propertyToTitle(key)
+              error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${response.error[key]}</p></div>`
+              $("#modal-errors").prepend(error_text_template)
+              $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+            })
         }
         else {
-          addShipping(new_sale)
+          library.append(new_shipping)
+          addShipping(new_shipping, true)
+          $("#modal-btn-close").trigger( "click" );
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
         alert("textStatus: " + textStatus + " " + errorThrown)
       }
     })

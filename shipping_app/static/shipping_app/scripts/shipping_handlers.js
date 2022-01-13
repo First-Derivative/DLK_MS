@@ -7,6 +7,16 @@ function start(){
   })
 }
 
+function propertyToTitle(property)
+{
+  format = property.split("_")
+  for( i = 0; i < format.length; i ++)
+  {
+    format[i] = format[i].charAt(0).toUpperCase() + format[i].substr(1, format[i].length)
+  }
+  return format.join(" ")
+}
+
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Shipping Card
@@ -48,7 +58,7 @@ function addShipping(new_shipping, prepend=false) {
 
         <p class="card-text ${new_shipping.germany_isNull ? 'missing_text' : ''}" id="germany_${new_shipping.project_code}"><span class="text-muted">Shipping From Germany: </span>${new_shipping.germany_isNull ? 'null' : new_shipping.germany}</p>
 
-        <p class="card-text ${new_shipping.customer_isNull ? 'missing_text' : ''}" id="customer_${new_shipping.project_code}"><span class="text-muted">Shipping From Customer: </span>${new_shipping.customer_isNull ? 'null' : new_shipping.customer}</p>
+        <p class="card-text ${new_shipping.customer_isNull ? 'missing_text' : ''}" id="customer_${new_shipping.project_code}"><span class="text-muted">Shipping To Customer: </span>${new_shipping.customer_isNull ? 'null' : new_shipping.customer}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_shipping.project_code}">
@@ -89,7 +99,7 @@ function addShipping(new_shipping, prepend=false) {
 
 }
 
-// UI Functionality: Remove all Shipping Cards
+// Remove all Shipping Cards
 function removeAllShipping()
 {
   $(`.card`).each(function () {
@@ -98,12 +108,45 @@ function removeAllShipping()
   $("#shipping_display").empty()
 }
 
+// Remove singular Shipping Card
 function removeShipping(shipping_id)
 {
   $(`div[id*='${shipping_id}']`).off() // unbinds handlers
   $(`div[id*='${shipping_id}']`).remove()
 }
+// ===== ADD ENTRY FEATURE =====
 
+// Add Shipping Handler
+$("#modal-btn-save").click(function () {
+
+  new_shipping = {}
+  new_shipping["cancelled"] = false
+  new_shipping["completed"] = false
+
+  $("input[class*=input-error-highlight]").each(function () {
+    $(this).removeClass("input-error-highlight")
+  })
+
+  $("#modal-errors").empty()
+
+  // Get & Assign Data
+  let data_form = $(`form[id=modal-form-addShipping]`).serializeArray()
+  $.each(data_form, function (i, field) {
+    property = field.name
+    if (property == "cancelled") {
+      new_shipping["cancelled"] = true
+    }
+    else if (property == "completed") {
+      new_shipping["completed"] = true
+    }
+    else {
+      new_shipping[property] = field.value
+    }
+  })
+
+
+  postShipping(cache, new_shipping)
+})
 
 // ===== SEARCH FEAURE =====
 
