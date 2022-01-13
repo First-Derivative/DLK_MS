@@ -10,7 +10,6 @@ function startUpSales() {
 
 // UX Functionality: Add Sale Handler
 $("#modal-btn-save").click(function () {
-
   new_sales = {}
   new_sales["cancelled"] = false
   new_sales["completed"] = false
@@ -24,6 +23,7 @@ $("#modal-btn-save").click(function () {
   $.each(data_form, function (i, field) {
     property = field.name
     if (property == "order_date") {
+      // Client: MM/DD/YYYY -> Server:
       src = field.value
       src = src.replace("/", "-")
       src = src.replace("/", "-")

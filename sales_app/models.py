@@ -34,7 +34,7 @@ class Sales(models.Model):
 
   @property
   def payment_term_isNull(self):
-    if(self.payment_term.lower() == "null" or self.payment_term.lower() == ""):
+    if(self.payment_term.lower() == "null"):
       return True
     return False
 

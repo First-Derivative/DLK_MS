@@ -80,7 +80,7 @@
 
           <div class="col-lg-12">
             <div class="form-floating">
-              <textarea class="form-control modal-input modal-form-project_detail" name="project_detail" placeholder="Project Detail" id="modal-input-project_detail"></textarea>
+              <input type="textarea" class="form-control modal-input modal-form-project_detail" name="project_detail" placeholder="Project Detail" id="modal-input-project_detail">
               <label for="modal-input-project_detail">Project Detail</label>
             </div>
           </div>
@@ -108,8 +108,9 @@
           </div>
 
           <div class="col-lg-6 date_wrapper">
-            <div class="input-group date">
-              <input type="text" class="form-control modal-input" id="modal-input-order_date" name="order_date" placeholder="Order Date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+            <div class="form-floating date">
+              <input type="text" class="form-control modal-input" id="modal-input-order_date" name="order_date" placeholder="order_date"><span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+              <label for="modal-input-order_date">Order Date</label>
             </div>
           </div>
 
@@ -143,7 +144,7 @@
       <div class="modal-footer p-3" style="border: none">
         <div class="col px-3" id="modal-errors">
           <div class="d-flex flex-row justify-content-end mt-3">
-            <button type="button" class="btn sales_standard-btn" style="width:auto;" id="modal-btn-save" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn sales_standard-btn" style="width:auto;" id="modal-btn-close" data-bs-dismiss="modal">Close</button>
             <button  class="btn sales_secondary-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save">Add Sale</button>
           </div>
         </div>
@@ -177,8 +178,6 @@
 {% endblock right_content %}
 
 {% block scripts %}
-  {% comment %} <script src="{% static 'sales_app/scripts/autoresize.js' %}"></script> {% endcomment %}
-  <script src="{% static 'sales_app/scripts/autosize.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_library.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
@@ -206,13 +205,11 @@
   // Startup Script
   startUpSales()
 
-  // Autoresize by Jack Moore
-  autosize($('.modal-form-project_detail'))
   // Datepicker Utility for modal order date
   $('.date').datepicker({
     todayBtn: "linked",
     clearBtn: true,
     orientation: "top auto"
-});
+  });
 </script>
 {% endblock scripts %}
