@@ -15,11 +15,14 @@ def unauthenticated_check(view_func):
 def role_check(allowed_roles=""):
   def decorator(view_func):
     def wrapper_func(request, *args, **kwargs):
+      print("in role_check decorator")
       user_groups = request.user.groups.all()
       if request.user.groups.exists():
         for group in user_groups:
+          print(group.name)
           if( group.name == allowed_roles):
             return view_func(request, *args, **kwargs)
+        return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})    
       else:
         return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})
     return wrapper_func
