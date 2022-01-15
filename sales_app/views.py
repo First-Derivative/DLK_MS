@@ -103,8 +103,6 @@ def editSale(request):
     
     try:
 
-      print("in edit sales")
-
       # Creating Temp Sale before full clean
       temp_project_code = post["project_code"]
       temp_project_name = post["project_name"]
@@ -117,8 +115,6 @@ def editSale(request):
       temp_currency = post["currency"] 
       temp_cancelled = True if (post["cancelled"] == "true") else False
       temp_completed = True if (post["completed"] == "true") else False
-
-      print("temp values are {a}, {b}".format(a=temp_cancelled, b=temp_completed))
 
       for choice in Currency:
         if choice.label == temp_currency:

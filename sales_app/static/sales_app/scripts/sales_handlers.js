@@ -59,7 +59,7 @@ function UI_addSale(new_sale) {
     if (new_sale[field[0]] === '') { alerted = true; }
   }
 
-  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-edit-${new_sale.project_code}" style="padding-bottom: 0.2em" name="${new_sale.project_code}" alt="Needs Entry"></div>`
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-alert-${new_sale.project_code}" style="padding-bottom: 0.2em" name="${new_sale.project_code}" alt="Needs Entry"></div>`
 
   sales_card_template =
     `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''} ${new_sale.completed ? 'completed-card' : ''}"  id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
@@ -112,11 +112,10 @@ function UI_addSale(new_sale) {
     else { $(`#card-footer-${id}`).hide("fast") }
   })
 
-
-
   // Edit button for sales Card Handler
-  edit_selector = "#card-edit-" + new_sale.project_code
+  edit_selector = "#sales-card-" + new_sale.project_code
   $(edit_selector).on("click", function () {
+    console.log("edit handler")
     id = $(this).attr("name")
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
     enterEditMode(new_sale.project_code)

@@ -34,8 +34,7 @@ function addPurchases(new_purchases, prepend=false) {
   
   alerted = false
   if(new_purchases.supplier_name_isNull || new_purchases.supplier_date_isNull || new_purchases.po_date_isNull || new_purchases.expected_date_isNull) { alerted = true }
-  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_purchases.project_code}" style="padding-bottom: 0.2em" name="${new_purchases.project_code}" alt="Needs Entry"></div>`
-  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_purchases.project_code}" style="padding-bottom: 0.2em" name="${new_purchases.project_code}" alt="Needs Entry"></div>`
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_purchases.project_code}" style="padding-bottom: 0.2em" name="${new_purchases.project_code}" alt="Needs Entry"></div>`
 
   purchases_card_template =
     `<div class="card"  id="purchases-card-${new_purchases.purchase_order}" name="${new_purchases.purchase_order}">
