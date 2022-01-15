@@ -28,4 +28,16 @@ class Library {
     this.index = []
   }
 
+  getItem(project_code)
+  {
+    for (i = 0; i < this.index.length; i++)
+    {
+      if (this.index[i].project_code == project_code)
+      {
+        return this.index[i]
+      }
+    }
+    return null
+  }
+
 }

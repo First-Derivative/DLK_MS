@@ -27,11 +27,11 @@ function addOperations(new_operations, prepend=false) {
   }
 
   if(new_operations.status_isNull || new_operations.finish_detail_isNull ) { alerted = true }
-  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-edit-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
 
   operations_card_template =
-    `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="operations-card-${new_operations.project_code}" name="${new_operations.project_code}">
-    <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="operations-card-header-${new_operations.project_code}">
+    `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="card-${new_operations.project_code}" name="${new_operations.project_code}" edit="0">
+    <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_operations.project_code}">
       <p id="project_code_${new_operations.project_code}">${new_operations.project_code}</p>
       <div class="d-flex justify-content-between" id="card-header-icons">
         ${alerted ? alerted_tag : ''}
@@ -57,15 +57,14 @@ function addOperations(new_operations, prepend=false) {
   if(prepend){ $('#operations_display').prepend(operations_card_template) }
   else{ $('#operations_display').append(operations_card_template) }
 
-  /*
   // Edit button for operations Card Handler
-  edit_selector = "#card-edit-" + new_sale.project_code
+  edit_selector = "#card-edit-" + new_operations.project_code
   $(edit_selector).on("click", function () {
+    $(this).empty
     id = $(this).attr("name")
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
-    enterEditMode(new_sale.project_code)
+    enterEdit(cache, new_operations.project_code)
   })
-  */
 }
 
 // Remove All Operation Cards
@@ -109,7 +108,7 @@ $("#modal-btn-save").click(function () {
       new_operations[property] = field.value
     }
   })
-  postOperations(cache,new_operations)
+  postNewOperations(cache,new_operations)
 })
 
 // ===== SEARCH FEAURE =====
@@ -203,3 +202,118 @@ $("#reverse-list").click(function () {
     $("#operations_display").prepend($(this))
   })
 })
+
+// ===== EDIT FEATURE ======
+/* */
+
+// enter editMode
+function enterEdit(library, project_code){
+  edit_check = $(`.card[name=${project_code}]`).attr("edit")
+
+  if(edit_check == "0")
+  {
+    $(`.card[name=${project_code}]`).attr("edit", "1") // set active card to edit mode
+
+    $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
+    $(`#card-body-${project_code}`).removeClass(["d-flex", "justify-content-between"])
+    $(`#card-footer-${project_code}`).css("display", "block")
+
+    operations = library.getItem(project_code)
+    
+    $(`p[id*=${project_code}]`).each(function() {
+      field = $(this).attr("id")
+      field = field.substr(0, field.length - 12)
+      input_field_template = ``
+
+      // Configuring Input DOM based on field
+      if(field == "project_code")
+      {
+        input_field_template = `
+        <div class="mb-3 form-group" id="${field}_${project_code}">
+          <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
+        </div>`
+      }
+      else if(field == "cancelled") 
+      {
+        input_field_template = `
+        <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
+          <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(operations[field]) ? 'checked' : ''}>
+          <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-cancelled" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
+        </div>`
+      } else 
+      {
+        input_field_template = `
+        <div class="mb-3 form-group" id="${field}_${project_code}">
+          <label for="edit_input_${operations.field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
+          <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
+        </div>`
+      }
+      
+      $(this).replaceWith(input_field_template)
+      
+      if(field != "cancelled")
+      {
+        $(`.edit-input[id*=${field}_${project_code}]`).val(operations[field])
+      }
+    })
+
+    // Initliaze cancel & save changes buttons @card-footer
+    card_footer_template = `
+    <div class="card-footer d-flex justify-content-end" id="card_footer_${project_code}">
+      <div class="my-3">
+        <button type="button" class="btn btn-pair edit-button text-center" id="cancel-edit-${project_code}" name="${project_code}">Cancel</button>
+        <button type="button" class="btn btn-pair edit-save text-center" id="save-edit-${project_code}" name="${project_code}" style="margin-right:0rem;">Save Changes</button>
+      </div>
+    </div>`
+
+    $(`.card[name=${project_code}]`).append(card_footer_template)
+
+    $(`#cancel-edit-${project_code}`).on("click", function() {
+      leaveEdit(library, project_code)
+    })
+
+  }
+  else
+  {
+    leaveEdit(library, project_code)
+  }
+}
+
+// leave editMode
+function leaveEdit(library, project_code){
+  edit_check = $(`.card[name=${project_code}]`).attr("edit")
+  if(edit_check == "1")
+  {
+    $(`.card[name=${project_code}]`).attr("edit", "0") // set active card to !edit mode
+    $(`#card-${project_code}`).unwrap() //unwraps <form> from card
+
+    operations = library.getItem(project_code)
+    
+    $(`.form-group[id*=${project_code}]`).each(function() {
+      field = $(this).attr("id")
+      field = field.substr(0, field.length - 12)
+      
+      if(field == "project_name" || field == "client_name" || field == "project_code")
+      {
+        card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${operations[field]} </p>`
+      }
+      else
+      {
+        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${operations[field]}</p>`
+      }
+
+      $(this).empty()
+      $(this).replaceWith(card_text_template)
+
+      document.getElementById(`card-${project_code}`).scrollIntoView(false)
+    })
+
+    $(`#card-body-${project_code}`).addClass(["d-flex" ,"justify-content-between"])
+    $(`#card_footer_${project_code}`).remove()
+  }
+  else
+  {
+    console.log("edge-case: leaveEdit() called when edit attr is false on card")
+  }
+}
+

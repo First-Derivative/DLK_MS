@@ -78,7 +78,7 @@ function getAllOperations(library, callback) {
 }
 
 // Post Operations
-function postOperations(library, new_operations) {
+function postNewOperations(library, new_operations) {
   $.ajax(
     {
       type: "POST",
@@ -104,6 +104,35 @@ function postOperations(library, new_operations) {
         else {
           library.append(new_operations)
           addOperations(new_operations,true)
+          $("#modal-btn-close").trigger( "click" );
+        }
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        // Debugging case
+        alert("textStatus: " + textStatus + " " + errorThrown)
+      }
+    })
+}
+
+function postEditOperations(library, edit_operations)
+{
+  $.ajax(
+    {
+      type: "POST",
+      headers: { "X-CSRFToken": token },
+      url: editSale_url,
+      data: sale,
+      success: function (response)
+      {
+        if (response.error) { // error handling
+          Object.keys(response.error).forEach(key => 
+          { 
+            title = propertyToTitle(key)
+            $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+          })
+        }
+        else {
+          library.append(new_operations)
           $("#modal-btn-close").trigger( "click" );
         }
       },
