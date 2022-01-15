@@ -40,7 +40,10 @@ ul,li {list-style-type: none;}
   margin-left: 2.5em;
 }
 
-
+.dropdown-item:active
+{
+  background-color: #d82d4e;
+}
 
 .standard-btn
 {
