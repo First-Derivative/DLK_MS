@@ -61,18 +61,20 @@ def postNewOperations(request):
 @role_check(allowed_roles="operations")
 def postEditOperations(request):
   post = request.POST
+
   project_code = post["data[project_code]"]
   project_name = post["data[project_name]"]
   client_name = post["data[client_name]"] 
   status = post["data[status]"]
   finish_detail = post["data[finish_detail]"]
-  cancelled  = True if post["data[cancelled]"] else False
+  cancelled = True if ("data[cancelled]" in post) else False
 
   try:
-    new_operations = Operations(project_code=project_code)
+    new_operations = Operations.objects.get(project_code=project_code)
     
     try:
-      new_operations.project_code=project_code,
+      
+      new_operations.project_code=project_code
       new_operations.project_name=project_name
       new_operations.client_name=client_name
       new_operations.status=status
@@ -80,10 +82,10 @@ def postEditOperations(request):
       new_operations.cancelled=cancelled
 
       new_operations.full_clean()
-      
       new_operations.save()
+      return JsonResponse({"status": "OK"})
+      
     except ValidationError as e:
-
       return JsonResponse({"error":dict(e)})
 
   except Operations.DoesNotExist:

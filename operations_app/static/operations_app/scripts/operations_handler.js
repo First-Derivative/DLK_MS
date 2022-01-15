@@ -266,10 +266,34 @@ function enterEdit(library, project_code){
       </div>
     </div>`
 
-    $(`.card[name=${project_code}]`).append(card_footer_template)
+    edit_errors_template = `<div class="" id="edit-errors-${project_code}"></div>`
 
+    // Add Footer Template with Cancel & Save buttons
+    $(`.card[name=${project_code}]`).append(card_footer_template)
+    // Add empty div to house form errors
+    $(`#card-body-${project_code}`).append(edit_errors_template)
+
+    // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function() {
       leaveEdit(library, project_code)
+    })
+
+    // Save Changes button handler
+    $(`#save-edit-${project_code}`).on("click", function () {
+      edit_operations = {}
+
+      // Get & Assign Data
+      let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
+      $.each(data_form, function (i, field) {
+        property = field.name
+        if (property == "cancelled") {
+          edit_operations["cancelled"] = true
+        }
+        else {
+          edit_operations[property] = field.value
+        }
+      })
+      postEditOperations(library, edit_operations)
     })
 
   }
@@ -280,14 +304,15 @@ function enterEdit(library, project_code){
 }
 
 // leave editMode
-function leaveEdit(library, project_code){
+function leaveEdit(library, operations){
+  project_code = operations.project_code 
+
   edit_check = $(`.card[name=${project_code}]`).attr("edit")
   if(edit_check == "1")
   {
     $(`.card[name=${project_code}]`).attr("edit", "0") // set active card to !edit mode
     $(`#card-${project_code}`).unwrap() //unwraps <form> from card
 
-    operations = library.getItem(project_code)
     
     $(`.form-group[id*=${project_code}]`).each(function() {
       field = $(this).attr("id")
@@ -308,8 +333,26 @@ function leaveEdit(library, project_code){
       document.getElementById(`card-${project_code}`).scrollIntoView(false)
     })
 
-    $(`#card-body-${project_code}`).addClass(["d-flex" ,"justify-content-between"])
+    $(`#edit-errors-${project_code}`).remove()
     $(`#card_footer_${project_code}`).remove()
+    $(`#card-body-${project_code}`).addClass(["d-flex" ,"justify-content-between"])
+    
+    console.log("operations is cancelled: " + operations.cancelled)
+
+    // Edit Cancelled Handlers
+    if(operations.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card"))
+    {
+      console.log("turning card cancelled")
+      $(`#card-${project_code}`).addClass("cancelled-card")
+      $(`#card-header-${project_code}`).addClass("cancelled-card-header")
+    }
+    
+    if(!operations.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card"))
+    {
+      console.log("turning card uncancelled")
+      $(`#card-${project_code}`).removeClass("cancelled-card")
+      $(`#card-header-${project_code}`).removeClass("cancelled-card-header")
+    }
   }
   else
   {

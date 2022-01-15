@@ -120,20 +120,23 @@ function postEditOperations(library, edit_operations)
     {
       type: "POST",
       headers: { "X-CSRFToken": token },
-      url: editSale_url,
-      data: sale,
+      url: postEditOperations_url,
+      data: { 'data': edit_operations},
       success: function (response)
       {
         if (response.error) { // error handling
+          console.log("in error handling")
           Object.keys(response.error).forEach(key => 
           { 
-            title = propertyToTitle(key)
-            $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+            error_title = propertyToTitle(key)
+            $(`#edit-errors-${edit_operations.project_code}`).append(`<p class="error-text"> ${error_title}: ${response.error[key]}`)
+            $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
           })
         }
         else {
-          library.append(new_operations)
-          $("#modal-btn-close").trigger( "click" );
+          library.updateItem(edit_operations)
+          console.log("ajax: " + edit_operations)
+          leaveEdit(library, edit_operations)
         }
       },
       error: function (jqXHR, textStatus, errorThrown) {

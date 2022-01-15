@@ -40,4 +40,13 @@ class Library {
     return null
   }
 
+  updateItem(item){
+    for (i=0; i < this.index.length; i++){
+      if(this.index[i].project_code == item.project_code)
+      {
+        this.index[i] == item
+      }
+    }
+  }
+
 }
