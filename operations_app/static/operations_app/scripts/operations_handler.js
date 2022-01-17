@@ -3,15 +3,13 @@
 // StartUp Script
 function start() {
   cache.clearLibrary()
-  $.when(getAllOperations(cache,addOperations)).done(function () {
+  $.when(getAllOperations(cache, addOperations)).done(function () {
   })
 }
 
-function propertyToTitle(property)
-{
+function propertyToTitle(property) {
   format = property.split("_")
-  for( i = 0; i < format.length; i ++)
-  {
+  for (i = 0; i < format.length; i++) {
     format[i] = format[i].charAt(0).toUpperCase() + format[i].substr(1, format[i].length)
   }
   return format.join(" ")
@@ -20,13 +18,13 @@ function propertyToTitle(property)
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Operations
-function addOperations(new_operations, prepend=false) {
+function addOperations(new_operations, prepend = false) {
   alerted = false
-  if($(`.card[name*='${new_operations.project_code}']`).length > 0){
+  if ($(`.card[name*='${new_operations.project_code}']`).length > 0) {
     return
   }
 
-  if(new_operations.status_isNull || new_operations.finish_detail_isNull ) { alerted = true }
+  if (new_operations.status_isNull || new_operations.finish_detail_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
 
   operations_card_template =
@@ -44,18 +42,18 @@ function addOperations(new_operations, prepend=false) {
       <div class="card_row">
         <p class="card-text" id="project_name_${new_operations.project_code}">${new_operations.project_name}</p>
         <p class="card-text" id="client_name_${new_operations.project_code}">${new_operations.client_name}</p>
-        <p class="card-text ${ new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="finish_detail_${new_operations.project_code}"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
+        <p class="card-text ${new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="finish_detail_${new_operations.project_code}"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${ new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
+        <p class="card-text ${new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
         <p class="card-text" id="cancelled_${new_operations.project_code}"><span class="text-muted">Cancelled: </span>${new_operations.cancelled ? 'True' : 'False'}</p>
       </div>
     </div>
   </div>`
 
   // Adding New Operations Card to page
-  if(prepend){ $('#operations_display').prepend(operations_card_template) }
-  else{ $('#operations_display').append(operations_card_template) }
+  if (prepend) { $('#operations_display').prepend(operations_card_template) }
+  else { $('#operations_display').append(operations_card_template) }
 
   // Edit button for operations Card Handler
   edit_selector = "#card-edit-" + new_operations.project_code
@@ -68,8 +66,7 @@ function addOperations(new_operations, prepend=false) {
 }
 
 // Remove All Operation Cards
-function removeAllOperations()
-{
+function removeAllOperations() {
   $(`.card`).each(function () {
     $(this).off()
   })
@@ -77,8 +74,7 @@ function removeAllOperations()
 }
 
 // Remove Single Operation Card
-function removeOperations(project_code)
-{
+function removeOperations(project_code) {
   $(`div[id*='${project_code}']`).off() // unbinds handlers
   $(`div[id*='${project_code}']`).remove()
 }
@@ -108,7 +104,7 @@ $("#modal-btn-save").click(function () {
       new_operations[property] = field.value
     }
   })
-  postNewOperations(cache,new_operations)
+  postNewOperations(cache, new_operations)
 })
 
 // ===== SEARCH FEAURE =====
@@ -116,16 +112,16 @@ $("#modal-btn-save").click(function () {
 // UX Functionality: Enter 'search mode' on enter key
 $("#left_content_form").on("keypress", function (event) {
   keyPressed = event.keyCode || event.which;
-  if (keyPressed === 13)  {// Enter Key
+  if (keyPressed === 13) {// Enter Key
     event.preventDefault();
-    
+
     if (!search_mode) { // check if already in search mode, if false then enter and start search
       enterSearch()
     }
     else {
       removeAllOperations()
     }
-    
+
     const search_header_template = `
     <div class="row" id="searchHeader">
     <div class="header_title">
@@ -133,7 +129,7 @@ $("#left_content_form").on("keypress", function (event) {
     </div>
     `
     $("#operations_display").prepend(search_header_template)
-    
+
     const input_value = $("#input-search").val()
     searchOperations(input_value, cache)
     return false;
@@ -141,7 +137,7 @@ $("#left_content_form").on("keypress", function (event) {
 })
 
 // UX Functionality: Leave 'search mode' on clear button press
-$("#input-search-clear").click(function(){
+$("#input-search-clear").click(function () {
   $(this).removeClass("operations_standard-btn-danger")
   $("#input-search").val("")
   leaveSearch()
@@ -156,17 +152,15 @@ $("#left_content_form").on("keyup", function (event) {
 })
 
 // Enter Search
-function enterSearch()
-{
+function enterSearch() {
   search_mode = true
   removeAllOperations()
   return true
 }
 
 // Leave Search
-function leaveSearch()
-{
-  if ( $("#input-search-clear").hasClass("operations_standard-btn-danger") ){ $("#input-search-clear").removeClass("operations_standard-btn-danger")}
+function leaveSearch() {
+  if ($("#input-search-clear").hasClass("operations_standard-btn-danger")) { $("#input-search-clear").removeClass("operations_standard-btn-danger") }
   $("#input-search").val("")
   search_mode = false
   removeAllOperations()
@@ -176,23 +170,19 @@ function leaveSearch()
 // ===== FILTERING TOGGLES =====
 
 // Cancelled Toggle
-$("#input-cancelled").click(function ()
-{
-  if (!$(this).is(":checked"))
-  {
-    $("div[class*=cancelled-card]").each(function ()
-    {
+$("#input-cancelled").click(function () {
+  if (!$(this).is(":checked")) {
+    $("div[class*=cancelled-card]").each(function () {
       $(this).remove()
     })
     return
   }
-  for (const operations of cache.allCancelled)
-  {
-    if(!search_mode) //not in search mode 
+  for (const operations of cache.allCancelled) {
+    if (!search_mode) //not in search mode 
     {
       addOperations(operations, true)
     }
-    else{ if (operations.searched) { addOperations(operations) }}
+    else { if (operations.searched) { addOperations(operations) } }
   }
 })
 
@@ -207,11 +197,10 @@ $("#reverse-list").click(function () {
 /* */
 
 // enter editMode
-function enterEdit(library, project_code){
+function enterEdit(library, project_code) {
   edit_check = $(`.card[name=${project_code}]`).attr("edit")
 
-  if(edit_check == "0")
-  {
+  if (edit_check == "0") {
     $(`.card[name=${project_code}]`).attr("edit", "1") // set active card to edit mode
 
     $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
@@ -219,40 +208,36 @@ function enterEdit(library, project_code){
     $(`#card-footer-${project_code}`).css("display", "block")
 
     operations = library.getItem(project_code)
-    
-    $(`p[id*=${project_code}]`).each(function() {
+
+    $(`p[id*=${project_code}]`).each(function () {
       field = $(this).attr("id")
       field = field.substr(0, field.length - 12)
       input_field_template = ``
 
       // Configuring Input DOM based on field
-      if(field == "project_code")
-      {
+      if (field == "project_code") {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${project_code}">
           <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
         </div>`
       }
-      else if(field == "cancelled") 
-      {
+      else if (field == "cancelled") {
         input_field_template = `
         <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
           <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(operations[field]) ? 'checked' : ''}>
           <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-cancelled" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
         </div>`
-      } else 
-      {
+      } else {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${project_code}">
           <label for="edit_input_${operations.field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
           <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
         </div>`
       }
-      
+
       $(this).replaceWith(input_field_template)
-      
-      if(field != "cancelled")
-      {
+
+      if (field != "cancelled") {
         $(`.edit-input[id*=${field}_${project_code}]`).val(operations[field])
       }
     })
@@ -274,8 +259,8 @@ function enterEdit(library, project_code){
     $(`#card-body-${project_code}`).append(edit_errors_template)
 
     // Cancel Edit button handler
-    $(`#cancel-edit-${project_code}`).on("click", function() {
-      leaveEdit(library, project_code)
+    $(`#cancel-edit-${project_code}`).on("click", function () {
+      leaveEdit(library, operations)
     })
 
     // Save Changes button handler
@@ -297,33 +282,30 @@ function enterEdit(library, project_code){
     })
 
   }
-  else
-  {
+  else {
     leaveEdit(library, project_code)
   }
 }
 
 // leave editMode
-function leaveEdit(library, operations){
-  project_code = operations.project_code 
+function leaveEdit(library, operations) {
+  project_code = operations.project_code
 
   edit_check = $(`.card[name=${project_code}]`).attr("edit")
-  if(edit_check == "1")
-  {
+
+  if (edit_check == "1") {
     $(`.card[name=${project_code}]`).attr("edit", "0") // set active card to !edit mode
     $(`#card-${project_code}`).unwrap() //unwraps <form> from card
 
-    
-    $(`.form-group[id*=${project_code}]`).each(function() {
+
+    $(`.form-group[id*=${project_code}]`).each(function () {
       field = $(this).attr("id")
       field = field.substr(0, field.length - 12)
-      
-      if(field == "project_name" || field == "client_name" || field == "project_code")
-      {
+
+      if (field == "project_name" || field == "client_name" || field == "project_code") {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${operations[field]} </p>`
       }
-      else
-      {
+      else {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${operations[field]}</p>`
       }
 
@@ -335,27 +317,21 @@ function leaveEdit(library, operations){
 
     $(`#edit-errors-${project_code}`).remove()
     $(`#card_footer_${project_code}`).remove()
-    $(`#card-body-${project_code}`).addClass(["d-flex" ,"justify-content-between"])
-    
-    console.log("operations is cancelled: " + operations.cancelled)
+    $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
+
 
     // Edit Cancelled Handlers
-    if(operations.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card"))
-    {
-      console.log("turning card cancelled")
+    if (operations.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card")) {
       $(`#card-${project_code}`).addClass("cancelled-card")
       $(`#card-header-${project_code}`).addClass("cancelled-card-header")
     }
-    
-    if(!operations.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card"))
-    {
-      console.log("turning card uncancelled")
+
+    if (!operations.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card")) {
       $(`#card-${project_code}`).removeClass("cancelled-card")
       $(`#card-header-${project_code}`).removeClass("cancelled-card-header")
     }
   }
-  else
-  {
+  else {
     console.log("edge-case: leaveEdit() called when edit attr is false on card")
   }
 }
