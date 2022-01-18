@@ -25,7 +25,6 @@ function addShipping(new_shipping, prepend=false) {
   if($(`.card[name*='${new_shipping.project_code}']`).length > 0){
     return
   }
-  console.log(new_shipping)
   alerted = false
 
   if(new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
