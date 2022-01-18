@@ -265,6 +265,9 @@ function enterEdit(library, project_code) {
 
     // Save Changes button handler
     $(`#save-edit-${project_code}`).on("click", function () {
+
+      $(`#edit-errors-${project_code}`).empty()
+
       edit_operations = {}
 
       // Get & Assign Data
@@ -285,11 +288,13 @@ function enterEdit(library, project_code) {
         library.updateItem(edit_operations)
         leaveEdit(library, project_code)
       }).catch((error) => {
-        Object.keys(error.responseJSON).forEach(key => {
-          error_title = propertyToTitle(key)
-          $(`#edit-errors-${edit_operations.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
-          $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
-        })
+        if(error.responseJSON){
+          Object.keys(error.responseJSON).forEach(key => {
+            error_title = propertyToTitle(key)
+            $(`#edit-errors-${edit_operations.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
+            $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
+          })
+        }
       })
       
     })
@@ -332,10 +337,10 @@ function leaveEdit(library, project_code) {
       document.getElementById(`card-${project_code}`).scrollIntoView(false)
     })
 
+    $(`#card-alert-${project_code}`).unwrap();$(`#card-alert-${project_code}`).remove();
     $(`#edit-errors-${project_code}`).remove()
     $(`#card_footer_${project_code}`).remove()
     $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
-
 
     // Edit Cancelled Handlers
     if (operations.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card")) {
