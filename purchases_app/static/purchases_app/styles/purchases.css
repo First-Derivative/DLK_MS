@@ -1,3 +1,17 @@
+/* AUX Styles */
+
+.btn-pair
+{
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.value
+{
+  color: #383736;
+  font-weight: bold;
+}
+
 /* Search Results */
 
 #searchHeader
@@ -189,12 +203,44 @@
   color: red;
 }
 
-.edit-validation-update-text
-{
-  /* margin-bottom: 1.5em; */
-}
-
 .input-error-highlight
 {
   border: 0.1em solid #d82d4e;
 }
+
+/* EDITING  */
+
+.edit-label
+{
+  color: #426285;
+  font-size: 1.25em;
+}
+
+
+.edit-label-checkbox{
+  margin-top: 0.75rem;
+  padding-left: 1rem;
+}
+
+.edit-check-input
+{
+  height: 1.5em !important;
+  width: 1.5em !important;
+}
+
+.edit-button{
+  color: white;
+  border: 0.1em solid #4d4b4a;
+  background-color: #383736;
+}
+
+.edit-button:hover{color: white}
+
+.edit-save
+{
+  color: white;
+  background-color: #047afb;
+  border: 0.1em solid white;
+}
+
+.edit-save:hover{ color: white; background-color: #0d78ee; }

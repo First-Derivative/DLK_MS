@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
 from rest_framework import generics, filters
+from rest_framework.response import Response
 from ms_app.decorators import *
 from ms_app.models import Currency, resolveCurrencyLabel
 from .models import Purchases
@@ -65,3 +67,46 @@ def postNewPurchases(request):
     new_purchase.save()
 
     return JsonResponse({"status":"OK"})
+
+
+# POST Edit Purchases
+@method_check(allowed_methods=["POST"])
+@role_check(allowed_roles="purchases")
+@api_view(['POST'])
+def postEditPurchases(request):
+  post = request.POST
+
+  purchase_order = post["data[purchase_order]"]
+  project_code = post["data[project_code]"]
+  po_date = post["data[po_date]"]
+  supplier_name = post["data[supplier_name]"]
+  purchased_items = post["data[purchased_items]"]
+  value = post["data[value]"]
+  currency = post["data[currency]"]
+  expected_date = post["data[expected_date]"]
+  supplier_date = post["data[supplier_date]"]
+
+  try:
+    new_purchases = Purchases.objects.get(purchase_order=purchase_order)
+    
+    try:
+      
+      new_purchases.purchase_order=purchase_order
+      new_purchases.project_code=project_code
+      new_purchases.po_date=po_date
+      new_purchases.supplier_name=supplier_name
+      new_purchases.purchased_items=purchased_items
+      new_purchases.value=value
+      new_purchases.currency=currency
+      new_purchases.expected_date=expected_date
+      new_purchases.supplier_date=supplier_date
+
+      new_purchases.full_clean()
+      new_purchases.save()
+      return JsonResponse(PurchasesSerializer(new_purchases).data)
+      
+    except ValidationError as e:
+      return Response(status=400, data=dict(e))
+
+  except Purchases.DoesNotExist:
+    return JsonResponse({"error":{"purchases_does_not_exist":"Purchase not found. Bad Edit"}})

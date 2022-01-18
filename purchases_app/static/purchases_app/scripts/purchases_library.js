@@ -25,9 +25,9 @@ class Library {
     return this.output
   }
 
-  append(shipping)
+  append(item)
   {
-    this.index.push(shipping)
+    this.index.push(item)
   }
 
   clearLibrary()
@@ -35,4 +35,26 @@ class Library {
     this.index = []
   }
 
+  getItem(purchase_order) {
+    for (i = 0; i < this.index.length; i++) {
+      if (this.index[i].purchase_order == purchase_order) {
+        return this.index[i]
+      }
+    }
+    return null
+  }
+
+  updateItem(item) {
+    for (i = 0; i < this.index.length; i++) {
+      if (this.index[i].purchase_order == item.purchase_order) {
+        this.index[i] = item
+        return
+      }
+    }
+    this.index.push(item)
+  }
+
+  showLibrary() {
+    console.log(this.index)
+  }
 }

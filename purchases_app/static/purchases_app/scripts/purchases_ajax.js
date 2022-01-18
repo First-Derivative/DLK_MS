@@ -34,7 +34,7 @@ function searchPurchases(query, library)
 }
 
 // GET All Purchases
-function getAllPurchases(callback) {
+function getAllPurchases(library, callback) {
   $.ajax(
     {
       type: "GET",
@@ -42,10 +42,10 @@ function getAllPurchases(callback) {
       success: function (response) {
         purchases = response.purchases
         purchases_count = purchases.length
-        purchases.reverse()
 
         for (i = 0; i < purchases_count; i++) {
           content = purchases.pop()
+          library.append(content)
           callback(content)
         }
       },
@@ -92,4 +92,23 @@ function postPurchases(library, new_purchase) {
         alert("textStatus: " + textStatus + " " + errorThrown)
       }
     })
+}
+
+// Post Edit Purchases
+function postEditPurchases(edit_purchases) {
+  return new Promise((resolve, reject) =>{
+    $.ajax(
+      {
+        type: "POST",
+        headers: { "X-CSRFToken": token },
+        url: postEditPurchases_url,
+        data: { 'data': edit_purchases },
+        success: function (response) {
+          resolve(response)
+        },
+        error: function (error) {
+          reject(error)
+        }
+      })
+  })
 }
