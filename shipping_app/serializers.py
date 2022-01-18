@@ -9,5 +9,5 @@ class ShippingSerializer(serializers.ModelSerializer):
 
   class Meta:
     model = Shipping
-    fields = ('project_code','project_name', "client_name", "germany","customer","remarks", "cancelled", "completed", "germany_isNull", "customer_isNull", "charges_isNull", "remarks_isNull")
+    fields = ('project_code','project_name', "client_name", "germany","customer", "charges","remarks", "cancelled", "completed", "germany_isNull", "customer_isNull", "charges_isNull", "remarks_isNull")
 
