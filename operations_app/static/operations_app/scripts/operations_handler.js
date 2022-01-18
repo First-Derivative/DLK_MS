@@ -194,7 +194,6 @@ $("#reverse-list").click(function () {
 })
 
 // ===== EDIT FEATURE ======
-/* */
 
 // enter editMode
 function enterEdit(library, project_code) {
@@ -334,7 +333,7 @@ function leaveEdit(library, project_code) {
       $(this).empty()
       $(this).replaceWith(card_text_template)
 
-      document.getElementById(`card-${project_code}`).scrollIntoView(false)
+      document.getElementById(`card-${project_code}`).scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
     })
 
     $(`#card-alert-${project_code}`).unwrap();$(`#card-alert-${project_code}`).remove();
@@ -359,4 +358,3 @@ function leaveEdit(library, project_code) {
     console.log("edge-case: leaveEdit() called when edit attr is false on card")
   }
 }
-

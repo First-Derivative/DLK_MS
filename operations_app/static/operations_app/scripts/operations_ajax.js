@@ -126,23 +126,3 @@ function postEditOperations(edit_operations) {
       })
   })
 }
-
-/*
-
-          if (response.error) { // error handling
-            console.log("in error handling")
-            Object.keys(response.error).forEach(key => {
-              error_title = propertyToTitle(key)
-              $(`#edit-errors-${edit_operations.project_code}`).append(`<p class="error-text"> ${error_title}: ${response.error[key]}`)
-              $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
-            })
-          }
-          else {
-            console.log("from edit form:")
-            Object.keys(edit_operations).forEach(key => {
-              console.log(edit_operations[key])
-            })
-          }
-          console.log("done handling succesful response in ajax, back to when")
-
-*/
