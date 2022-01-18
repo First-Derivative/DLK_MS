@@ -15,7 +15,6 @@ def unauthenticated_check(view_func):
 def role_check(allowed_roles=""):
   def decorator(view_func):
     def wrapper_func(request, *args, **kwargs):
-      print("in role_check decorator")
       user_groups = request.user.groups.all()
       if request.user.groups.exists():
         for group in user_groups:
