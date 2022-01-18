@@ -260,7 +260,7 @@ function enterEdit(library, project_code) {
 
     // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function () {
-      leaveEdit(library, operations)
+      leaveEdit(library, project_code)
     })
 
     // Save Changes button handler
@@ -278,7 +278,20 @@ function enterEdit(library, project_code) {
           edit_operations[property] = field.value
         }
       })
-      postEditOperations(library, edit_operations)
+      1
+      
+      // Make Ajax Call & handle OK response
+      postEditOperations(edit_operations).then((response) => {
+        library.updateItem(edit_operations)
+        leaveEdit(library, project_code)
+      }).catch((error) => {
+        Object.keys(error.responseJSON).forEach(key => {
+          error_title = propertyToTitle(key)
+          $(`#edit-errors-${edit_operations.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
+          $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
+        })
+      })
+      
     })
 
   }
@@ -288,15 +301,15 @@ function enterEdit(library, project_code) {
 }
 
 // leave editMode
-function leaveEdit(library, operations) {
-  project_code = operations.project_code
-
+function leaveEdit(library, project_code) {
   edit_check = $(`.card[name=${project_code}]`).attr("edit")
 
   if (edit_check == "1") {
     $(`.card[name=${project_code}]`).attr("edit", "0") // set active card to !edit mode
     $(`#card-${project_code}`).unwrap() //unwraps <form> from card
 
+    operations = library.getItem(project_code)
+    console.log(operations)
 
     $(`.form-group[id*=${project_code}]`).each(function () {
       field = $(this).attr("id")
@@ -304,6 +317,10 @@ function leaveEdit(library, operations) {
 
       if (field == "project_name" || field == "client_name" || field == "project_code") {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${operations[field]} </p>`
+      }
+      else if(field == "cancelled")
+      {
+        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${ (operations[field]) ? 'True' : 'False'}</p>`
       }
       else {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${operations[field]}</p>`
@@ -322,11 +339,13 @@ function leaveEdit(library, operations) {
 
     // Edit Cancelled Handlers
     if (operations.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card")) {
+      console.log("adding cancelled styling")
       $(`#card-${project_code}`).addClass("cancelled-card")
       $(`#card-header-${project_code}`).addClass("cancelled-card-header")
     }
-
+    
     if (!operations.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card")) {
+      console.log("removing cancelled styling")
       $(`#card-${project_code}`).removeClass("cancelled-card")
       $(`#card-header-${project_code}`).removeClass("cancelled-card-header")
     }

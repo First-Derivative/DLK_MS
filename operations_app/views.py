@@ -1,7 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework.decorators import api_view
 from rest_framework import generics, filters
+from rest_framework.response import Response
 from .models import Operations
 from .serializers import OperationsSerializer
 from ms_app.decorators import *
@@ -59,6 +61,7 @@ def postNewOperations(request):
 # POST Edit Operation
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="operations")
+@api_view(['POST'])
 def postEditOperations(request):
   post = request.POST
 
@@ -86,7 +89,9 @@ def postEditOperations(request):
       return JsonResponse({"status": "OK"})
       
     except ValidationError as e:
-      return JsonResponse({"error":dict(e)})
+      return Response(status=400, data=dict(e))
+      # return JsonResponse(status=400,dict(e))
+      # return HttpResponseBadRequest({"error":dict(e)})
 
   except Operations.DoesNotExist:
     return JsonResponse({"error":{"operations_does_not_exist":"Operation not found. Bad Edit"}})

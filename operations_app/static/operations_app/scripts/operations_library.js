@@ -35,16 +35,10 @@ class Library {
   }
 
   updateItem(item) {
-
-    console.log("from updateItem call, before update:")
-    Object.keys(item).forEach(key => {
-      console.log(item[key])
-    })
     for (i = 0; i < this.index.length; i++) {
-
       if (this.index[i].project_code == item.project_code) {
-        console.log("found item to update")
-        this.index[i] == item
+        this.index[i] = item
+        return
       }
     }
   }
