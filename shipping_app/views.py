@@ -15,7 +15,7 @@ def shippingPage(request):
 
 # GET (Search) Shipping
 class searchAPI(generics.ListCreateAPIView):
-  search_fields = ['project_code', 'project_name', 'client_name']
+  search_fields = ['project_code', 'project_name', 'client_name', 'germany', 'customer', 'charges', 'remarks']
   filter_backends = (filters.SearchFilter,)
   queryset = Shipping.objects.all()
   serializer_class = ShippingSerializer
