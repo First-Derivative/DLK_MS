@@ -8,6 +8,7 @@ media
 */migrations/
 */*/migrations/
 */*/migrations/*
+staticfiles/
 
 # Special Files #
 *_key.json
