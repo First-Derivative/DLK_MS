@@ -18,7 +18,6 @@ def role_check(allowed_roles=""):
       user_groups = request.user.groups.all()
       if request.user.groups.exists():
         for group in user_groups:
-          print(group.name)
           if( group.name == allowed_roles):
             return view_func(request, *args, **kwargs)
         return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})    

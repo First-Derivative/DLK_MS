@@ -5,6 +5,7 @@ class Currency(models. TextChoices):
   MYR = ("MYR","RM")
   EUR = ("EUR","€")
   USD = ("USD","$")
+  SGD = ("SGD", "SGD")
 
 #Auxiliary Function to resolve object currency value for serialization
 def resolveCurrencyLabel(currency):

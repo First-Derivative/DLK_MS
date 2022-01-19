@@ -31,20 +31,26 @@ def reset_database():
     #Reset to Home after deleetion
     os.chdir(home)
 
-    # os.system('python manage.py makemigrations users_app sales_app accounts_app purchases_app')
+  os.system('python manage.py makemigrations users_app')
+  os.system('python manage.py migrate')
+  os.system('python manage.py createsuperuser')
+  os.system('python manage.py makemigrations sales_app accounts_app shipping_app purchases_app operations_app')
+  os.system('python manage.py migrate')
+
+  print("Done Setting up DB ")
 
     # os.system('python manage.py migrate')
+    # Done Reseting DB's
   
-
+# CUSTOM READSHEET FUNCTION FOR FILE: 'DLK - MASTER SCHEDULE LQ2021 & 2022_COPY'
 def readSheet(sheet):
   gc = gspread.service_account(filename=os.path.join(os.getcwd(),'ms_app/google_dlk_key.json'))
-  # Acces Google Sheet "DLK_MASTERSCHEDULE_11_1_2021"
-  db = gc.open_by_key("11YmOa5p7BuKbOOzzts9_o4ssghzrxUaT6RBm0YzqnPA")
+  db = gc.open_by_key("13ww8cRY13CSD7_pc3J7zuXDHClNLqZDt4KMCGzus-Dg")
 
   if(sheet == "SALES"):
     sales = db.worksheet(sheet)
     start_row = 5
-    end_row = 20
+    end_row = 56
 
     for i in range(start_row, end_row+1):
       active_row = sales.row_values(i)
@@ -52,25 +58,26 @@ def readSheet(sheet):
       project_code = active_row[0].replace(" ","-")
       project_name = active_row[1]
       client_name = active_row[2]
-      project_detail = active_row[3]
+      project_detail = active_row[3] if (active_row[3] != '') else "null"
       invoice_amount = active_row[4]
-      order_date = resolveDate(active_row[5],"american") # double check model for null value support
-      shipping_date = active_row[6]
-      payment_term = active_row[7]
-      cancelled = True if (active_row[14] == "TRUE") else False 
-      completed = True if (active_row[15] == "TRUE") else False 
+      order_date = resolveDate(active_row[5],"american")
+      shipping_date = active_row[6] if (active_row[6] != '') else 'null'
+      payment_term = active_row[7] if (active_row[7] != '') else 'null'
+      cancelled = True if (active_row[8] == "TRUE") else False 
+      completed = True if (active_row[9] == "TRUE") else False 
 
       currency, value = resolveInvoiceAmount(invoice_amount)
 
       new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,cancelled=cancelled, completed=completed)
 
-      print("Adding {}...".format(new_sale))
+      print("Added {}...".format(new_sale))
       new_sale.save()
-      time.sleep(10)
+      time.sleep(5)
+
   elif(sheet == "OPERATION"):
     operation = db.worksheet(sheet)
     start_row = 4
-    end_row = 20
+    end_row = 55
     
     for i in range(start_row,end_row+1):
       active_row = operation.row_values(i)
@@ -78,74 +85,80 @@ def readSheet(sheet):
       project_code = active_row[0].replace(" ","-")
       project_name = active_row[1]
       client_name = active_row[2]
-      status = active_row[3]
-      finish_detail = active_row[7]
+      status = active_row[3] if (active_row[3] != 'null') else 'null'
+      finish_detail = active_row[7] if (active_row[7] != '') else 'null'
       cancelled = True if (active_row[8] == "TRUE") else False
 
       new_operation = Operations(project_code=project_code, project_name=project_name, client_name=client_name, status=status, finish_detail=finish_detail,cancelled=cancelled)
-      print("Adding {}...".format(new_operation))
+      print("Added {}...".format(new_operation))
       new_operation.save()
-      time.sleep(10)
+      time.sleep(5)
+
   elif(sheet == "SHIPPING"):
     shipping = db.worksheet(sheet)
     start_row = 6
-    end_row = 22
-
+    end_row = 57
+    
     for i in range(start_row, end_row+1):
       active_row = shipping.row_values(i)
 
       project_code = active_row[0].replace(" ", "-")
       project_name = active_row[1]
       client_name = active_row[2]
-      germany = active_row[3]
-      customer = active_row[4]
-      charges = active_row[5]
-      remarks = active_row[6]
+      germany = active_row[3] if (active_row[3] != '') else 'null'
+      customer = active_row[4] if (active_row[4] != '') else 'null'
+      charges = active_row[5] if (active_row[5] != '') else 'null'
+      remarks = active_row[6] if (active_row[6] != '') else 'null' 
       cancelled = True if (active_row[7] == "TRUE") else False
       completed = True if (active_row[8] == "TRUE") else False
 
       new_shipping = Shipping(project_code=project_code, project_name=project_name, client_name=client_name, germany=germany, customer=customer, charges=charges, remarks=remarks, cancelled=cancelled, completed=completed)
-      print("Adding {}...".format(new_shipping))
+      print("Added {}...".format(new_shipping))
       new_shipping.save()
-      time.sleep(10)
+      time.sleep(5)
+
   elif(sheet == "PURCHASING"):
     purchases = db.worksheet(sheet)
-    start_row = 5
-    end_row = 37
+    # missing rows 7-9
+    start_row = 7
+    end_row = 9
 
-    for i in range(start_row, end_row+1):
-      active_row = purchases.row_values(i)
+    for j in range(start_row, end_row+1):
+      active_row = purchases.row_values(j)
 
-      purchase_order = active_row[0]
-      project_code = active_row[5]
-      po_date = resolveDate(active_row[1],"american") if i <= 15 else resolveDate(active_row[1])
+      purchase_order = active_row[0] if(active_row[0] != '') else 'null'
+      project_code = active_row[5] if(active_row[5] != '') else 'null'
+      po_date = resolveDate(active_row[1],"american") 
+      if (j > 32):
+        po_date = resolveDate(active_row[1])
       supplier_name = active_row[2]
       purchased_items = active_row[3]
       invoice_amount = active_row[4]
-      expected_date = active_row[6]
-      supplier_date = active_row[7]
+      expected_date = active_row[6] if (active_row[6] != '' or active_row[6] != None) else 'null' 
+      supplier_date = active_row[7] if (active_row[7] != '' or active_row[7] != None) else 'null' 
 
       currency, value = resolveInvoiceAmount(invoice_amount)
-      print(invoice_amount)
-      print(currency, value)
+
       new_purchases = Purchases(purchase_order=purchase_order, project_code=project_code, po_date=po_date, supplier_name=supplier_name, purchased_items=purchased_items, currency=currency, value=value, expected_date=expected_date, supplier_date=supplier_date)
-      print("Adding {}...".format(new_purchases))
       new_purchases.save()
-      time.sleep(10)
-
-
-
+      print("Added {}...".format(new_purchases))
+      time.sleep(0.8)
 
 def resolveInvoiceAmount(invoice):
+  if(invoice == '' or invoice == None):
+    return None, None
+  
   raw_invoice = invoice.strip()
   format_invoice = raw_invoice.split(" ")
-
+  
   if(len(format_invoice) == 3):
     return resolveCurrency(format_invoice[0]), format_invoice[2].replace(",", "")
 
   return resolveCurrency(format_invoice[0]), format_invoice[1].replace(",", "")
 
 def resolveDate(date,format="british"):
+  if(date == "" or date == None):
+    return None
   if(date):
     raw_date = date.split("/")
 
@@ -153,7 +166,6 @@ def resolveDate(date,format="british"):
       if(len(raw_date[i]) == 1):
         raw_date[i] = "0"+raw_date[i]
 
-    print(raw_date)
     if(format.lower() == "us" or format.lower() == "american"):
       
       # American Format Input : MM/DD/YYYY -> Output: YYYY-MM-DD
@@ -172,11 +184,11 @@ def resolveDate(date,format="british"):
 # print("===== Reading SALES =====")
 # readSheet("SALES")
 
-print("===== Reading OPERATION =====")
-readSheet("OPERATION")
+# print("===== Reading OPERATION =====")
+# readSheet("OPERATION")
 
-print("===== Reading SHIPPING =====")
-readSheet("SHIPPING")
+# print("===== Reading SHIPPING =====")
+# readSheet("SHIPPING")
 
-print("===== Reading PURCHASING =====")
+print("===== Reading PURCHASES =====")
 readSheet("PURCHASING")

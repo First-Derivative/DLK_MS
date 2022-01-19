@@ -3,22 +3,22 @@ from .validators import *
 
 class Operations(models.Model):
   operations_id = models.BigAutoField(primary_key=True)
-  project_code = models.CharField(max_length=20, validators=[validate_project_code])
-  project_name = models.CharField(max_length=80, validators=[null_check])
-  client_name = models.CharField(max_length=100, validators=[null_check])
-  status = models.CharField(null=True, blank=False,max_length=600,verbose_name="Production Status", validators=[null_check])
-  finish_detail = models.CharField(null=True, blank=False, max_length=100, validators=[null_check])
+  project_code = models.CharField(max_length=20)
+  project_name = models.CharField(max_length=80)
+  client_name = models.CharField(max_length=100)
+  status = models.CharField(null=True, blank=False,max_length=600,verbose_name="Production Status")
+  finish_detail = models.CharField(null=True, blank=False, max_length=100)
   cancelled = models.BooleanField(default=False)
 
   @property
   def status_isNull(self):
-    if(self.status == ""):
+    if(self.status == "" or self.status == "null"):
       return True
     return False
   
   @property
   def finish_detail_isNull(self):
-    if(self.finish_detail == ""):
+    if(self.finish_detail == "" or self.finish_detail == "null"):
       return True
     return False
 
