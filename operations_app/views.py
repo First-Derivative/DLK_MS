@@ -15,7 +15,7 @@ def operationsPage(request):
 
 # GET (Search) Operations
 class searchAPI(generics.ListCreateAPIView):
-  search_fields = ['project_code', 'project_name', 'client_name', 'status', 'finish_detail', 'cancelled']
+  search_fields = ['project_code', 'project_name', 'client_name', 'status', 'finish_detail']
   filter_backends = (filters.SearchFilter,)
   queryset = Operations.objects.all()
   serializer_class = OperationsSerializer
