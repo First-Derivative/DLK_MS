@@ -1,1 +1,1 @@
-web: gunicorn ms_app.wsgi --log-file -
+web: gunicorn ms_app.wsgi 

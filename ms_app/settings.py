@@ -26,7 +26,7 @@ SECRET_KEY = 'qprh##z+bk%_0=8hu-9gzudeckvett8+25ry@9m2scc_f#3(_0'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','localhost', 'heroku']
+ALLOWED_HOSTS = ['dlk-master.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
