@@ -17,7 +17,7 @@ def purchasesPage(request):
 
 # GET (Search) Purchases
 class searchAPI(generics.ListCreateAPIView):
-  search_fields = ['project_code','supplier_name', "purchased_items", "po_date"]
+  search_fields = ['project_code','supplier_name', "purchased_items", "po_date", "purchase_order", "expected_date", "supplier_date"]
   filter_backends = (filters.SearchFilter,)
   queryset = Purchases.objects.all()
   serializer_class = PurchasesSerializer
