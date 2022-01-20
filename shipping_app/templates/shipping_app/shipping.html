@@ -8,6 +8,7 @@
 
 {% block left_content %}
 
+<!-- Search & Filtering -->
 <div class="d-flex flex-row ">
   <form class="search_wrapper mb-3" id="left_content_form">
 
@@ -40,6 +41,7 @@
   
 </div>
 
+<!-- Page Down Button -->
 <div class="row mb-3">
   <div class="col-3">
     <button type="button" class="btn shipping_standard-btn btn-clear clear-3" id="page_down">
@@ -151,8 +153,10 @@
 {% endblock main_content%}
 
 {% block right_content %}
+<!-- Right Content -->
 <div class="d-flex flex-column justify-content-between" style="height:100%" >
 
+  <!-- Add & Reverse  -->
   <div class="row">
     <div class="mb-3">
       {% if perms.shipping_app %}
@@ -170,6 +174,7 @@
     </div>
   </div>
   
+  <!-- Page Up Button -->
   <div class="row justify-content-end mt-3">
     <div class="col-4">
       <button type="button" class="btn shipping_standard-btn btn-clear clear-3 flipped" id="page_up">
