@@ -4,7 +4,7 @@ function postReport(report) {
     $.ajax(
       {
         type: "POST",
-        headers: { "X-CSRFToken": token },
+        headers: { "X-CSRFToken": report_token },
         url: postReport_url,
         data:report,
         success: function (response) {
