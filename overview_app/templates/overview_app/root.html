@@ -67,13 +67,66 @@
             <button type="button" class="btn btn-outline-danger" id="logout_button">logout</button>
           </div>
           <div class="col p-3">
-            <button type="button" class="btn btn-outline-warning" id="bug">report</button>
+            <button type="button" class="btn btn-outline-warning"  data-bs-toggle="modal" data-bs-target="#reportModal" id="bug">report</button>
           </div>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- REPORT MODAL -->
+  
+  <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="reportModalLabel"><span class="text-warning">Report:</span> Bug/Feature</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body" id="report-modal-body">
+
+          <div class="row p-3">
+            <p class="small">If you encounter abnormal/unexpected behavior in this application: please report your findings in this form.</p>
+            <br>
+            <p class="small">If you instead would like to suggest a feature/wish for this application that would improve your use please submit your idea and select 'feature'.</p>
+          </div>
+
+          <form class="gx-3" id="modal-form-report" name="report_form">
+            
+            <div class="row-lg mb-3">
+              <div class="form-floating">
+                <input type="text" class="form-control modal-input" name="title" id="modal-input-title" placeholder="Edit Feature Not Working" required> 
+                <label for="modal-input-title">Title</label>
+              </div>
+            </div>
+            
+            <div class="row-lg mb-3">
+              <select class="form-select modal-input" id="modal-input-type" name="type" required>
+                <option selected value="BUG">Bug</option>
+                <option value="FT">Feature</option>
+              </select>
+            </div>
+            
+            <div class="row-lg">
+              <div class="form-floating">
+                <textarea class="form-control modal-input tall-input" placeholder="Tell us what happened" id="modal-input-body" name="body"></textarea>
+                <label for="modal-input-body">Describe Your Findings</label>
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="d-flex flex-column p-3" id="report-output">
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="reportModal-close">Close</button>
+            <button type="button" class="btn btn-primary" id="reportModal-save">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- COMBAT INFORMATION CENTER -->
   <div class="container-fluid mt-3" id="root_container">
@@ -97,12 +150,18 @@
       </div>
     </div>
   </div>
-
+  
+  <script src="{% static 'overview_app/scripts/overview_ajax.js'%}"></script>
+  <script src="{% static 'overview_app/scripts/overview_handlers.js'%}"></script>
   <script>
-    $("#logout_button").click(function()
-    {
-      window.location.replace("{% url 'user_logout' %}");
+
+
+    $("#logout_button").click(function() {
+      window.location.replace("{% url 'user_logout' %}"); 
     })
+
+    const postReport_url = "{% url 'postNewReport_API' %}"
+    let token = "{{csrf_token}} "
   </script>
   {% block scripts %}
   {% endblock scripts %}

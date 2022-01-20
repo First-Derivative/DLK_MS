@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+class ReportAdmin(admin.ModelAdmin):
+  list_display = ("title", "type", "location", "created_at")
+  search_fields = ("type",)
+  
+admin.site.register(Report, ReportAdmin)

@@ -196,6 +196,11 @@
   border: 0.1em solid #d82d4e;
 }
 
+.tall-input
+{
+  height: 9em !important;
+}
+
 
 /* EDITING  */
 

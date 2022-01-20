@@ -34,7 +34,7 @@ def reset_database():
   os.system('python manage.py makemigrations users_app')
   os.system('python manage.py migrate')
   os.system('python manage.py createsuperuser')
-  os.system('python manage.py makemigrations sales_app accounts_app shipping_app purchases_app operations_app')
+  os.system('python manage.py makemigrations sales_app accounts_app shipping_app purchases_app operations_app overview_app')
   os.system('python manage.py migrate')
 
   print("Done Setting up DB ")
