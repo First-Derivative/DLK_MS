@@ -1,0 +1,32 @@
+
+/* Sales-Specific Buttons */
+
+.sales_standard-btn
+{
+  background-color: #4d4b4a;
+  color: white;
+  width: 100%;
+}
+
+.sales_standard-btn:hover
+{
+  background-color: #383736;
+  color:white;
+}
+
+.sales_secondary-btn
+{
+  background-color: #d82d4e;
+  color: white;
+}
+
+.sales_secondary-btn:hover
+{
+  background-color: #b8233f;
+  color: white;
+}
+
+.sales_content-btn
+{
+  width: 100%;
+}

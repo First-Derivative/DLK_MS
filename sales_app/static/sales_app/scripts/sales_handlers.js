@@ -8,6 +8,14 @@ function startUpSales() {
   })
 }
 
+$(`#page_down`).click(function () {
+  window.scrollTo(0, document.body.scrollHeight);
+})
+
+$(`#page_up`).click(function () {
+  window.scrollTo(document.body.scrollHeight, 0);
+})
+
 // UX Functionality: Add Sale Handler
 $("#modal-btn-save").click(function () {
   new_sales = {}
@@ -19,7 +27,7 @@ $("#modal-btn-save").click(function () {
   })
 
   // Get & Assign Data
-  let data_form = $(`form[id=modal-form-addSale]`).serializeArray()
+  let data_form = $(`form[id=modal-form-addSales]`).serializeArray()
   $.each(data_form, function (i, field) {
     property = field.name
     if (property == "order_date") {
@@ -88,8 +96,8 @@ function UI_addSale(new_sale) {
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sale.project_code}">
-      <p class="card-text ${(new_sale.project_detail == '') ? 'missing_text' : ''}" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail == '' ? 'null': new_sale.project_detail}</p>
-      <p class="card-text ${ new_sale.payment_term_isNull ? 'missing_text' : ''}" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${ new_sale.payment_term_isNull ?  'null': new_sale.payment_term }</p>
+      <p class="card-text ${(new_sale.project_detail == '') ? 'missing_text' : ''}" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail == '' ? 'null' : new_sale.project_detail}</p>
+      <p class="card-text ${new_sale.payment_term_isNull ? 'missing_text' : ''}" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term_isNull ? 'null' : new_sale.payment_term}</p>
       <br>
       <p class="card-text" id="cancelled_${new_sale.project_code}"><span class="text-muted">Cancelled: </span>${new_sale.cancelled ? 'True' : 'False'}</p>
       <p class="card-text" id="completed_${new_sale.project_code}"><span class="text-muted">Completed: </span>${new_sale.completed ? 'True' : 'False'}</p>
@@ -495,7 +503,7 @@ function resolveCurrency(currency) {
 }
 
 // UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'
-$('#modal-form-addSale input').keydown(function (e) {
+$('#modal-form-addSales input').keydown(function (e) {
   if (e.keyCode == 13) {
     var inputs = $(this).parents("form").eq(0).find(":input");
     if (inputs[inputs.index(this) + 1] != null) {

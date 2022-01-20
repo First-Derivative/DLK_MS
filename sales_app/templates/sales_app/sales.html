@@ -2,24 +2,26 @@
 {% load static %}
 
 {% block app_stylesheet %}
-<link href="{% static '/sales_app/styles/sales_app.css' %}" rel="stylesheet">
+<link href="{% static '/sales_app/styles/sales.css' %}" rel="stylesheet">
+<link href="{% static '/overview_app/styles/overview.css' %}" rel="stylesheet">
 {% endblock app_stylesheet %}
 
 {% block left_content%}
 
-  <div class="d-flex flex-row {%comment%} position-fixed {%endcomment%}">
-    <form class="search_wrapper mb-3" id="left_content_form">
+<!-- Search & Filtering -->
+<div class="d-flex flex-row ">
+  <form class="search_wrapper mb-3" id="left_content_form">
 
-      <div class="col mb-3">
-        <input type="text" class="search_input form-control" value="" placeholder="Search..." id="input-search">
-        <p class="mt-1" style="font-size: 75%;margin-left: 0.25em" id="input-helper">press enter to start search</p>
-      </div>
+    <div class="col mb-3">
+      <input type="text" class="search_input form-control" value="" placeholder="Search..." id="input-search">
+      <p class="mt-1" style="font-size: 75%;margin-left: 0.25em" id="input-helper">press enter to start search</p>
+    </div>
 
     <div>
-        <button type="button" class="btn sales_standard-btn col mb-3" id="input-search-clear">
-          Clear Search Results
-        </button>
-      </div>
+      <button type="button" class="btn sales_standard-btn col mb-3" id="input-search-clear">
+        Clear Search Results
+      </button>
+    </div>
 
     <div class="col mb-3">
       <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
@@ -28,17 +30,27 @@
       </label>
     </div>
 
-    <div class="col mb-3">
+    <div class="col">
       <input class="form-check-input" type="checkbox" value="" id="input-completed" checked>
       <label class="form-check-label" for="input-completed">
         Show Completed Orders
       </label>
     </div>
-    
+
   </form>
   
 </div>
-  {% comment %} <p>Add Sale</p> {% endcomment %}
+
+<!-- Page Down Button -->
+<div class="row mb-3">
+  <div class="col-3">
+    <button type="button" class="btn sales_standard-btn btn-clear clear-3" id="page_down">
+      <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
+      height="32">
+    </button>
+  </div>
+</div>
+
 {% endblock left_content%}
 
 {% block main_content %}
@@ -47,7 +59,7 @@
 <div class="" id="sales_display"></div>
 
 <!-- MODAL  -->
-<div class="modal" tabindex="-1" id="modal_addSale">
+<div class="modal" tabindex="-1" id="modal_addSales">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
@@ -55,7 +67,7 @@
         <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form class="row gx-3 px-3 mt-3" id="modal-form-addSale" name="addSale_form">
+        <form class="row gx-3 px-3 mt-3" id="modal-form-addSales" name="addSale_form">
 
           <div class="col-lg-3">
             <div class="form-floating">
@@ -116,8 +128,8 @@
 
           <div class="col-lg-6">
             <div class="form-floating">
-              <input type="textarea" class="form-control modal-input modal-form-shipping_date" name="shipping_date" id="modal-input-shipping_date" placeholder="CWD">
-              <label for="modal-input-shipping_date">Customer Wanted Date</label>
+              <input type="textarea" class="form-control modal-input modal-form-sales_date" name="sales_date" id="modal-input-sales_date" placeholder="CWD">
+              <label for="modal-input-sales_date">Customer Wanted Date</label>
             </div>
           </div>
 
@@ -156,21 +168,38 @@
 
 {% block right_content %}
 
-  <div class="d-flex flex-row mb-3">
-    {% if perms.sales %}
-      <button type="button" class="btn sales_standard-btn sales_content-btn p-3" data-bs-toggle="modal" data-bs-target="#modal_addSale">
-        <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
-        Add Sale
+<!-- Right Content -->
+<div class="d-flex flex-column justify-content-between" style="height:100%" >
+
+  <!-- Add & Reverse  -->
+  <div class="row">
+    <div class="mb-3">
+      {% if perms.sales_app %}
+      <button type="button" class="btn sales_standard-btn p-3 sales_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addSales">
+        <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+        Add Sales
       </button>
-    {% endif %}
-  </div>
-  <div class="d-flex flex-row">
-      <button type="button" class="btn p-3 sales_standard-btn sales_content-btn" id="reverse-list">
-        <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 2em;">
+      {% endif %}
+    </div>
+    <div>
+      <button type="button" class="btn sales_standard-btn p-3 sales_content-btn" id="reverse-list">
+        <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
         Reverse List
       </button>
+    </div>
   </div>
-
+  
+  <!-- Page Up Button -->
+  <div class="row justify-content-end mt-3">
+    <div class="col-4">
+      <button type="button" class="btn sales_standard-btn btn-clear clear-3 flipped" id="page_up">
+        <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
+        height="32">
+      </button>
+    </div>
+  </div>
+  
+</div>
 {% endblock right_content %}
 
 {% block scripts %}
