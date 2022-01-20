@@ -13,6 +13,20 @@
 
 .flipped{ transform: rotate(180deg); }
 
+/* Standard Buttons */
+
+.std-btn-blue
+{
+  color: white;
+  background-color: #047afb;
+  border: 0.1em solid white;
+}
+
+.std-btn-blue:hover {
+  color: white;
+  background-color: #0773e6;
+}
+
 /* Search Results */
 
 .search_wrapper

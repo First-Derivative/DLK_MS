@@ -9,7 +9,6 @@ class UserAdminView(BaseUserAdmin):
   ordering = ("email","first_name")
   filter_horizontal = ()
   list_filter = ("is_admin",)
-  fieldsets = ()
 
 
 admin.site.register(User, UserAdminView)
