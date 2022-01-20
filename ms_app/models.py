@@ -1,7 +1,7 @@
 from django.db import models
 
 #Currency Class which is used in Sales and Purchases
-class Currency(models. TextChoices):
+class Currency(models.TextChoices):
   MYR = ("MYR","RM")
   EUR = ("EUR","€")
   USD = ("USD","$")
