@@ -102,8 +102,8 @@
 
 .search_wrapper
 {
-  /* height: 2.3em; */
-  width: inherit;
+  /* width: inherit; */
+  width: 100%;
 }
 
 #input-helper
