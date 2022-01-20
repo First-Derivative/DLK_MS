@@ -1,33 +1,39 @@
 // ===== AUXILIARY FUNCTIONS =====
 
 // StartUp Script
-function start(){
+function start() {
   cache.clearLibrary()
   $.when(getAllShipping(cache, addShipping)).done(function () {
   })
 }
 
-function propertyToTitle(property)
-{
+function propertyToTitle(property) {
   format = property.split("_")
-  for( i = 0; i < format.length; i ++)
-  {
+  for (i = 0; i < format.length; i++) {
     format[i] = format[i].charAt(0).toUpperCase() + format[i].substr(1, format[i].length)
   }
   return format.join(" ")
 }
 
+$(`#page_down`).click(function () {
+  window.scrollTo(0, document.body.scrollHeight);
+})
+
+$(`#page_up`).click(function () {
+  window.scrollTo(document.body.scrollHeight, 0);
+})
+
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Shipping Card
-function addShipping(new_shipping, prepend=false) {
+function addShipping(new_shipping, prepend = false) {
 
-  if($(`.card[name*='${new_shipping.project_code}']`).length > 0){
+  if ($(`.card[name*='${new_shipping.project_code}']`).length > 0) {
     return
   }
   alerted = false
 
-  if(new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
+  if (new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_shipping.project_code}" style="padding-bottom: 0.2em" name="${new_shipping.project_code}" alt="Needs Entry"></div>`
 
   shipping_card_template =
@@ -70,8 +76,8 @@ function addShipping(new_shipping, prepend=false) {
   </div>`
 
   // Adding New Shipping Card to page
-  if(prepend){ $('#shipping_display').prepend(shipping_card_template) }
-  else{ $('#shipping_display').append(shipping_card_template) }
+  if (prepend) { $('#shipping_display').prepend(shipping_card_template) }
+  else { $('#shipping_display').append(shipping_card_template) }
 
   // Set new_shipping card css to display none
   $(`#card-footer-${new_shipping.project_code}`).css("display", "none")
@@ -99,8 +105,7 @@ function addShipping(new_shipping, prepend=false) {
 }
 
 // Remove all Shipping Cards
-function removeAllShipping()
-{
+function removeAllShipping() {
   $(`.card`).each(function () {
     $(this).off()
   })
@@ -108,8 +113,7 @@ function removeAllShipping()
 }
 
 // Remove singular Shipping Card
-function removeShipping(shipping_id)
-{
+function removeShipping(shipping_id) {
   $(`div[id*='${shipping_id}']`).off() // unbinds handlers
   $(`div[id*='${shipping_id}']`).remove()
 }
@@ -152,16 +156,16 @@ $("#modal-btn-save").click(function () {
 // UX Functionality: Enter 'search mode' on enter key
 $("#left_content_form").on("keypress", function (event) {
   keyPressed = event.keyCode || event.which;
-  if (keyPressed === 13)  {// Enter Key
+  if (keyPressed === 13) {// Enter Key
     event.preventDefault();
-    
+
     if (!search_mode) { // check if already in search mode, if false then enter and start search
       enterSearch()
     }
     else {
       removeAllShipping()
     }
-    
+
     const search_header_template = `
     <div class="row" id="searchHeader">
     <div class="header_title">
@@ -169,7 +173,7 @@ $("#left_content_form").on("keypress", function (event) {
     </div>
     `
     $("#shipping_display").prepend(search_header_template)
-    
+
     const input_value = $("#input-search").val()
     searchShipping(input_value, cache)
     return false;
@@ -177,7 +181,7 @@ $("#left_content_form").on("keypress", function (event) {
 })
 
 // UX Functionality: Leave 'search mode' on clear button press
-$("#input-search-clear").click(function(){
+$("#input-search-clear").click(function () {
   leaveSearch()
 })
 
@@ -190,17 +194,15 @@ $("#left_content_form").on("keyup", function (event) {
 })
 
 // Enter Search
-function enterSearch()
-{
+function enterSearch() {
   search_mode = true
   removeAllShipping()
   return true
 }
 
 // Leave Search
-function leaveSearch()
-{
-  if ( $("#input-search-clear").hasClass("shipping_standard-btn-danger") ){ $("#input-search-clear").removeClass("shipping_standard-btn-danger")}
+function leaveSearch() {
+  if ($("#input-search-clear").hasClass("shipping_standard-btn-danger")) { $("#input-search-clear").removeClass("shipping_standard-btn-danger") }
   $("#input-search").val("")
   search_mode = false
   removeAllShipping()
@@ -210,44 +212,36 @@ function leaveSearch()
 // ===== FILTERING TOGGLES =====
 
 // Cancelled Toggle
-$("#input-cancelled").click(function ()
-{
-  if (!$(this).is(":checked"))
-  {
-    $("div[class*=cancelled-card]").each(function ()
-    {
+$("#input-cancelled").click(function () {
+  if (!$(this).is(":checked")) {
+    $("div[class*=cancelled-card]").each(function () {
       $(this).remove()
     })
     return
   }
-  for (const shipping of cache.allCancelled)
-  {
-    if(!search_mode) //not in search mode 
+  for (const shipping of cache.allCancelled) {
+    if (!search_mode) //not in search mode 
     {
       addShipping(shipping, true)
     }
-    else{ if (shipping.searched) { addShipping(shipping) }}
+    else { if (shipping.searched) { addShipping(shipping) } }
   }
 })
 
 // Completed Toggle
-$("#input-completed").click(function ()
-{
-  if (!$(this).is(":checked"))
-  {
-    $("div[class*=completed-card]").each(function ()
-    {
+$("#input-completed").click(function () {
+  if (!$(this).is(":checked")) {
+    $("div[class*=completed-card]").each(function () {
       $(this).remove()
     })
     return
   }
-  for (const shipping of cache.allCompleted)
-  {
-    if(!search_mode) //not in search mode 
+  for (const shipping of cache.allCompleted) {
+    if (!search_mode) //not in search mode 
     {
       addShipping(shipping, true)
     }
-    else{ if (shipping.searched) { addShipping(shipping) }}
+    else { if (shipping.searched) { addShipping(shipping) } }
   }
 })
 
@@ -342,8 +336,7 @@ function enterEdit(library, project_code) {
         if (property == "cancelled") {
           edit_shipping["cancelled"] = true
         }
-        else if(property == "completed") 
-        {
+        else if (property == "completed") {
           edit_shipping["completed"] = true
         }
         else {
@@ -355,7 +348,7 @@ function enterEdit(library, project_code) {
         library.updateItem(edit_shipping)
         leaveEdit(library, project_code)
       }).catch((error) => {
-        if(error.responseJSON){
+        if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
             error_title = propertyToTitle(key)
             $(`#edit-errors-${edit_shipping.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
@@ -363,7 +356,7 @@ function enterEdit(library, project_code) {
           })
         }
       })
-      
+
     })
 
   }
@@ -389,9 +382,8 @@ function leaveEdit(library, project_code) {
       if (field == "project_name" || field == "client_name" || field == "project_code") {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${shipping[field]} </p>`
       }
-      else if(field == "cancelled" || field == "completed")
-      {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${ (shipping[field]) ? 'True' : 'False'}</p>`
+      else if (field == "cancelled" || field == "completed") {
+        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${(shipping[field]) ? 'True' : 'False'}</p>`
       }
       else {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${shipping[field]}</p>`
@@ -400,10 +392,10 @@ function leaveEdit(library, project_code) {
       $(this).empty()
       $(this).replaceWith(card_text_template)
 
-      document.getElementById(`card-${project_code}`).scrollIntoView({behavior: "smooth", block: "start"})
+      document.getElementById(`card-${project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
     })
 
-    $(`#card-alert-${project_code}`).unwrap();$(`#card-alert-${project_code}`).remove();
+    $(`#card-alert-${project_code}`).unwrap(); $(`#card-alert-${project_code}`).remove();
     $(`#edit-errors-${project_code}`).remove()
     $(`#card_footer_${project_code}`).remove()
     $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
@@ -415,7 +407,7 @@ function leaveEdit(library, project_code) {
       $(`#card-${project_code}`).addClass("cancelled-card")
       $(`#card-header-${project_code}`).addClass("cancelled-card-header")
     }
-    
+
     if (!shipping.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card")) {
       $(`#card-${project_code}`).removeClass("cancelled-card")
       $(`#card-header-${project_code}`).removeClass("cancelled-card-header")
@@ -426,7 +418,7 @@ function leaveEdit(library, project_code) {
       $(`#card-${project_code}`).addClass("completed-card")
       $(`#card-header-${project_code}`).addClass("completed-card-header")
     }
-    
+
     if (!shipping.completed && $(`#card-${project_code}`).hasClass("completed-card")) {
       $(`#card-${project_code}`).removeClass("completed-card")
       $(`#card-header-${project_code}`).removeClass("completed-card-header")

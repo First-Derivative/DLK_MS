@@ -75,15 +75,20 @@
   <!-- COMBAT INFORMATION CENTER -->
   <div class="container-fluid mt-3" id="root_container">
     <div class="row d-flex justify-content-center ">
+      <!-- LEFT_CONTENT -->
       <div class="col-xl-2" id="left_content">
         {% block left_content%}  
         {% endblock left_content%}  
       </div>
+
+      <!-- MAIN CONTENT -->
       <div class="col-xl-8" id="main_content">
         {% block main_content %}
         {% endblock main_content %}
       </div>
-      <div class="col-xl-2">
+
+      <!-- RIGHT CONTENT -->
+      <div class="col-xl-2 ">
         {% block right_content%}
         {% endblock right_content%}
       </div>
