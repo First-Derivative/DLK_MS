@@ -22,6 +22,14 @@ function resolveCurrency(currency) {
   }
 }
 
+$(`#page_down`).click(function () {
+  window.scrollTo(0, document.body.scrollHeight);
+})
+
+$(`#page_up`).click(function () {
+  window.scrollTo(document.body.scrollHeight, 0);
+})
+
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Purchases Card

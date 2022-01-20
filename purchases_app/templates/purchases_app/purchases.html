@@ -4,12 +4,14 @@
 <!-- APP_STYLESHEET IMPORTS -->
 {% block app_stylesheet %}
   <link href="{% static '/purchases_app/styles/purchases.css' %}" rel="stylesheet">
+  <link href="{% static '/overview_app/styles/overview.css' %}" rel="stylesheet">
 {% endblock app_stylesheet %}
 
 <!-- LEFT CONTENT -->
 {% block left_content %}
 
-<div class="d-flex flex-row">
+<!-- Search & Filtering -->
+<div class="d-flex flex-row ">
   <form class="search_wrapper mb-3" id="left_content_form">
 
     <div class="col mb-3">
@@ -24,7 +26,19 @@
     </div>
 
   </form>
+  
 </div>
+
+<!-- Page Down Button -->
+<div class="row mb-3" id="page_down">
+  <div class="col-3">
+    <button type="button" class="btn purchases_standard-btn btn-clear clear-3">
+      <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
+      height="32">
+    </button>
+  </div>
+</div>
+  
 {% endblock left_content %}
 
 <!-- PURCHASES CARD DISPLAY + MODAL  -->
@@ -128,21 +142,38 @@
 <!-- ADD + REVERSE1 LIST SIDE BUTTONS -->
 {% block right_content %}
 
-<div class="d-flex flex-row mb-3">
-{% if perms.purchases_app %}
-  <button type="button" class="btn purchases_standard-btn p-3 purchases_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addPurchases">
-    <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
-    Add Purchases
-  </button>
-{% endif %}
-</div>
-<div class="d-flex flex-row">
-  <button type="button" class="btn purchases_standard-btn p-3 purchases_content-btn" id="reverse-list">
-    <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
-    Reverse List
-  </button>
-</div>
+<!-- Right Content -->
+<div class="d-flex flex-column justify-content-between" style="height:100%" >
 
+  <!-- Add & Reverse  -->
+  <div class="row">
+    <div class="mb-3">
+      {% if perms.purchases_app %}
+      <button type="button" class="btn purchases_standard-btn p-3 purchases_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addPurchases">
+        <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+        Add Purchases
+      </button>
+      {% endif %}
+    </div>
+    <div>
+      <button type="button" class="btn purchases_standard-btn p-3 purchases_content-btn" id="reverse-list">
+        <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+        Reverse List
+      </button>
+    </div>
+  </div>
+  
+  <!-- Page Up Button -->
+  <div class="row justify-content-end mt-3" id="page_up">
+    <div class="col-4">
+      <button type="button" class="btn purchases_standard-btn btn-clear clear-3 flipped">
+        <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
+        height="32">
+      </button>
+    </div>
+  </div>
+  
+</div>
 {% endblock right_content %}
 
 
