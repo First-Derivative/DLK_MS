@@ -15,6 +15,14 @@ function propertyToTitle(property) {
   return format.join(" ")
 }
 
+$(`#page_down`).click(function () {
+  window.scrollTo(0, document.body.scrollHeight);
+})
+
+$(`#page_up`).click(function () {
+  window.scrollTo(document.body.scrollHeight, 0);
+})
+
 // ===== UI ADD/REMOVE =====
 
 // UI Functionality: Add Operations
@@ -281,13 +289,13 @@ function enterEdit(library, project_code) {
         }
       })
       1
-      
+
       // Make Ajax Call & handle OK response
       postEditOperations(edit_operations).then((response) => {
         library.updateItem(edit_operations)
         leaveEdit(library, project_code)
       }).catch((error) => {
-        if(error.responseJSON){
+        if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
             error_title = propertyToTitle(key)
             $(`#edit-errors-${edit_operations.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
@@ -295,7 +303,7 @@ function enterEdit(library, project_code) {
           })
         }
       })
-      
+
     })
 
   }
@@ -322,9 +330,8 @@ function leaveEdit(library, project_code) {
       if (field == "project_name" || field == "client_name" || field == "project_code") {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${operations[field]} </p>`
       }
-      else if(field == "cancelled")
-      {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${ (operations[field]) ? 'True' : 'False'}</p>`
+      else if (field == "cancelled") {
+        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${(operations[field]) ? 'True' : 'False'}</p>`
       }
       else {
         card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${operations[field]}</p>`
@@ -333,10 +340,10 @@ function leaveEdit(library, project_code) {
       $(this).empty()
       $(this).replaceWith(card_text_template)
 
-      document.getElementById(`card-${project_code}`).scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"})
+      document.getElementById(`card-${project_code}`).scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
     })
 
-    $(`#card-alert-${project_code}`).unwrap();$(`#card-alert-${project_code}`).remove();
+    $(`#card-alert-${project_code}`).unwrap(); $(`#card-alert-${project_code}`).remove();
     $(`#edit-errors-${project_code}`).remove()
     $(`#card_footer_${project_code}`).remove()
     $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
@@ -347,7 +354,7 @@ function leaveEdit(library, project_code) {
       $(`#card-${project_code}`).addClass("cancelled-card")
       $(`#card-header-${project_code}`).addClass("cancelled-card-header")
     }
-    
+
     if (!operations.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card")) {
       console.log("removing cancelled styling")
       $(`#card-${project_code}`).removeClass("cancelled-card")

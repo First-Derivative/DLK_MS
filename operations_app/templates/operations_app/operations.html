@@ -3,11 +3,13 @@
 
 {% block app_stylesheet %}
   <link href="{% static '/operations_app/styles/operations.css' %}" rel="stylesheet">
+  <link href="{% static '/overview_app/styles/overview.css' %}" rel="stylesheet">
 {% endblock app_stylesheet %}
 
 {% block left_content %}
 
-<div class="d-flex flex-column {%comment%} position-fixed {%endcomment%}">
+<!-- Search & Filtering -->
+<div class="d-flex flex-row ">
   <form class="search_wrapper mb-3" id="left_content_form">
 
     <div class="col mb-3">
@@ -28,8 +30,27 @@
       </label>
     </div>
 
+    <div class="col">
+      <input class="form-check-input" type="checkbox" value="" id="input-completed" checked>
+      <label class="form-check-label" for="input-completed">
+        Show Completed Orders
+      </label>
+    </div>
+
   </form>
+  
 </div>
+
+<!-- Page Down Button -->
+<div class="row mb-3">
+  <div class="col-3">
+    <button type="button" class="btn operations_standard-btn btn-clear clear-3" id="page_down">
+      <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
+      height="32">
+    </button>
+  </div>
+</div>
+
 {% endblock left_content%}
 
 {% block main_content %}
@@ -109,19 +130,37 @@
 
 {% block right_content %}
 
-<div class="d-flex flex-row mb-3">
-  {% if perms.operations_app %}
-    <button type="button" class="btn operations_standard-btn p-3 operations_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addOperation">
-      <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
-      Add Operation
-    </button>
-  {% endif %}
-</div>
-<div class="d-flex flex-row">
-    <button type="button" class="btn operations_standard-btn p-3 operations_content-btn" id="reverse-list">
-      <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
-      Reverse List
-    </button>
+<!-- Right Content -->
+<div class="d-flex flex-column justify-content-between" style="height:100%" >
+
+  <!-- Add & Reverse  -->
+  <div class="row">
+    <div class="mb-3">
+      {% if perms.operations_app %}
+      <button type="button" class="btn operations_standard-btn p-3 operations_content-btn" data-bs-toggle="modal" data-bs-target="#modal_addOperations">
+        <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+        Add Operations
+      </button>
+      {% endif %}
+    </div>
+    <div>
+      <button type="button" class="btn operations_standard-btn p-3 operations_content-btn" id="reverse-list">
+        <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+        Reverse List
+      </button>
+    </div>
+  </div>
+  
+  <!-- Page Up Button -->
+  <div class="row justify-content-end mt-3">
+    <div class="col-4">
+      <button type="button" class="btn operations_standard-btn btn-clear clear-3 flipped" id="page_up">
+        <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
+        height="32">
+      </button>
+    </div>
+  </div>
+  
 </div>
 
 {% endblock right_content %}
