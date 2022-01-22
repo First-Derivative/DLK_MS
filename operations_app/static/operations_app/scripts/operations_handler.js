@@ -1,10 +1,21 @@
 // ===== AUXILIARY FUNCTIONS =====
 
 // StartUp Script
-function start() {
-  cache.clearLibrary()
-  $.when(getAllOperations(cache, addOperations)).done(function () {
+function start(library) {
+  library.clearLibrary()
+  getAllOperations().then((response) => {
+    operations = response.operations
+    operations_count = operations.length
+
+    for (i = 0; i < operations_count; i++) {
+      content = operations.pop()
+      library.append(content)
+      addOperations(content)
+    }
+  }).catch((error) => {
+    alert("textStatus: " + error + " " + error)
   })
+
 }
 
 function propertyToTitle(property) {
@@ -25,12 +36,9 @@ $(`#page_up`).click(function () {
 
 // ===== UI ADD/REMOVE =====
 
-// UI Functionality: Add Operations
-function addOperations(new_operations, prepend = false) {
+function getTemplate(new_operations) {
   alerted = false
-  if ($(`.card[name*='${new_operations.project_code}']`).length > 0) {
-    return
-  }
+
 
   if (new_operations.status_isNull || new_operations.finish_detail_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_operations.project_code}" style="padding-bottom: 0.2em" name="${new_operations.project_code}" alt="Needs Entry"></div>`
@@ -39,7 +47,7 @@ function addOperations(new_operations, prepend = false) {
     `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="card-${new_operations.project_code}" name="${new_operations.project_code}" edit="0">
     <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_operations.project_code}">
       <p id="project_code_${new_operations.project_code}">${new_operations.project_code}</p>
-      <div class="d-flex justify-content-between" id="card-header-icons">
+      <div class="d-flex justify-content-between" id="card-header-icons" name="project_code">
         ${alerted ? alerted_tag : ''}
         <div class="col" style="padding-right:0em;">
           <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_operations.project_code}" name="${new_operations.project_code}" alt="Edit Entry">
@@ -48,16 +56,31 @@ function addOperations(new_operations, prepend = false) {
     </div>
     <div class="card-body d-flex justify-content-between" id="card-body-${new_operations.project_code}">
       <div class="card_row">
-        <p class="card-text" id="project_name_${new_operations.project_code}">${new_operations.project_name}</p>
-        <p class="card-text" id="client_name_${new_operations.project_code}">${new_operations.client_name}</p>
-        <p class="card-text ${new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="finish_detail_${new_operations.project_code}"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
+        <p class="card-text" id="project_name_${new_operations.project_code}" name="project_name">${new_operations.project_name}</p>
+        <p class="card-text" id="client_name_${new_operations.project_code}" name="client_name">${new_operations.client_name}</p>
+        <p class="card-text ${new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="finish_detail_${new_operations.project_code}" name="finish_detail"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
-        <p class="card-text" id="cancelled_${new_operations.project_code}"><span class="text-muted">Cancelled: </span>${new_operations.cancelled ? 'True' : 'False'}</p>
+        <p class="card-text ${new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}" name="status">
+          <span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}
+        </p>
+        <p class="card-text" id="cancelled_${new_operations.project_code}" name="cancelled" value="${(new_operations.status_isNull) ? 'true' : 'false'}>
+        <span class="text-muted">Cancelled: </span>${new_operations.cancelled ? 'True' : 'False'}
+        </p>
       </div>
     </div>
   </div>`
+
+  return operations_card_template
+}
+
+// UI Functionality: Add Operations
+function addOperations(new_operations, prepend = false) {
+  if ($(`.card[name*='${new_operations.project_code}']`).length > 0) {
+    return
+  }
+
+  operations_card_template = getTemplate(new_operations)
 
   // Adding New Operations Card to page
   if (prepend) { $('#operations_display').prepend(operations_card_template) }
@@ -202,6 +225,11 @@ $("#reverse-list").click(function () {
 })
 
 // ===== EDIT FEATURE ======
+
+function edit() {
+  return null;
+}
+
 
 // enter editMode
 function enterEdit(library, project_code) {

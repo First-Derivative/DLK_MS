@@ -51,26 +51,20 @@ function getOperations(obj) {
 }
 
 // GetAll Operations
-function getAllOperations(library, callback) {
-  $.ajax(
-    {
-      type: "GET",
-      url: getAllOperations_url,
-      success: function (response) {
-        operations = response.operations
-        operations_count = operations.length
-
-        for (i = 0; i < operations_count; i++) {
-          content = operations.pop()
-          library.append(content)
-          callback(content)
+function getAllOperations() {
+  return new Promise((resolve, reject) => {
+    $.ajax(
+      {
+        type: "GET",
+        url: getAllOperations_url,
+        success: function (response) {
+          resolve(response)
+        },
+        error: function (error) {
+          reject(error)
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
-      }
-    })
+      })
+  })
 }
 
 // Post Operations
@@ -110,7 +104,7 @@ function postNewOperations(library, new_operations) {
 }
 
 function postEditOperations(edit_operations) {
-  return new Promise((resolve, reject) =>{
+  return new Promise((resolve, reject) => {
     $.ajax(
       {
         type: "POST",
