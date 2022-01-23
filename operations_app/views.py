@@ -86,7 +86,7 @@ def postEditOperations(request):
 
       new_operations.full_clean()
       new_operations.save()
-      return JsonResponse({"status": "OK"})
+      return JsonResponse({"operations": OperationsSerializer(new_operations).data})
       
     except ValidationError as e:
       return Response(status=400, data=dict(e))

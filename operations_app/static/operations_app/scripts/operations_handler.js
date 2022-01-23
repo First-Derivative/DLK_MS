@@ -61,7 +61,7 @@ function getTemplate(new_operations) {
       </div>
       <div class="card_row">
         <p class="card-text ${new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}" name="status"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
-        <p class="card-text" id="cancelled_${new_operations.project_code}" name="cancelled" value="${(new_operations.status_isNull) ? 'true' : 'false'}">
+        <p class="card-text" id="cancelled_${new_operations.project_code}" name="cancelled" value="${(new_operations.cancelled) ? 'true' : 'false'}">
         <span class="text-muted">Cancelled: </span>${new_operations.cancelled ? 'True' : 'False'}
         </p>
       </div>
@@ -83,6 +83,12 @@ function addOperations(new_operations, prepend = false, replace = false) {
     
     else{ $(`div[id=card-${new_operations.project_code}]`).replaceWith(operations_card_template) }
     
+    // Attatching Edit Handler to Replaced Card
+    $(`div[id=card-${new_operations.project_code}]`).on("click", function () {
+      $(this).empty
+      id = $(this).attr("name")
+      edit(cache, new_operations.project_code)
+    })
     document.getElementById(`card-${new_operations.project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
     return;
   }
@@ -102,7 +108,6 @@ function addOperations(new_operations, prepend = false, replace = false) {
   $(edit_selector).on("click", function () {
     $(this).empty
     id = $(this).attr("name")
-    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
     edit(cache, new_operations.project_code)
   })
 }
@@ -245,14 +250,14 @@ function edit(library, project_code) {
 
     $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
     $(`#card-body-${project_code}`).removeClass(["d-flex", "justify-content-between"])
-    $(`#card-footer-${project_code}`).css("display", "block")
-
 
     $(`p[id*=${project_code}]`).each(function () {
       field = $(this).attr("name") ? $(this).attr("name") : ''
       dom_value = $(this).text() ? $(this).text() : ''
-      value = ($(this).attr("value") == "true") ? true : $(this).attr("value")
+      value = undefined
       input_field_template = ``
+      
+      if(field == "cancelled") { console.log($(this).attr("value"));value = $(this).attr("value"); console.log(value) }
 
       // Configuring Input DOM based on field
       if (field == "project_code") {
@@ -264,7 +269,7 @@ function edit(library, project_code) {
       else if (field == "cancelled") {
         input_field_template = `
         <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
-          <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(value) ? 'checked' : ''}>
+          <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(value == 'true') ? 'checked' : ''}>
           <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-cancelled" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
         </div>`
       } else {
@@ -307,14 +312,12 @@ function edit(library, project_code) {
     // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function () {
       archive = library.getItem(project_code)
-      template = getTemplate(archive.project_code)
       addOperations(archive, prepend=false, replace=true)
-
     })
 
     // Save Changes button handler
     $(`#save-edit-${project_code}`).on("click", function () {
-
+      console.log("saving changes")
       $(`#edit-errors-${project_code}`).empty()
 
       edit_operations = {}
@@ -333,8 +336,10 @@ function edit(library, project_code) {
 
       // Make Ajax Call & handle OK response
       postEditOperations(edit_operations).then((response) => {
-        library.updateItem(edit_operations)
-        leaveEdit(library, project_code)
+        new_edit = response.operations
+        console.log(new_edit)
+        library.updateItem(new_edit)
+        addOperations(new_edit, prepend=false, replace=true)
       }).catch((error) => {
         if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
@@ -349,59 +354,7 @@ function edit(library, project_code) {
 
   }
   else {
-    console.log("Edit Error")
+    console.log("Already in edit mode")
   }
 
-}
-
-// leave editMode
-function leaveEdit(library, project_code) {
-  console.log("leave called")
-  edit_check = $(`.card[name=${project_code}]`).attr("edit")
-
-  if (edit_check == "1") {
-    $(`.card[name=${project_code}]`).attr("edit", "0") // set active card to !edit mode
-    $(`#card-${project_code}`).unwrap() //unwraps <form> from card
-
-    operations = library.getItem(project_code)
-
-    $(`.form-group[id*=${project_code}]`).each(function () {
-      field = $(this).attr("id")
-      field = field.substr(0, field.length - 12)
-
-      if (field == "project_name" || field == "client_name" || field == "project_code") {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${operations[field]} </p>`
-      }
-      else if (field == "cancelled") {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${(operations[field]) ? 'True' : 'False'}</p>`
-      }
-      else {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${operations[field]}</p>`
-      }
-
-      $(this).empty()
-      $(this).replaceWith(card_text_template)
-
-      document.getElementById(`card-${project_code}`).scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" })
-    })
-
-    $(`#card-alert-${project_code}`).unwrap(); $(`#card-alert-${project_code}`).remove();
-    $(`#edit-errors-${project_code}`).remove()
-    $(`#card_footer_${project_code}`).remove()
-    $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
-
-    // Edit Cancelled Handlers
-    if (operations.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card")) {
-      $(`#card-${project_code}`).addClass("cancelled-card")
-      $(`#card-header-${project_code}`).addClass("cancelled-card-header")
-    }
-
-    if (!operations.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card")) {
-      $(`#card-${project_code}`).removeClass("cancelled-card")
-      $(`#card-header-${project_code}`).removeClass("cancelled-card-header")
-    }
-  }
-  else {
-    console.log("edge-case: leaveEdit() called when edit attr is false on card")
-  }
 }
