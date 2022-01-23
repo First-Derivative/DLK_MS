@@ -206,7 +206,22 @@ $("#modal-btn-save").click(function () {
     else { new_purchases[property] = field.value }
 
   })
-  postPurchases(cache, new_purchases)
+
+  postNewPurchases(new_purchases).then((response) => {
+    response_purchase = response.new_purchases
+    cache.append(response_purchase)
+    addPurchases(response_purchase, prepend=true, replace=false)
+    $("#modal-btn-close").trigger("click")
+  }).catch( (error) => {
+    console.log(error)
+    console.log(error.responseJSON)
+    Object.keys(error.responseJSON).forEach(key => {
+      title = propertyToTitle(String(key))
+      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+      $("#modal-errors").prepend(error_text_template)
+      $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+    })
+  })
 })
 // ===== SEARCH FEAURE =====
 

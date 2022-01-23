@@ -36,6 +36,7 @@ def getAllPurchases(request):
 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="purchases")
+@api_view(['POST'])
 def postNewPurchases(request):
   post = request.POST
 
@@ -62,11 +63,11 @@ def postNewPurchases(request):
     try: 
       new_purchase.full_clean()
     except ValidationError as e:
-      return JsonResponse({"error":dict(e)})
+      return Response(status=400, data=dict(e))
 
     new_purchase.save()
 
-    return JsonResponse({"status":"OK"})
+    return JsonResponse({"new_purchases": PurchasesSerializer(new_purchase).data})
 
 
 # POST Edit Purchases

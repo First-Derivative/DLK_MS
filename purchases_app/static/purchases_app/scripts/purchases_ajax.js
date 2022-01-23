@@ -1,7 +1,6 @@
 // GET Search API
 function searchPurchases(query, library)
 {
-  library.clearLibrary()
   $.ajax(
     {
       type: "GET",
@@ -51,8 +50,9 @@ function getAllPurchases() {
 }
 
 // POST New Purchases
-function postPurchases(library, new_purchase) {
-  $.ajax(
+function postNewPurchases(new_purchase) {
+  return new Promise ( (resolve, reject) => {
+    $.ajax(
     {
       type: "POST",
       headers:
@@ -65,27 +65,13 @@ function postPurchases(library, new_purchase) {
         'data': new_purchase
       },
       success: function (response) {
-        if (response.error) {
-          Object.keys(response.error).forEach(key => 
-            { 
-              title = propertyToTitle(key)
-              error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${response.error[key]}</p></div>`
-              $("#modal-errors").prepend(error_text_template)
-              $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
-            })
-        }
-        else {
-          new_purchase["invoice_amount"] = new_purchase["currency"] + new_purchase["value"]
-          library.append(new_purchase)
-          addPurchases(new_purchase, true)
-          $("#modal-btn-close").trigger( "click" );
-        }
+       resolve(response)
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
+      error: function (error) {
+        reject(error)  
       }
     })
+  })
 }
 
 // Post Edit Purchases
