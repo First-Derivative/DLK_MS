@@ -294,7 +294,7 @@ function edit(library, project_code) {
         input_field_template = `
         <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
           <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(value == 'true') ? 'checked' : ''}>
-          <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-cancelled" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
+          <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
         </div>`
       } else {
         input_field_template = `
