@@ -27,6 +27,24 @@
   background-color: #0773e6;
 }
 
+.std-btn
+{
+  background-color: #4d4b4a;
+  color: white;
+  width: 100%;
+}
+
+.std-btn:hover
+{
+  background-color: #383736;
+  color:white;
+}
+
+.std-btn-large
+{
+  width: 100%;
+}
+
 /* Search Results */
 
 .search_wrapper
