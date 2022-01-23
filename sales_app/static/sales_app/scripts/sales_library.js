@@ -1,17 +1,57 @@
 class Library {
-  constructor() {
-    this.index = [];
-    this.setLibrary = function (new_library) {
-      this.index = new_library;
-    };
-    this.clearLibrary = function () {
-      this.index = [];
-    };
-    this.getLibrary = function () {
-      return this.index;
-    };
-    this.append = function (sale) {
-      this.index.push(sale);
-    };
+  constructor(library) {
+    this.index = library;
   }
+
+  setLibrary(new_library) {
+    this.index = new_library;
+  }
+
+  get library(){
+    return this.index
+  }
+
+  get allCancelled()
+  {
+    this.output = []
+    for (const item of this.index) { if (item.cancelled) { this.output.push(item) }}
+    return this.output
+  }
+
+  get allCompleted()
+  {
+    this.output = []
+    for (const item of this.index) { if (item.completed) { this.output.push(item) }}
+    return this.output
+  }
+
+  append(sales)
+  {
+    this.index.push(sales)
+  }
+
+  clearLibrary()
+  {
+    this.index = []
+  }
+
+  getItem(project_code) {
+    for (i = 0; i < this.index.length; i++) {
+      if (this.index[i].project_code == project_code) {
+        return this.index[i]
+      }
+    }
+    return null
+  }
+
+  updateItem(item) {
+    for (i = 0; i < this.index.length; i++) {
+      if (this.index[i].project_code == item.project_code) {
+        this.index[i] = item
+        return
+      }
+    }
+  }
+
+
 }
