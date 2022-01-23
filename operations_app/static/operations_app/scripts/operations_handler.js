@@ -13,7 +13,7 @@ function start(library) {
       addOperations(content)
     }
   }).catch((error) => {
-    alert("textStatus: " + error + " " + error)
+    $(`operations_display`).append(`<p class="h5 text-danger> Get Operations Error: Please report bug with the text: ${error} </p>`)
   })
 
 }
@@ -188,8 +188,22 @@ $("#left_content_form").on("keypress", function (event) {
     $("#operations_display").prepend(search_header_template)
 
     const input_value = $("#input-search").val()
-    searchOperations(input_value, cache)
-    return false;
+    cache.clearLibrary()
+    searchOperations(input_value).then((response) => {
+      $("#input-search-clear").addClass("operations_standard-btn-danger")
+      if (response.length > 0) {
+        for (const operations of response) {
+          $(".header_title").text(`Found ${response.length} results...`)
+          operations["searched"] = true
+          cache.append(operations)
+          addOperations(operations)
+        }
+      }
+      else { $(".header_title").text(`No results for ${input_value}`) }
+    }).catch( (error) => {
+      $(`operations_display`).append(`<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`)
+    })
+
   }
 })
 
@@ -197,7 +211,7 @@ $("#left_content_form").on("keypress", function (event) {
 $("#input-search-clear").click(function () {
   $(this).removeClass("operations_standard-btn-danger")
   $("#input-search").val("")
-  leaveSearch()
+  leaveSearch(cache)
 })
 
 // UX Functionality: Leave 'search mode' ALT Trigger:  escape key
@@ -221,7 +235,7 @@ function leaveSearch() {
   $("#input-search").val("")
   search_mode = false
   removeAllOperations()
-  start()
+  start(cache)
 }
 
 // ===== FILTERING TOGGLES =====
