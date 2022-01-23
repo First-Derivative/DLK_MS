@@ -47,7 +47,7 @@ function getTemplate(new_sales)
 {
   alerted = false
   
-  if (new_sales.project_detail_isNull || new_sales.order_date_isNull || new_sales.sales_date_isNull || new_sales.payment_term_isNull) { alerted = true }
+  if (new_sales.project_detail_isNull || new_sales.order_date_isNull || new_sales.shipping_date_isNull || new_sales.payment_term_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_sales.project_code}" style="padding-bottom: 0.2em" name="${new_sales.project_code}" alt="Needs Entry"></div>`
 
   sales_card_template =
@@ -71,8 +71,8 @@ function getTemplate(new_sales)
         <p class="card-text value" id="invoice_amount_${new_sales.project_code}" name="invoice_amount">${new_sales.invoice_amount}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${ (new_sales.order_date_isNull) ? 'mssing_text' : ''}" id="order_date_${new_sales.project_code}" name-"order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
-        <p class="card-text ${(new_sales.sales_date_isNull) ? 'missing_text' : ''}" id="sales_date_${new_sales.project_code}" name="sales_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.sales_date_isNull)  ? 'null' : new_sales.sales_date}</p>
+        <p class="card-text ${ (new_sales.order_date_isNull) ? 'missing_text' : ''}" id="order_date_${new_sales.project_code}" name-"order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
+        <p class="card-text ${(new_sales.shipping_date_isNull) ? 'missing_text' : ''}" id="shipping_date_${new_sales.project_code}" name="shipping_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.shipping_date_isNull)  ? 'null' : new_sales.shipping_date}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sales.project_code}">
@@ -236,7 +236,7 @@ function enterEditMode(project_code) {
       $(`#card-footer-${project_code}`).css("display", "block")
       
       // Replace p tags with inputs (Excludes Currency + Value)
-      fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "sales_date", "payment_term"]
+      fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
       $.each(fields, function (i, item) {
         
         // handles project_code, project_name, client_name
@@ -432,7 +432,7 @@ function leaveEditMode(sale) {
     else if (field == "invoice_amount") {
       $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text value" id="invoice_amount_${project_code}">${value}</p>`)
     }
-    else if (field == "order_date" || field == "sales_date") {
+    else if (field == "order_date" || field == "shipping_date") {
       $(`.card_row[name=${project_code}_row1]`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
     }
     else if (field == "project_detail" || field == "payment_term") {
