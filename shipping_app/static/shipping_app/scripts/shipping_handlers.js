@@ -72,9 +72,9 @@ function getTemplate(new_shipping){
     <div class="card-footer" id="card-footer-${new_shipping.project_code}">
       <p class="card-text ${new_shipping.remarks_isNull ? 'missing_text' : ''}" id="remarks_${new_shipping.project_code}" name="remarks"><span class="text-muted">Remarks: </span>${new_shipping.remarks_isNull ? 'null' : new_shipping.remarks}</p>
 
-      <p class="card-text" id="cancelled_${new_shipping.project_code}" name="cancelled" value="${ (new_shipping.cancelled) ? 'true' : 'else' }"><span class="text-muted">Cancelled: </span>${new_shipping.cancelled ? 'True' : 'False'}</p>
+      <p class="card-text" id="cancelled_${new_shipping.project_code}" name="cancelled" value="${ (new_shipping.cancelled) ? 'true' : 'false' }"><span class="text-muted">Cancelled: </span>${new_shipping.cancelled ? 'True' : 'False'}</p>
 
-      <p class="card-text" id="completed_${new_shipping.project_code}" name="completed" value="${ (new_shipping.completed) ? 'true' : 'else' }"><span class="text-muted">Completed: </span>${new_shipping.completed ? 'True' : 'False'}</p>
+      <p class="card-text" id="completed_${new_shipping.project_code}" name="completed" value="${ (new_shipping.completed) ? 'true' : 'false' }"><span class="text-muted">Completed: </span>${new_shipping.completed ? 'True' : 'False'}</p>
     </div>
   </div>`
 
