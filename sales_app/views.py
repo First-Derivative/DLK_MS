@@ -81,15 +81,15 @@ def addSales(request):
         break
     
     #Instantiate and save new Sale object on DB
-    new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled)
+    new_sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled)
     try:
-      new_sale.full_clean()
+      new_sales.full_clean()
     except ValidationError as e:
       return JsonResponse({"error": dict(e)})
 
     #end of user-flow for succesful request: return status OK
-    new_sale.save()
-    return JsonResponse({"status":"OK"}) #consider sending new_sale back if necessary instead of status:OK
+    new_sales.save()
+    return JsonResponse({"status":"OK"}) #consider sending new_sales back if necessary instead of status:OK
 
 # EDIT SALE
 #@unauthenticated_check 

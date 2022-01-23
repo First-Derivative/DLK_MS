@@ -1,4 +1,5 @@
 // ===== AUXILIARY FUNCTIONS =====
+// Starts main function of webpage: getsAllSales & appends to #sales_display
 function start(library) {
   library.clearLibrary()
   getAllSales().then((response) => {
@@ -15,6 +16,24 @@ function start(library) {
   })
 }
 
+function propertyToTitle(property) {
+  format = property.split("_")
+  for (i = 0; i < format.length; i++) {
+    format[i] = format[i].charAt(0).toUpperCase() + format[i].substr(1, format[i].length)
+  }
+  return format.join(" ")
+}
+
+// UX Functionality: resolveCurrency for API serialized schema for Sales
+function resolveCurrency(currency) {
+  switch (currency) {
+    case "MYR": return "RM";
+    case "EUR": return "€";
+    case "USD": return "$";
+    default: return "ERROR";
+  }
+}
+
 $(`#page_down`).click(function () {
   window.scrollTo(0, document.body.scrollHeight);
 })
@@ -22,6 +41,132 @@ $(`#page_down`).click(function () {
 $(`#page_up`).click(function () {
   window.scrollTo(document.body.scrollHeight, 0);
 })
+
+// ===== UI ADD/REMOVE =====
+function getTemplate(new_sales)
+{
+  alerted = false
+  
+  if (new_sales.project_detail_isNull || new_sales.order_date_isNull || new_sales.sales_date_isNull || new_sales.payment_term_isNull) { alerted = true }
+  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_sales.project_code}" style="padding-bottom: 0.2em" name="${new_sales.project_code}" alt="Needs Entry"></div>`
+
+  sales_card_template =
+  `<div class="card ${new_sales.cancelled ? 'cancelled-card' : ''} ${new_sales.completed ? 'completed-card' : ''}"  id="card-${new_sales.project_code}" name="${new_sales.project_code}">
+    <div class="card-header ${new_sales.cancelled ? 'cancelled-card-header' : ''} ${new_sales.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_sales.project_code}">
+      <p id="project_code_${new_sales.project_code}" name="project_code">${new_sales.project_code}</p>
+      <div class="d-flex justify-content-between" id="card-header-icons">
+        ${alerted ? alerted_tag : ''}
+        <div class="col">
+          <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sales.project_code}" name="${new_sales.project_code}" alt="Edit Entry">
+        </div>
+        <div class="col" style="padding-right:0em;">
+          <img src="${droparrow_src}" width="24" height="24" class="hoverable header-img" id="card-dropdown-${new_sales.project_code}" name="${new_sales.project_code}" alt="More Info">
+        </div>
+      </div>
+    </div>
+    <div class="card-body d-flex justify-content-between" id="card-body-${new_sales.project_code}">
+      <div class="card_row">
+        <p class="card-text" id="project_name_${new_sales.project_code}" name="project_name">${new_sales.project_name}</p>
+        <p class="card-text" id="client_name_${new_sales.project_code}" name="client_name">${new_sales.client_name}</p>
+        <p class="card-text value" id="invoice_amount_${new_sales.project_code}" name="invoice_amount">${new_sales.invoice_amount}</p>
+      </div>
+      <div class="card_row">
+        <p class="card-text ${ (new_sales.order_date_isNull) ? 'mssing_text' : ''}" id="order_date_${new_sales.project_code}" name-"order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
+        <p class="card-text ${(new_sales.sales_date_isNull) ? 'missing_text' : ''}" id="sales_date_${new_sales.project_code}" name="sales_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.sales_date_isNull)  ? 'null' : new_sales.sales_date}</p>
+      </div>
+    </div>
+    <div class="card-footer" id="card-footer-${new_sales.project_code}">
+      <p class="card-text ${(new_sales.project_detail_isNull) ? 'missing_text' : ''}" id="project_detail_${new_sales.project_code}" name="project_detail"><span class="text-muted">Project Detail: </span>${ (new_sales.project_detail_isNull) ? 'null' : new_sales.project_detail}</p>
+      <p class="card-text ${(new_sales.payment_term_isNull) ? 'missing_text' : ''}" id="payment_term_${new_sales.project_code}" name="payment_term"><span class="text-muted">Payment Detail: </span>${ (new_sales.payment_term_isNull) ? 'null' : new_sales.payment_term}</p>
+      <p class="card-text" id="cancelled_${new_sales.project_code}" name="cancelled" value="${ (new_sales.cancelled) ? 'true' : 'false'}"><span class="text-muted">Cancelled: </span>${new_sales.cancelled ? 'True' : 'False'}</p>
+      <p class="card-text" id="completed_${new_sales.project_code}" name="completed" value="${ (new_sales.completed) ? 'true' : 'false'}"><span class="text-muted">Completed: </span>${new_sales.completed ? 'True' : 'False'}</p>
+    </div>
+</div>`
+
+    return sales_card_template;
+}
+
+// UI Functionality: Add Sale
+function addSales(new_sales, prepend=false, replace=false) {
+  // edge-case replace handler
+  if (replace == true) {
+    sales_card_template = getTemplate(new_sales)
+    if( $(`form[id=edit-form-${new_sales.project_code}]`).length > 0 )
+    {
+      $(`form[id=edit-form-${new_sales.project_code}]`).replaceWith(sales_card_template)
+    }
+    
+    else{ $(`div[id=card-${new_sales.project_code}]`).replaceWith(sales_card_template) }
+    
+    // Attatching Edit Handler to Replaced Card
+    $(`img[id=card-edit-${new_sales.project_code}]`).on("click", function () {
+      $(this).empty
+      id = $(this).attr("name")
+      if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+      edit(cache, new_sales.project_code)
+    })
+    
+    // Dropdown for sales Card Handler
+    $(`img[id=card-dropdown-${new_sales.project_code}]`).on("click", function () {
+      id = $(this).attr("name")
+  
+      if ($(`#card-footer-${id}`).css('display') == "none") {
+        $(`#card-footer-${id}`).show("fast")
+      }
+      else { $(`#card-footer-${id}`).hide("fast") }
+    })
+    
+    document.getElementById(`card-${new_sales.project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
+    return;
+  }
+
+  if ($(`.card[name*='${new_sales.project_code}']`).length > 0) {
+    return
+  }
+
+  sales_card_template = getTemplate(new_sales)
+
+  // Adding New Sales Card to page
+  if (prepend) { $('#sales_display').prepend(sales_card_template) }
+  else { $('#sales_display').append(sales_card_template) }
+
+  // Set new_sales card css to display none
+  $(`#card-footer-${new_sales.project_code}`).css("display", "none")
+
+  // Dropdown for sales Card Handler
+  dropdown_selector = "#card-dropdown-" + new_sales.project_code
+  $(dropdown_selector).on("click", function () {
+    id = $(this).attr("name")
+
+    if ($(`#card-footer-${id}`).css('display') == "none") {
+      $(`#card-footer-${id}`).show("fast")
+    }
+    else { $(`#card-footer-${id}`).hide("fast") }
+  })
+
+  // Edit button for sales Card Handler
+  edit_selector = "#card-edit-" + new_sales.project_code
+  $(edit_selector).on("click", function () {
+    id = $(this).attr("name")
+    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+    edit(cache, new_sales.project_code)
+  })
+}
+
+// UI Functionality: Removes all Sales Cards
+function removeAllSales() {
+  $(`.card`).each(function () {
+    $(this).off()
+  })
+  $("#sales_display").empty()
+}
+
+// UI Functionality: Removes singular Sales Card with project_code
+function removeSales(project_code) {
+  $(`div[id*='${project_code}']`).off() // unbinds handlers
+  $(`div[id*='${project_code}']`).remove()
+}
+
 
 // UX Functionality: Add Sale Handler
 $("#modal-btn-save").click(function () {
@@ -67,76 +212,6 @@ $("#modal-btn-save").click(function () {
   postSale(cache, new_sales)
 })
 
-// UI Functionality: Add Sale
-function addSales(new_sale) {
-  alerted = false
-  for (const field of Object.entries(new_sale)) {
-    if (new_sale[field[0]] === '') { alerted = true; }
-  }
-
-  alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" class="hoverable" id="card-alert-${new_sale.project_code}" style="padding-bottom: 0.2em" name="${new_sale.project_code}" alt="Needs Entry"></div>`
-
-  sales_card_template =
-    `<div class="card ${new_sale.cancelled ? 'cancelled-card' : ''} ${new_sale.completed ? 'completed-card' : ''}"  id="sales-card-${new_sale.project_code}" name="${new_sale.project_code}">
-    <div class="card-header ${new_sale.cancelled ? 'cancelled-card-header' : ''} ${new_sale.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="sales-card-header-${new_sale.project_code}">
-      <p id="project_code_${new_sale.project_code}">${new_sale.project_code}</p>
-      <div class="d-flex justify-content-between" id="card-header-icons">
-      ${alerted ? alerted_tag : ''}
-      <div class="col">
-        <img src="${edit_src}" width="24" height="24" class="hoverable header-img" id="card-edit-${new_sale.project_code}" name="${new_sale.project_code}" alt="Edit Entry">
-      </div>
-      <div class="col" style="padding-right:0em;">
-        <img src="${droparrow_src}" width="24" height="24" class="hoverable header-img" id="card-dropdown-${new_sale.project_code}" name="${new_sale.project_code}" alt="More Info">
-      </div>
-      </div>
-    </div>
-    <div class="card-body d-flex justify-content-between" id="card-body-${new_sale.project_code}">
-      <div class="card_row">
-        <p class="card-text" id="project_name_${new_sale.project_code}">${new_sale.project_name}</p>
-        <p class="card-text" id="client_name_${new_sale.project_code}">${new_sale.client_name}</p>
-        <p class="card-text value" id="invoice_amount_${new_sale.project_code}">${new_sale.invoice_amount}</p>
-        
-      </div>
-      <div class="card_row">
-        <p class="card-text" id="order_date_${new_sale.project_code}"><span class="text-muted">Customer Order Date: </span>${new_sale.order_date}</p>
-        <p class="card-text ${(new_sale.shipping_date == '') ? 'missing_text' : ''}" id="shipping_date_${new_sale.project_code}"><span class="text-muted">Customer Wanted Date: </span>${new_sale.shipping_date == '' ? 'null' : new_sale.shipping_date}</p>
-      </div>
-    </div>
-    <div class="card-footer" id="card-footer-${new_sale.project_code}">
-      <p class="card-text ${(new_sale.project_detail == '') ? 'missing_text' : ''}" id="project_detail_${new_sale.project_code}"><span class="text-muted">Project Detail: </span>${new_sale.project_detail == '' ? 'null' : new_sale.project_detail}</p>
-      <p class="card-text ${new_sale.payment_term_isNull ? 'missing_text' : ''}" id="payment_term_${new_sale.project_code}"><span class="text-muted">Payment Detail: </span>${new_sale.payment_term_isNull ? 'null' : new_sale.payment_term}</p>
-      <br>
-      <p class="card-text" id="cancelled_${new_sale.project_code}"><span class="text-muted">Cancelled: </span>${new_sale.cancelled ? 'True' : 'False'}</p>
-      <p class="card-text" id="completed_${new_sale.project_code}"><span class="text-muted">Completed: </span>${new_sale.completed ? 'True' : 'False'}</p>
-    </div>
-  </div>`
-
-  // Prepend new_sale Card to DOM
-  $('#sales_display').prepend(sales_card_template)
-  // Set new_sale card css to display none
-  $(`#card-footer-${new_sale.project_code}`).css("display", "none")
-
-  // Dropdown for sales Card Handler
-  dropdown_selector = "#card-dropdown-" + new_sale.project_code
-  $(dropdown_selector).on("click", function () {
-    id = $(this).attr("name")
-    selector = "#card-footer-" + id
-    if ($(`#card-footer-${id}`).css('display') == "none") {
-      $(`#card-footer-${id}`).show("fast")
-    }
-    else { $(`#card-footer-${id}`).hide("fast") }
-  })
-
-  // Edit button for sales Card Handler
-  edit_selector = "#sales-card-" + new_sale.project_code
-  $(edit_selector).on("click", function () {
-    console.log("edit handler")
-    id = $(this).attr("name")
-    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
-    enterEditMode(new_sale.project_code)
-  })
-}
-
 // UX Functionality: Handler for #reverse-list button
 $("#reverse-list").click(function () {
   $("#sales_display").children().each(function () {
@@ -146,28 +221,28 @@ $("#reverse-list").click(function () {
 
 // UI Functionality: Selects a specific card to enterEditMode, allowing for inputs and POST to db
 function enterEditMode(project_code) {
-  edit_check = $(`#sales-card-${project_code}`).attr('editing');
-
+  edit_check = $(`#card-${project_code}`).attr('editing');
+  
   if (edit_check == undefined || edit_check == "0") {
-
-    if (!$(`#sales-card-${project_code}`).attr("editing") || $(`#sales-card-${project_code}`).attr("editing", "0")) {
-
-      // Set sales-card (wrapper) attribute 'editing' to active '1'
-      $(`#sales-card-${project_code}`).attr("editing", "1")
-
+    
+    if (!$(`#card-${project_code}`).attr("editing") || $(`#card-${project_code}`).attr("editing", "0")) {
+      
+      // Set card (wrapper) attribute 'editing' to active '1'
+      $(`#card-${project_code}`).attr("editing", "1")
+      
       // Edit Card Styling for Editing formatting
-      $(`#sales-card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
+      $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
       $(`#card-body-${project_code}`).removeClass(["d-flex", "justify-content-between"])
       $(`#card-footer-${project_code}`).css("display", "block")
-
+      
       // Replace p tags with inputs (Excludes Currency + Value)
-      fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
+      fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "sales_date", "payment_term"]
       $.each(fields, function (i, item) {
-
+        
         // handles project_code, project_name, client_name
         if (i < 3) {
           if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
-
+          
           const input = $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
           $(`#${item}_${project_code}`).replaceWith(input)
 
@@ -211,9 +286,9 @@ function enterEditMode(project_code) {
       $(`#input_value_${project_code}`).val(invoice_value)
 
       // Format and Append Cancelled & Completed Input
-      sale_cancelled = ($(`#sales-card-${project_code}`).hasClass('cancelled-card')) ? true : false
+      sale_cancelled = ($(`#card-${project_code}`).hasClass('cancelled-card')) ? true : false
       const cancelled_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_cancelled_${project_code}" name="cancelled" ${sale_cancelled ? 'checked' : ''}>`
-      sale_completed = ($(`#sales-card-${project_code}`).hasClass('completed-card')) ? true : false
+      sale_completed = ($(`#card-${project_code}`).hasClass('completed-card')) ? true : false
       const completed_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_completed_${project_code}" name="completed" ${sale_completed ? 'checked' : ''}>`
 
       // Add new Cancelled & Completed DOM elements to card-footer
@@ -227,7 +302,7 @@ function enterEditMode(project_code) {
       $(`#form-group-completed_${project_code}`).append(`<label class="form-check-label pt-1" for="input_completed_${project_code}" style="color: #426285;font-size:1.15em"> Completed Order? </label>`)
 
       // Add Cancel and Save Changes Buttons
-      $(`#sales-card-${project_code}`).append(`<div class="d-flex flex-row justify-content-end m-3 sales_footer_buttons" id="card-footer-buttons-${project_code}">
+      $(`#card-${project_code}`).append(`<div class="d-flex flex-row justify-content-end m-3 sales_footer_buttons" id="card-footer-buttons-${project_code}">
       <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
       <button class="btn sales_standard-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
@@ -246,7 +321,7 @@ function enterEditMode(project_code) {
       // Cancel_edit button for sales editing handler
       $(`#cancel-edit-${project_code}`).on("click", function () {
         id = $(this).attr("name")
-        if ($(`#sales-card-${id}`).attr("editing") == "1") {
+        if ($(`#card-${id}`).attr("editing") == "1") {
           getSale({ "project_code": String(project_code) }, leaveEditMode)
         }
       })
@@ -293,7 +368,7 @@ function enterEditMode(project_code) {
           }
         })
 
-        if ($(`#sales-card-${id}`).attr("editing") == "1") {
+        if ($(`#card-${id}`).attr("editing") == "1") {
           editSale(sale, leaveEditMode)
         }
       })
@@ -310,25 +385,25 @@ function leaveEditMode(sale) {
   is_cancelled = sale.cancelled
   is_completed = sale.completed
 
-  // Reset sales-card & sales-card-header classes
-  $(`#sales-card-${project_code}`).removeClass()
-  $(`#sales-card-header-${project_code}`).removeClass()
+  // Reset card & card-header classes
+  $(`#card-${project_code}`).removeClass()
+  $(`#card-header-${project_code}`).removeClass()
 
   // Revert DOM and Styling to before Edit mode
-  $(`#sales-card-${project_code}`).unwrap()
-  $(`#sales-card-${project_code}`).addClass("card")
-  $(`#sales-card-header-${project_code}`).addClass(["card-header", "d-flex", "flex-row", "justify-content-between"])
+  $(`#card-${project_code}`).unwrap()
+  $(`#card-${project_code}`).addClass("card")
+  $(`#card-header-${project_code}`).addClass(["card-header", "d-flex", "flex-row", "justify-content-between"])
   $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
   $(`#card-footer-${project_code}`).css("display", "flex")
 
   if (is_cancelled) {
-    $(`#sales-card-${project_code}`).addClass("cancelled-card")
-    $(`#sales-card-header-${project_code}`).addClass("cancelled-card-header")
+    $(`#card-${project_code}`).addClass("cancelled-card")
+    $(`#card-header-${project_code}`).addClass("cancelled-card-header")
   }
 
   if (is_completed) {
-    $(`#sales-card-${project_code}`).addClass("completed-card")
-    $(`#sales-card-header-${project_code}`).addClass("completed-card-header")
+    $(`#card-${project_code}`).addClass("completed-card")
+    $(`#card-header-${project_code}`).addClass("completed-card-header")
   }
 
   // Remove excess validation texts
@@ -357,7 +432,7 @@ function leaveEditMode(sale) {
     else if (field == "invoice_amount") {
       $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text value" id="invoice_amount_${project_code}">${value}</p>`)
     }
-    else if (field == "order_date" || field == "shipping_date") {
+    else if (field == "order_date" || field == "sales_date") {
       $(`.card_row[name=${project_code}_row1]`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
     }
     else if (field == "project_detail" || field == "payment_term") {
@@ -368,9 +443,9 @@ function leaveEditMode(sale) {
   $(`#card-footer-${project_code}`).append(`<p class="card-text" id="cancelled_${project_code}"><span class="text-muted">Cancelled: </span>${is_cancelled ? 'True' : 'False'}</p>`)
   $(`#card-footer-${project_code}`).append(`<p class="card-text" id="completed_${project_code}"><span class="text-muted">Completed: </span>${is_completed ? 'True' : 'False'}</p>`)
 
-  // Finally, set sales-card editing to false "0" and scroll into view 
-  $(`#sales-card-${sale.project_code}`).attr("editing", 0)
-  document.getElementById(`sales-card-${sale.project_code}`).scrollIntoView(false)
+  // Finally, set card editing to false "0" and scroll into view 
+  $(`#card-${sale.project_code}`).attr("editing", 0)
+  document.getElementById(`card-${sale.project_code}`).scrollIntoView(false)
 
   // Edit button for sales Card Handler
   $(`#card-edit-${project_code}`).on("click", function () {
@@ -469,45 +544,6 @@ $('#input-completed').click(function () {
     }
   }
 })
-
-// UI Functionality: Removes Sale cards from #sales_display
-function UI_removeSale(sale_id) {
-  $(`div[id*='${sales_id}']`).off() // unbinds handlers ?
-  $(`div[id*='${sales_id}']`).remove()
-}
-
-// UI Functionality: Removes All Sale cards from #sales_display
-function UI_removeAll() {
-  $(`.card`).each(function () {
-    $(this).off()
-  })
-  $("#sales_display").empty()
-}
-
-function propertyToTitle(property) {
-  if (property === "shipping_date") //edge-case
-  {
-    return "Customer Wanted Date"
-  }
-  src = property.split("_")
-  title = null
-  for (i = 0; i < src.length; i++) {
-    src[i] = src[i].charAt(0).toUpperCase() + src[i].substr(1, src[i].length)
-  }
-  title = src.join(" ")
-
-  return title
-}
-
-// UX Functionality: resolveCurrency for API serialized schema for Sales
-function resolveCurrency(currency) {
-  switch (currency) {
-    case "MYR": return "RM";
-    case "EUR": return "€";
-    case "USD": return "$";
-    default: return "ERROR";
-  }
-}
 
 // UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'
 $('#modal-form-addSales input').keydown(function (e) {

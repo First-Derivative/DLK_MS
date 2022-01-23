@@ -68,10 +68,10 @@ def readSheet(sheet):
 
       currency, value = resolveInvoiceAmount(invoice_amount)
 
-      new_sale = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,cancelled=cancelled, completed=completed)
+      new_sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,cancelled=cancelled, completed=completed)
 
-      print("Added {}...".format(new_sale))
-      new_sale.save()
+      print("Added {}...".format(new_sales))
+      new_sales.save()
       time.sleep(5)
 
   elif(sheet == "OPERATION"):

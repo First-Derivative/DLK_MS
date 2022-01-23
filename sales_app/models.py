@@ -33,8 +33,20 @@ class Sales(models.Model):
     return "{a}{b}".format(a=currency_label, b=self.value)
 
   @property
+  def project_detail_isNull(self):
+    if(self.project_detail.lower() == "null" or self.project_detail.lower() == "tba"):
+      return True
+    return False
+
+  @property
+  def order_date_isNull(self):
+    if(self.order_date.lower() == "null" or self.order_date == ""):
+      return True
+    return False
+
+  @property
   def shipping_date_isNull(self):
-    if(self.shipping_date.lower() == "null" or self.shipping_date.lower() == 'TBA'):
+    if(self.shipping_date.lower() == "null" or self.shipping_date.lower() == 'tba'):
       return True
     return False
 

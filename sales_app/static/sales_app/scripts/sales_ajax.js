@@ -68,24 +68,24 @@ function getAllSales(library) {
 }
 
 // Post (new) Sale
-function postSale(library, new_sale) {
+function postSale(library, new_sales) {
   $.ajax(
     {
       type: "POST",
       headers: { "X-CSRFToken": token },
       url: postSales_url,
-      data: { "data": new_sale },
+      data: { "data": new_sales },
       success: function (response) {
         start = 0
         if (response.hasOwnProperty("error")) {
           Object.keys(response.error).forEach(key => {
             error_title = propertyToTitle(key)
             if (start == 0) {
-              $("#modal-errors").prepend(`<div class="row text-left modal-validation-update-text" id="modal-error-text-${new_sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
+              $("#modal-errors").prepend(`<div class="row text-left modal-validation-update-text" id="modal-error-text-${new_sales.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
               $(`.modal-input[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
             else {
-              $(`#modal-error-text-${new_sale.project_code}`).append(`<p style="color: #d82d4e">${error_title} : ${response.error[key]}</p>`)
+              $(`#modal-error-text-${new_sales.project_code}`).append(`<p style="color: #d82d4e">${error_title} : ${response.error[key]}</p>`)
 
               $(`.modal-input[name=${key}]`).css("border", "0.1em solid #d82d4e")
             }
@@ -94,9 +94,9 @@ function postSale(library, new_sale) {
         }
         if (response.hasOwnProperty("status")) {
           if (response.status == "OK") {
-            new_sale["invoice_amount"] = new_sale["currency"] + new_sale["value"]
-            library.append(new_sale)
-            UI_addSale(new_sale)
+            new_sales["invoice_amount"] = new_sales["currency"] + new_sales["value"]
+            library.append(new_sales)
+            UI_addSale(new_sales)
             $("#modal-btn-close").trigger( "click" )
           }
         }
