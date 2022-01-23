@@ -247,8 +247,21 @@ $("#left_content_form").on("keypress", function (event) {
     $("#purchases_display").prepend(search_header_template)
 
     const input_value = $("#input-search").val()
-    searchPurchases(input_value, cache)
-    return false;
+    cache.clearLibrary()
+    searchPurchases(input_value).then((response) => {
+      $("#input-search-clear").addClass("purchases_standard-btn-danger")
+      if (response.length > 0) {
+        for (const purchases of response) {
+          $(".header_title").text(`Found ${response.length} results...`)
+          purchases["searched"] = true
+          cache.append(purchases)
+          addPurchases(purchases)
+        }
+      }
+      else { $(".header_title").text(`No results for ${input_value}`) }
+    }).catch( (error) => {
+      $(`purchases_display`).append(`<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`)
+    })
   }
 })
 
