@@ -1,29 +1,17 @@
 // GET Search API
-function searchOperations(query, library) {
-  library.clearLibrary()
-  $.ajax({
-    type: "GET",
-    url: getSearch_url.replace(0, query),
-    success: function (response) {
-      $("#input-search-clear").addClass("operations_standard-btn-danger")
-
-      if (response.length) {
-        for (const operations of response) {
-          $(".header_title").text(`Found ${response.length} results...`)
-
-          operations["searched"] = true
-          library.append(operations)
-          addOperations(operations)
-        }
+function searchOperations(query) {
+  return new Promise( (resolve, reject) => {
+    $.ajax({
+      type: "GET",
+      url: getSearch_url.replace(0, query),
+      success: function (response) {
+        resolve(response)      
+      },
+      error: function (error) {
+        reject(error)
       }
-      else {
-        $(".header_title").text(`No results for ${query}`)
-      }
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      // Debugging case
-      alert("textStatus: " + textStatus + " " + errorThrown)
-    }
+    })
+
   })
 }
 
