@@ -23,14 +23,7 @@ $(`#page_up`).click(function () {
   window.scrollTo(document.body.scrollHeight, 0);
 })
 
-// ===== UI ADD/REMOVE =====
-
-// UI Functionality: Add Shipping Card
-function addShipping(new_shipping, prepend = false) {
-
-  if ($(`.card[name*='${new_shipping.project_code}']`).length > 0) {
-    return
-  }
+function getTemplate(new_shipping){
   alerted = false
 
   if (new_shipping.germany_isNull || new_shipping.customer_isNull || new_shipping.charges_isNull || new_shipping.remarks_isNull) { alerted = true }
@@ -39,7 +32,7 @@ function addShipping(new_shipping, prepend = false) {
   shipping_card_template =
     `<div class="card ${new_shipping.cancelled ? 'cancelled-card' : ''} ${new_shipping.completed ? 'completed-card' : ''}"  id="card-${new_shipping.project_code}" name="${new_shipping.project_code}" edit="0">
       <div class="card-header ${new_shipping.cancelled ? 'cancelled-card-header' : ''} ${new_shipping.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_shipping.project_code}">
-        <p id="project_code_${new_shipping.project_code}">${new_shipping.project_code}</p>
+        <p id="project_code_${new_shipping.project_code}" name="project_code">${new_shipping.project_code}</p>
         <div class="d-flex justify-content-between" id="card-header-icons">
           ${alerted ? alerted_tag : ''}
           <div class="col">
@@ -53,27 +46,73 @@ function addShipping(new_shipping, prepend = false) {
     <div class="card-body d-flex justify-content-between" id="card-body-${new_shipping.project_code}">
 
       <div class="card_row">
-        <p class="card-text" id="project_name_${new_shipping.project_code}">${new_shipping.project_name}</p>
+        <p class="card-text" id="project_name_${new_shipping.project_code}" name="project_name">${new_shipping.project_name}</p>
 
-        <p class="card-text" id="client_name_${new_shipping.project_code}">${new_shipping.client_name}</p>
+        <p class="card-text" id="client_name_${new_shipping.project_code}" name="client_name">${new_shipping.client_name}</p>
       </div>
 
       <div class="card_row">
-        <p class="card-text ${new_shipping.charges_isNull ? 'missing_text' : ''}" id="charges_${new_shipping.project_code}" id="charges_${new_shipping.project_code}"><span class="text-muted">Charges: </span>${new_shipping.charges_isNull ? 'null' : new_shipping.charges}</p>
+        <p class="card-text ${new_shipping.charges_isNull ? 'missing_text' : ''}" id="charges_${new_shipping.project_code}" id="charges_${new_shipping.project_code}" name="charges"><span class="text-muted">Charges: </span>${new_shipping.charges_isNull ? 'null' : new_shipping.charges}</p>
 
-        <p class="card-text ${new_shipping.germany_isNull ? 'missing_text' : ''}" id="germany_${new_shipping.project_code}"><span class="text-muted">Shipping From Germany: </span>${new_shipping.germany_isNull ? 'null' : new_shipping.germany}</p>
+        <p class="card-text ${new_shipping.germany_isNull ? 'missing_text' : ''}" id="germany_${new_shipping.project_code}" name="germany"><span class="text-muted">Shipping From Germany: </span>${new_shipping.germany_isNull ? 'null' : new_shipping.germany}</p>
 
-        <p class="card-text ${new_shipping.customer_isNull ? 'missing_text' : ''}" id="customer_${new_shipping.project_code}"><span class="text-muted">Shipping To Customer: </span>${new_shipping.customer_isNull ? 'null' : new_shipping.customer}</p>
+        <p class="card-text ${new_shipping.customer_isNull ? 'missing_text' : ''}" id="customer_${new_shipping.project_code}" name="customer"><span class="text-muted">Shipping To Customer: </span>${new_shipping.customer_isNull ? 'null' : new_shipping.customer}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_shipping.project_code}">
-      <p class="card-text ${new_shipping.remarks_isNull ? 'missing_text' : ''}" id="remarks_${new_shipping.project_code}"><span class="text-muted">Remarks: </span>${new_shipping.remarks_isNull ? 'null' : new_shipping.remarks}</p>
+      <p class="card-text ${new_shipping.remarks_isNull ? 'missing_text' : ''}" id="remarks_${new_shipping.project_code}" name="remarks"><span class="text-muted">Remarks: </span>${new_shipping.remarks_isNull ? 'null' : new_shipping.remarks}</p>
 
-      <p class="card-text" id="cancelled_${new_shipping.project_code}"><span class="text-muted">Cancelled: </span>${new_shipping.cancelled ? 'True' : 'False'}</p>
+      <p class="card-text" id="cancelled_${new_shipping.project_code}" name="cancelled" value="${ (new_shipping.cancelled) ? 'true' : 'else' }"><span class="text-muted">Cancelled: </span>${new_shipping.cancelled ? 'True' : 'False'}</p>
 
-      <p class="card-text" id="completed_${new_shipping.project_code}"><span class="text-muted">Completed: </span>${new_shipping.completed ? 'True' : 'False'}</p>
+      <p class="card-text" id="completed_${new_shipping.project_code}" name="completed" value="${ (new_shipping.completed) ? 'true' : 'else' }"><span class="text-muted">Completed: </span>${new_shipping.completed ? 'True' : 'False'}</p>
     </div>
   </div>`
+
+  return shipping_card_template;
+}
+
+// ===== UI ADD/REMOVE =====
+
+// UI Functionality: Add Shipping Card
+function addShipping(new_shipping, prepend = false, replace = false) {
+
+  // edge-case replace handler
+  if (replace == true) {
+    shipping_card_template = getTemplate(new_shipping)
+    if( $(`form[id=edit-form-${new_shipping.project_code}]`).length > 0 )
+    {
+      $(`form[id=edit-form-${new_shipping.project_code}]`).replaceWith(shipping_card_template)
+    }
+    
+    else{ $(`div[id=card-${new_shipping.project_code}]`).replaceWith(shipping_card_template) }
+    
+    // Attatching Edit Handler to Replaced Card
+    $(`img[id=card-edit-${new_shipping.project_code}]`).on("click", function () {
+      $(this).empty
+      id = $(this).attr("name")
+      if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+      edit(cache, new_shipping.project_code)
+    })
+    
+    // Dropdown for shipping Card Handler
+    $(`img[id=card-dropdown-${new_shipping.project_code}]`).on("click", function () {
+      id = $(this).attr("name")
+  
+      if ($(`#card-footer-${id}`).css('display') == "none") {
+        $(`#card-footer-${id}`).show("fast")
+      }
+      else { $(`#card-footer-${id}`).hide("fast") }
+    })
+    
+    document.getElementById(`card-${new_shipping.project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
+    return;
+  }
+
+  if ($(`.card[name*='${new_shipping.project_code}']`).length > 0) {
+    return
+  }
+
+  shipping_card_template = getTemplate(new_shipping)
 
   // Adding New Shipping Card to page
   if (prepend) { $('#shipping_display').prepend(shipping_card_template) }
@@ -86,7 +125,6 @@ function addShipping(new_shipping, prepend = false) {
   dropdown_selector = "#card-dropdown-" + new_shipping.project_code
   $(dropdown_selector).on("click", function () {
     id = $(this).attr("name")
-    selector = "#card-footer-" + id
 
     if ($(`#card-footer-${id}`).css('display') == "none") {
       $(`#card-footer-${id}`).show("fast")
@@ -99,7 +137,7 @@ function addShipping(new_shipping, prepend = false) {
   $(edit_selector).on("click", function () {
     id = $(this).attr("name")
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
-    enterEdit(cache, new_shipping.project_code)
+    edit(cache, new_shipping.project_code)
   })
 
 }
@@ -222,7 +260,7 @@ $("#input-cancelled").click(function () {
   for (const shipping of cache.allCancelled) {
     if (!search_mode) //not in search mode 
     {
-      addShipping(shipping, true)
+      addShipping(shipping, prepend=true, replace=false)
     }
     else { if (shipping.searched) { addShipping(shipping) } }
   }
@@ -239,7 +277,7 @@ $("#input-completed").click(function () {
   for (const shipping of cache.allCompleted) {
     if (!search_mode) //not in search mode 
     {
-      addShipping(shipping, true)
+      addShipping(shipping, prepend=true, replace=false)
     }
     else { if (shipping.searched) { addShipping(shipping) } }
   }
@@ -255,7 +293,7 @@ $("#reverse-list").click(function () {
 // ===== EDIT FEATURE ======
 
 // enter editMode
-function enterEdit(library, project_code) {
+function edit(library, project_code) {
   edit_check = $(`.card[name=${project_code}]`).attr("edit")
 
   if (edit_check == "0") {
@@ -266,12 +304,15 @@ function enterEdit(library, project_code) {
     $(`#card-footer-${project_code}`).css("display", "block")
     $(`#card-dropdown-${project_code}`).parent().hide()
 
-    shipping = library.getItem(project_code)
-
     $(`p[id*=${project_code}]`).each(function () {
-      field = $(this).attr("id")
-      field = field.substr(0, field.length - 12)
+      field = $(this).attr("name") ? $(this).attr("name") : ''
+      dom_value = $(this).text() ? $(this).text() : ''
+      cancelled_value = undefined
+      completed_value = undefined
       input_field_template = ``
+      
+      if(field == "cancelled") { cancelled_value = $(this).attr("value") }
+      if(field == "completed") { completed_value = $(this).attr("value") }
 
       // Configuring Input DOM based on field
       if (field == "project_code") {
@@ -281,23 +322,42 @@ function enterEdit(library, project_code) {
         </div>`
       }
       else if (field == "cancelled" || field == "completed") {
-        input_field_template = `
-        <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
-          <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(shipping[field]) ? 'checked' : ''}>
-          <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
-        </div>`
+        if(field == "cancelled")
+        {
+          input_field_template = `
+          <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
+            <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(cancelled_value == 'true') ? 'checked' : ''}>
+            <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
+          </div>`
+        }
+        else //completed
+        {
+          input_field_template = `
+          <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
+            <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(completed_value == 'true') ? 'checked' : ''}>
+            <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
+          </div>`
+        }
       } else {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${project_code}">
-          <label for="edit_input_${shipping.field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
+          <label for="edit_input_${field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
           <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
         </div>`
       }
 
       $(this).replaceWith(input_field_template)
-
-      if (field != "cancelled" || field != "completed") {
-        $(`.edit-input[id*=${field}_${project_code}]`).val(shipping[field])
+      if ( (field != "cancelled" && field != "completed" ) &&  (field != "project_code" && field != "project_name") && field != "client_name") {
+        buffer = 2
+        if(field == "germany") { buffer = 16 }
+        else if ( field == "customer" ) { buffer = 14 }
+        min = field.length + buffer;
+        max = dom_value.length
+        dom_value = dom_value.substr(min, max)
+        $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
+      }
+      else if (field == "project_code" || field == "project_name" || field == "client_name") {
+        $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
       }
     })
 
@@ -319,7 +379,8 @@ function enterEdit(library, project_code) {
 
     // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function () {
-      leaveEdit(library, project_code)
+      archive = library.getItem(project_code)
+      addShipping(archive, prepend=false, replace=true)
     })
 
     // Save Changes button handler
@@ -345,8 +406,9 @@ function enterEdit(library, project_code) {
       })
       // Make Ajax Call & handle OK response
       postEditShipping(edit_shipping).then((response) => {
-        library.updateItem(edit_shipping)
-        leaveEdit(library, project_code)
+        new_edit = response.shipping
+        library.updateItem(new_edit)
+        addShipping(new_edit, prepend=false, replace=true)
       }).catch((error) => {
         if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
@@ -361,70 +423,6 @@ function enterEdit(library, project_code) {
 
   }
   else {
-    leaveEdit(library, project_code)
-  }
-}
-
-// leave editMode
-function leaveEdit(library, project_code) {
-  edit_check = $(`.card[name=${project_code}]`).attr("edit")
-
-  if (edit_check == "1") {
-    $(`.card[name=${project_code}]`).attr("edit", "0") // set active card to !edit mode
-    $(`#card-${project_code}`).unwrap() //unwraps <form> from card
-
-    shipping = library.getItem(project_code)
-
-    $(`.form-group[id*=${project_code}]`).each(function () {
-      field = $(this).attr("id")
-      field = field.substr(0, field.length - 12)
-
-      if (field == "project_name" || field == "client_name" || field == "project_code") {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"> ${shipping[field]} </p>`
-      }
-      else if (field == "cancelled" || field == "completed") {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${(shipping[field]) ? 'True' : 'False'}</p>`
-      }
-      else {
-        card_text_template = `<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}:</span> ${shipping[field]}</p>`
-      }
-
-      $(this).empty()
-      $(this).replaceWith(card_text_template)
-
-      document.getElementById(`card-${project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
-    })
-
-    $(`#card-alert-${project_code}`).unwrap(); $(`#card-alert-${project_code}`).remove();
-    $(`#edit-errors-${project_code}`).remove()
-    $(`#card_footer_${project_code}`).remove()
-    $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
-    $(`#card-footer-${project_code}`).css("display", "")
-    $(`#card-dropdown-${project_code}`).parent().show("fast")
-
-    // Edit Cancelled Handlers
-    if (shipping.cancelled && !$(`#card-${project_code}`).hasClass("cancelled-card")) {
-      $(`#card-${project_code}`).addClass("cancelled-card")
-      $(`#card-header-${project_code}`).addClass("cancelled-card-header")
-    }
-
-    if (!shipping.cancelled && $(`#card-${project_code}`).hasClass("cancelled-card")) {
-      $(`#card-${project_code}`).removeClass("cancelled-card")
-      $(`#card-header-${project_code}`).removeClass("cancelled-card-header")
-    }
-
-    // Edit Completed Handlers
-    if (shipping.completed && !$(`#card-${project_code}`).hasClass("completed-card")) {
-      $(`#card-${project_code}`).addClass("completed-card")
-      $(`#card-header-${project_code}`).addClass("completed-card-header")
-    }
-
-    if (!shipping.completed && $(`#card-${project_code}`).hasClass("completed-card")) {
-      $(`#card-${project_code}`).removeClass("completed-card")
-      $(`#card-header-${project_code}`).removeClass("completed-card-header")
-    }
-  }
-  else {
-    console.log("edge-case: leaveEdit() called when edit attr is false on card")
+    console.log("Already in edit mode")
   }
 }

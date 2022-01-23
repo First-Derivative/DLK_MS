@@ -62,7 +62,6 @@ def postNewShipping(request):
 @api_view(['POST'])
 def postEditShipping(request):
   post = request.POST
-  print(post)
   project_code = post["data[project_code]"]
   project_name = post["data[project_name]"]
   client_name = post["data[client_name]"] 
@@ -90,7 +89,7 @@ def postEditShipping(request):
 
       new_shipping.full_clean()
       new_shipping.save()
-      return JsonResponse({"status": "OK"})
+      return JsonResponse({"shipping": ShippingSerializer(new_shipping).data})
       
     except ValidationError as e:
       return Response(status=400, data=dict(e))
