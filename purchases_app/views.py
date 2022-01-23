@@ -76,6 +76,7 @@ def postNewPurchases(request):
 def postEditPurchases(request):
   post = request.POST
 
+  purchases_id = post["data[purchases_id]"]
   purchase_order = post["data[purchase_order]"]
   project_code = post["data[project_code]"]
   po_date = post["data[po_date]"]
@@ -87,7 +88,7 @@ def postEditPurchases(request):
   supplier_date = post["data[supplier_date]"]
 
   try:
-    new_purchases = Purchases.objects.get(purchase_order=purchase_order)
+    new_purchases = Purchases.objects.get(purchases_id=purchases_id)
     
     try:
       
@@ -103,7 +104,7 @@ def postEditPurchases(request):
 
       new_purchases.full_clean()
       new_purchases.save()
-      return JsonResponse(PurchasesSerializer(new_purchases).data)
+      return JsonResponse({"purchases": PurchasesSerializer(new_purchases).data})
       
     except ValidationError as e:
       return Response(status=400, data=dict(e))

@@ -32,11 +32,8 @@ $(`#page_up`).click(function () {
 
 // ===== UI ADD/REMOVE =====
 
-// UI Functionality: Add Purchases Card
-function addPurchases(new_purchases, prepend = false) {
-  if ($(`.card[name*='${new_purchases.purchases_id}']`).length > 0) {
-    return
-  }
+function getTemplate(new_purchases)
+{
   alerted = false
   if (new_purchases.supplier_name_isNull || new_purchases.supplier_date_isNull || new_purchases.po_date_isNull || new_purchases.expected_date_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_purchases.purchases_id}" style="padding-bottom: 0.2em" name="${new_purchases.purchases_id}" alt="Needs Entry"></div>`
@@ -44,7 +41,7 @@ function addPurchases(new_purchases, prepend = false) {
   purchases_card_template =
     `<div class="card" id="card-${new_purchases.purchases_id}" name="${new_purchases.purchases_id}" edit="0">
       <div class="card-header d-flex flex-row justify-content-between" id="card-header-${new_purchases.purchases_id}">
-        <p id="purchase_order_${new_purchases.purchase_order}">${new_purchases.purchase_order}</p>
+        <p id="purchase_order_${new_purchases.purchases_id}" name="purchase_order">${new_purchases.purchase_order}</p>
         <div class="d-flex justify-content-between" id="card-header-icons">
           ${alerted ? alerted_tag : ''}
           <div class="col">
@@ -58,29 +55,70 @@ function addPurchases(new_purchases, prepend = false) {
     <div class="card-body d-flex justify-content-between" id="card-body-${new_purchases.purchases_id}">
 
       <div class="card_row">
-        <p class="card-text" id="project_code_${new_purchases.purchases_id}">${new_purchases.project_code}</p>
+        <p class="card-text" id="project_code_${new_purchases.purchases_id}" name="project_code">${new_purchases.project_code}</p>
 
-        <p class="card-text" id="purchased_items_${new_purchases.purchases_id}">${new_purchases.purchased_items}</p>
+        <p class="card-text" id="purchased_items_${new_purchases.purchases_id}" name="purchased_items">${new_purchases.purchased_items}</p>
         
-        <p class="card-text value" id="invoice_amount_${new_purchases.purchases_id}">${new_purchases.invoice_amount}</p>
+        <p class="card-text value" id="invoice_amount_${new_purchases.purchases_id}" name="invoice_amount">${new_purchases.invoice_amount}</p>
       </div>
 
       <div class="card_row">
-        <p class="card-text ${new_purchases.po_date_isNull ? 'missing_text' : ''}" id="po_date_${new_purchases.purchases_id}" id="po_date_${new_purchases.purchases_id}"><span class="text-muted">Purchase Order Date: </span>${new_purchases.po_date_isNull ? 'null' : new_purchases.po_date}</p>
+        <p class="card-text ${new_purchases.po_date_isNull ? 'missing_text' : ''}" id="po_date_${new_purchases.purchases_id}" id="po_date_${new_purchases.purchases_id}" name="po_date"><span class="text-muted">Purchase Order Date: </span>${new_purchases.po_date_isNull ? 'null' : new_purchases.po_date}</p>
 
-        <p class="card-text ${new_purchases.supplier_name_isNull ? 'missing_text' : ''}" id="supplier_name_${new_purchases.purchases_id}"><span class="text-muted">Purchases From: </span>${new_purchases.supplier_name_isNull ? 'null' : new_purchases.supplier_name}</p>
+        <p class="card-text ${new_purchases.supplier_name_isNull ? 'missing_text' : ''}" id="supplier_name_${new_purchases.purchases_id}" name="supplier_name"><span class="text-muted">Purchases From: </span>${new_purchases.supplier_name_isNull ? 'null' : new_purchases.supplier_name}</p>
 
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_purchases.purchases_id}">
 
-      <p class="card-text ${new_purchases.expected_date_isNull ? 'missing_text' : ''}" id="expected_date_${new_purchases.purchases_id}"><span class="text-muted">Expected Payment Date: </span>${new_purchases.expected_date_isNull ? 'null' : new_purchases.expected_date}</p>
+      <p class="card-text ${new_purchases.expected_date_isNull ? 'missing_text' : ''}" id="expected_date_${new_purchases.purchases_id}" name="expected_date"><span class="text-muted">Expected Payment Date: </span>${new_purchases.expected_date_isNull ? 'null' : new_purchases.expected_date}</p>
 
-      <p class="card-text ${new_purchases.supplier_date_isNull ? 'missing_text' : ''}" id="supplier_date_${new_purchases.purchases_id}"><span class="text-muted">Supplier Delivary Date: </span>${new_purchases.supplier_date_isNull ? 'null' : new_purchases.supplier_date}</p>
+      <p class="card-text ${new_purchases.supplier_date_isNull ? 'missing_text' : ''}" id="supplier_date_${new_purchases.purchases_id}" name="supplier_date"><span class="text-muted">Supplier Delivary Date: </span>${new_purchases.supplier_date_isNull ? 'null' : new_purchases.supplier_date}</p>
 
     </div>
   </div>`
 
+  return purchases_card_template;
+}
+
+// UI Functionality: Add Purchases Card
+function addPurchases(new_purchases, prepend = false, replace=false) {
+    // edge-case replace handler
+  if (replace == true) {
+    purchases_card_template = getTemplate(new_purchases)
+    if( $(`form[id=edit-form-${new_purchases.purchases_id}]`).length > 0 )
+    {
+      $(`form[id=edit-form-${new_purchases.purchases_id}]`).replaceWith(purchases_card_template)
+    }
+    
+    else{ $(`div[id=card-${new_purchases.purchases_id}]`).replaceWith(purchases_card_template) }
+    
+    // Attaching Edit Handler to Replaced Card
+    $(`img[id=card-edit-${new_purchases.purchases_id}]`).on("click", function () {
+      $(this).empty
+      id = $(this).attr("name")
+      if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
+      edit(cache, new_purchases.purchases_id)
+    })
+    
+    // Dropdown for purchases Card Handler
+    $(`img[id=card-dropdown-${new_purchases.purchases_id}]`).on("click", function () {
+      id = $(this).attr("name")
+  
+      if ($(`#card-footer-${id}`).css('display') == "none") {
+        $(`#card-footer-${id}`).show("fast")
+      }
+      else { $(`#card-footer-${id}`).hide("fast") }
+    })
+    
+    document.getElementById(`card-${new_purchases.purchases_id}`).scrollIntoView({ behavior: "smooth", block: "start" })
+    return;
+  }
+
+  if ($(`.card[name*='${new_purchases.purchases_id}']`).length > 0) {
+    return
+  }
+  purchases_card_template = getTemplate(new_purchases)
   // Adding New Purchases Card to page
   if (prepend) { $('#purchases_display').prepend(purchases_card_template) }
   else { $('#purchases_display').append(purchases_card_template) }
@@ -105,7 +143,7 @@ function addPurchases(new_purchases, prepend = false) {
   $(edit_selector).on("click", function () {
     id = $(this).attr("name")
     if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
-    enterEdit(cache, new_purchases.purchases_id)
+    edit(cache, new_purchases.purchases_id)
   })
 
 }
@@ -230,7 +268,7 @@ $("#reverse-list").click(function () {
 // ===== EDIT FEATURE ======
 
 // enter editMode
-function enterEdit(library, purchases_id) {
+function edit(library, purchases_id) {
   edit_check = $(`.card[name=${purchases_id}]`).attr("edit")
 
   if (edit_check == "0") {
@@ -240,13 +278,12 @@ function enterEdit(library, purchases_id) {
     $(`#card-footer-${purchases_id}`).css("display", "block")
     $(`#card-dropdown-${purchases_id}`).parent().hide()
 
-    purchases = library.getItem(purchases_id)
 
     $(`p[id*=${purchases_id}]`).each(function () {
-      field = $(this).attr("id")
-      field = field.substr(0, field.length - 9)
+      field = $(this).attr("name") ? $(this).attr("name") : ''
+      dom_value = $(this).text() ? $(this).text() : ''
       input_field_template = ``
-
+      
       // Configuring Input DOM based on field
       if (field == "purchase_order") {
         input_field_template = `
@@ -255,7 +292,7 @@ function enterEdit(library, purchases_id) {
         </div>`
       }
       else if (field == "invoice_amount") {
-        invoice_currency = purchases.invoice_amount.substr(0, 1)
+        invoice_currency = dom_value.substr(0, 1)
         input_field_template = `
         <div class="mb-3 form-group" id="currency_${purchases_id}">
           <label for="edit_input_currency_${purchases_id}" class="sr-only form-label edit-label">Currency</label>
@@ -272,27 +309,38 @@ function enterEdit(library, purchases_id) {
       } else {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${purchases_id}">
-          <label for="edit_input_${purchases.field}_${purchases_id}" class="form-label edit-label">${propertyToTitle(field)}</label>
+          <label for="edit_input_${field}_${purchases_id}" class="form-label edit-label ">${propertyToTitle(field)}</label>
           <input type="text" class="form-control edit-input" id="edit_input_${field}_${purchases_id}" name="${field}">
         </div>`
       }
-
+      console.log(field)
       $(this).replaceWith(input_field_template)
-      if (field != "invoice_amount") {
-        $(`.edit-input[id*=${field}_${purchases_id}]`).val(purchases[field])
+      if (field == "invoice_amount") {
+        raw = dom_value
+        matches = raw.match(/\d+/g);
+        if (matches.length == 1) { dom_value = matches[0] }
+        else { dom_value = matches[0] + "." + matches[1] }
+        
+        // set .val() for value field
+        $(`#edit_input_value_${purchases_id}`).val(dom_value)
+      }
+      else if(field == "po_date" || field == "supplier_date" || field == "expected_date" || field == "supplier_name")
+      {
+        console.log("in buffer if")
+        buffer = 0
+        if(field == "po_date") { buffer = 21 }
+        else if ( field == "supplier_date" ) { buffer = 24 }
+        else if ( field == "expected_date" ) { buffer = 23 }
+        else if ( field == "supplier_name" ) { buffer = 16 }
+        min = buffer;
+        max = dom_value.length
+        dom_value = dom_value.substr(min, max)
+        $(`.edit-input[id*=${field}_${purchases_id}]`).val(dom_value)
       }
       else {
-        raw = purchases.invoice_amount
-        value = null
-        matches = raw.match(/\d+/g);
-        if (matches.length == 1) { value = matches[0] }
-        else { value = matches[0] + "." + matches[1] }
-        // set .val() for value field
-        $(`#edit_input_value_${purchases_id}`).val(value)
+        $(`.edit-input[id*=${field}_${purchases_id}]`).val(dom_value)
       }
     })
-
-    // 
 
     // Initliaze cancel & save changes buttons @card-footer
     card_footer_template = `
@@ -312,7 +360,8 @@ function enterEdit(library, purchases_id) {
 
     // Cancel Edit button handler
     $(`#cancel-edit-${purchases_id}`).on("click", function () {
-      leaveEdit(library, purchases_id)
+      archive = library.getItem(purchases_id)
+      addPurchases(archive, prepend=false, replace=true)
     })
 
     // Save Changes button handler
@@ -328,11 +377,13 @@ function enterEdit(library, purchases_id) {
         property = field.name
         edit_purchases[property] = field.value
       })
+      edit_purchases["purchases_id"] = purchases_id
 
       // Make Ajax Call & handle OK response
       postEditPurchases(edit_purchases).then((response) => {
-        library.updateItem(response)
-        leaveEdit(library, response.purchases_id)
+        new_edit = response.purchases
+        library.updateItem(new_edit)
+        addPurchases(new_edit, prepend=false, replace=true)
       }).catch((error) => {
         if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
@@ -347,52 +398,6 @@ function enterEdit(library, purchases_id) {
 
   }
   else {
-    leaveEdit(library, purchases_id)
-  }
-}
-
-// leave editMode
-function leaveEdit(library, purchases_id) {
-  edit_check = $(`.card[name=${purchases_id}]`).attr("edit")
-
-  if (edit_check == "1") {
-    $(`.card[name=${purchases_id}]`).attr("edit", "0") // set active card to !edit mode
-    $(`#card-${purchases_id}`).unwrap() //unwraps <form> from card
-
-    purchases = library.getItem(purchases_id)
-
-    $(`.form-group[id*=${purchases_id}]`).each(function () {
-      field = $(this).attr("id")
-      field = field.substr(0, field.length - 9)
-
-      if (field == "purchase_order" || field == "project_code" || field == "purchased_items") {
-        card_text_template = `<p class="card-text" id="${field}_${purchases_id}"> ${purchases[field]} </p>`
-      }
-      else if (field == "currency") {
-        card_text_template = `<p class="card-text value" id="invoice_amount_${purchases_id}">${purchases.invoice_amount}</p>`
-      }
-      else {
-        card_text_template = `<p class="card-text" id="${field}_${purchases_id}"><span class="text-muted">${propertyToTitle(field)}:</span> ${purchases[field]}</p>`
-      }
-
-      if (field != "value") {
-        $(this).empty()
-        $(this).replaceWith(card_text_template)
-      }
-      else { $(this).remove() }
-
-      document.getElementById(`card-${purchases_id}`).scrollIntoView({ behavior: "smooth", block: "start" })
-    })
-
-    $(`#card-alert-${purchases_id}`).unwrap(); $(`#card-alert-${purchases_id}`).remove();
-    $(`#edit-errors-${purchases_id}`).remove()
-    $(`#card_footer_${purchases_id}`).remove()
-    $(`#card-body-${purchases_id}`).addClass(["d-flex", "justify-content-between"])
-    $(`#card-footer-${purchases_id}`).css("display", "")
-    $(`#card-dropdown-${purchases_id}`).parent().show("fast")
-
-  }
-  else {
-    console.log("edge-case: leaveEdit() called when edit attr is false on card")
+    console.log("Already in edit mdoe")
   }
 }
