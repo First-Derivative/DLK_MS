@@ -68,8 +68,9 @@ function getAllOperations() {
 }
 
 // Post Operations
-function postNewOperations(library, new_operations) {
-  $.ajax(
+function postNewOperations(new_operations) {
+  return new Promise((resolve, reject) => {
+    $.ajax(
     {
       type: "POST",
       headers:
@@ -77,30 +78,16 @@ function postNewOperations(library, new_operations) {
         "X-CSRFToken": token
       },
       url: postNewOperations_url,
-      data:
-      {
-        'data': new_operations
-      },
+      data: { 'data': new_operations },
       success: function (response) {
-        if (response.error) { // error handling
-          Object.keys(response.error).forEach(key => {
-            title = propertyToTitle(key)
-            error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${response.error[key]}</p></div>`
-            $("#modal-errors").prepend(error_text_template)
-            $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
-          })
-        }
-        else {
-          library.append(new_operations)
-          addOperations(new_operations, true)
-          $("#modal-btn-close").trigger("click");
-        }
+        resolve(response)
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
+      error: function (error) {
+        reject(error)
       }
     })
+  })
+  
 }
 
 function postEditOperations(edit_operations) {

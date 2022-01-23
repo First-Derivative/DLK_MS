@@ -34,13 +34,14 @@ def getAllOperations(request):
 # POST New Operations
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="operations")
+@api_view(['POST'])
 def postNewOperations(request):
   post = request.POST
 
   # Validate postdata for duplication 
   try:
     operations = Operations.objects.get(project_code=post["data[project_code]"])
-    return JsonResponse({"error":{"duplicate_project_code":"Operations order with that shipping code already exists, please check for duplicate records"}})
+    return Response(status=400, data={"error":{"duplicate_project_code":"Operations order with that shipping code already exists, please check for duplicate records"}})
 
   # No Duplicate Found-> Create new Object
   except Operations.DoesNotExist:
@@ -49,11 +50,10 @@ def postNewOperations(request):
     
     # Instantiate New Operations from Post Data
     new_operations = Operations(project_code=post["data[project_code]"], project_name=post["data[project_name]"], client_name=post["data[client_name]"], status=post["data[status]"], finish_detail=post["data[finish_detail]"], cancelled=cancelled)
-    print(new_operations)
     try:
       new_operations.full_clean()
     except ValidationError as e:
-      return JsonResponse({"error":dict(e)})
+      return Response(status=400, data=dict(e))
     
     new_operations.save()
     return JsonResponse({"status":"OK"})

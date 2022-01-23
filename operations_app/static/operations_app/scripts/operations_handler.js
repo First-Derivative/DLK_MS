@@ -98,7 +98,6 @@ function addOperations(new_operations, prepend = false, replace = false) {
   }
   operations_card_template = getTemplate(new_operations)
 
-
   // Adding New Operations Card to page
   if (prepend) { $('#operations_display').prepend(operations_card_template) }
   else { $('#operations_display').append(operations_card_template) }
@@ -151,7 +150,18 @@ $("#modal-btn-save").click(function () {
       new_operations[property] = field.value
     }
   })
-  postNewOperations(cache, new_operations)
+  postNewOperations(new_operations).then((response) => {
+    cache.append(new_operations)
+    addOperations(new_operations, prepend=true, replace=false)
+    $("#modal-btn-close").trigger("click")
+  }).catch( (error) => {
+    Object.keys(error.responseJSON).forEach(key => {
+      title = propertyToTitle(String(key))
+      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+      $("#modal-errors").prepend(error_text_template)
+      $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+    })
+  })
 })
 
 // ===== SEARCH FEAURE =====
@@ -257,7 +267,7 @@ function edit(library, project_code) {
       value = undefined
       input_field_template = ``
       
-      if(field == "cancelled") { console.log($(this).attr("value"));value = $(this).attr("value"); console.log(value) }
+      if(field == "cancelled") { value = $(this).attr("value") }
 
       // Configuring Input DOM based on field
       if (field == "project_code") {
@@ -317,7 +327,6 @@ function edit(library, project_code) {
 
     // Save Changes button handler
     $(`#save-edit-${project_code}`).on("click", function () {
-      console.log("saving changes")
       $(`#edit-errors-${project_code}`).empty()
 
       edit_operations = {}
@@ -337,7 +346,6 @@ function edit(library, project_code) {
       // Make Ajax Call & handle OK response
       postEditOperations(edit_operations).then((response) => {
         new_edit = response.operations
-        console.log(new_edit)
         library.updateItem(new_edit)
         addOperations(new_edit, prepend=false, replace=true)
       }).catch((error) => {
