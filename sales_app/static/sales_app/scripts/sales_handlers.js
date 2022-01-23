@@ -333,15 +333,12 @@ $("#input-cancelled").click(function () {
     })
     return
   }
-  for (const sale of cache.getLibrary()) {
-    if (sale.cancelled && search_mode) {
-      if (sale.searched) {
-        UI_addSale(sale)
-      }
+  for (const sales of cache.allCancelled) {
+    if (!search_mode) //not in search mode 
+    {
+      addSales(sales, prepend=true, replace=false)
     }
-    else if (sale.cancelled) {
-      UI_addSale(sale)
-    }
+    else { if (sales.searched) { addSales(sales) } }
   }
 })
 
@@ -353,15 +350,12 @@ $('#input-completed').click(function () {
     })
     return
   }
-  for (const sale of cache.getLibrary()) {
-    if (sale.completed && search_mode) {
-      if (sale.searched) {
-        UI_addSale(sale)
-      }
+  for (const sales of cache.allCompleted) {
+    if (!search_mode) //not in search mode 
+    {
+      addSales(sales, prepend=true, replace=false)
     }
-    else if (sale.completed) {
-      UI_addSale(sale)
-    }
+    else { if (sales.searched) { addSales(sales) } }
   }
 })
 
