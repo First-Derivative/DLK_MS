@@ -1,7 +1,17 @@
 // ===== AUXILIARY FUNCTIONS =====
-function start() {
-  cache.clearLibrary()
-  $.when(getAllPurchases(cache, addPurchases)).done(function () {
+function start(library) {
+  library.clearLibrary()
+  getAllPurchases().then((response) => {
+    purchases = response.purchases
+    purchases_count = purchases.length
+
+    for (i = 0; i < purchases_count; i++) {
+      content = purchases.pop()
+      library.append(content)
+      addPurchases(content)
+    }
+  }).catch((error) => {
+    $(`purchases_display`).append(`<p class="h5 text-danger> Get Purchases Error: Please report bug with the text: ${error} </p>`)
   })
 }
 
@@ -253,7 +263,7 @@ function leaveSearch() {
   $("#input-search").val("")
   search_mode = false
   removeAllPurchases()
-  start()
+  start(cache)
 }
 
 // ===== FILTERING TOGGLES =====

@@ -34,26 +34,20 @@ function searchPurchases(query, library)
 }
 
 // GET All Purchases
-function getAllPurchases(library, callback) {
-  $.ajax(
+function getAllPurchases() {
+  return new Promise ( (resolve, reject) => {
+    $.ajax(
     {
       type: "GET",
       url: getAllPurchases_url,
       success: function (response) {
-        purchases = response.purchases
-        purchases_count = purchases.length
-
-        for (i = 0; i < purchases_count; i++) {
-          content = purchases.pop()
-          library.append(content)
-          callback(content)
-        }
+        resolve(response)
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
+      error: function (error) {
+        reject(error)
       }
     })
+  })
 }
 
 // POST New Purchases
