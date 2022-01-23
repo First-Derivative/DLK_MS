@@ -43,7 +43,7 @@ def postNewPurchases(request):
   # Validate postdata for duplication 
   try:
     purchase = Purchases.objects.get(purchase_order=post["data[purchase_order]"])
-    return JsonResponse({"error":{"duplicate_purchase_order":"Purchase with that purchase order already exists, please check for duplicate records"}})
+    return Response(status=400, data={"duplicate_purchase_order":"Purchase with that purchase order already exists, please check for duplicate records"})
   
   # No Duplicate Found-> Create new Object
   except Purchases.DoesNotExist:

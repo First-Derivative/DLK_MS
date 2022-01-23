@@ -349,7 +349,6 @@ function edit(library, purchases_id) {
           <input type="text" class="form-control edit-input" id="edit_input_${field}_${purchases_id}" name="${field}">
         </div>`
       }
-      console.log(field)
       $(this).replaceWith(input_field_template)
       if (field == "invoice_amount") {
         raw = dom_value
@@ -362,7 +361,6 @@ function edit(library, purchases_id) {
       }
       else if(field == "po_date" || field == "supplier_date" || field == "expected_date" || field == "supplier_name")
       {
-        console.log("in buffer if")
         buffer = 0
         if(field == "po_date") { buffer = 21 }
         else if ( field == "supplier_date" ) { buffer = 24 }

@@ -37,11 +37,10 @@ def getAllShipping(request):
 @api_view(['POST'])
 def postNewShipping(request):
   post = request.POST
-  print(post)
   # Validate postdata for duplication 
   try:
     shipping = Shipping.objects.get(project_code=post["data[project_code]"])
-    return JsonResponse({"error":{"duplicate_project_code":"Shipping order with that shipping code already exists, please check for duplicate records"}})
+    return Response(status=400, data={"duplicate_project_code":"Shipping order with that shipping code already exists, please check for duplicate records"})
   
   # No Duplicate Found-> Create new Object
   except Shipping.DoesNotExist:
