@@ -84,7 +84,7 @@ function addOperations(new_operations, prepend = false, replace = false) {
     else{ $(`div[id=card-${new_operations.project_code}]`).replaceWith(operations_card_template) }
     
     // Attatching Edit Handler to Replaced Card
-    $(`div[id=card-${new_operations.project_code}]`).on("click", function () {
+    $(`div[id=card-edit-${new_operations.project_code}]`).on("click", function () {
       $(this).empty
       id = $(this).attr("name")
       edit(cache, new_operations.project_code)
