@@ -73,16 +73,17 @@ function getTemplate(new_operations) {
 
 // UI Functionality: Add Operations
 function addOperations(new_operations, prepend = false, replace = false) {
-  console.log("in addOperations")
   // edge-case replace handler
-  if (replace) {
-    console.log("replacing card")
-    selector = `div[id=card-${new_operatons.project_code}]`
-    root = ($(selector).parents('form').length > 0) ? $(selector).parents('form') : $(selector).parents(selector)
-
-    root.replaceWith(operations_card_template)
-    // $(root).replaceWith()
-
+  if (replace == true) {
+    operations_card_template = getTemplate(new_operations)
+    if( $(`form[id=edit-form-${new_operations.project_code}]`).length > 0 )
+    {
+      $(`form[id=edit-form-${new_operations.project_code}]`).replaceWith(operations_card_template)
+    }
+    
+    else{ $(`div[id=card-${new_operations.project_code}]`).replaceWith(operations_card_template) }
+    
+    document.getElementById(`card-${new_operations.project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
     return;
   }
 
@@ -251,8 +252,6 @@ function edit(library, project_code) {
       field = $(this).attr("name") ? $(this).attr("name") : ''
       dom_value = $(this).text() ? $(this).text() : ''
       value = ($(this).attr("value") == "true") ? true : $(this).attr("value")
-      console.log("attr value :" + $(this).attr("value"))
-      console.log(field, value)
       input_field_template = ``
 
       // Configuring Input DOM based on field
@@ -307,10 +306,9 @@ function edit(library, project_code) {
 
     // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function () {
-      console.log("cancelling edit")
-      archive = getTemplate(library.getItem(project_code))
-      addOperations(archive, replace = true)
-
+      archive = library.getItem(project_code)
+      template = getTemplate(archive.project_code)
+      addOperations(archive, prepend=false, replace=true)
 
     })
 
