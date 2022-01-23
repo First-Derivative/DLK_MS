@@ -1,9 +1,19 @@
 // ===== AUXILIARY FUNCTIONS =====
 
 // StartUp Script
-function start() {
-  cache.clearLibrary()
-  $.when(getAllShipping(cache, addShipping)).done(function () {
+function start(library) {
+  library.clearLibrary()
+  getAllShipping().then((response) => {
+    shipping = response.shipping
+    shipping_count = shipping.length
+
+    for (i = 0; i < shipping_count; i++) {
+      content = shipping.pop()
+      library.append(content)
+      addShipping(content)
+    }
+  }).catch((error) => {
+    $(`shipping_display`).append(`<p class="h5 text-danger> Get Shipping Error: Please report bug with the text: ${error} </p>`)
   })
 }
 
@@ -244,7 +254,7 @@ function leaveSearch() {
   $("#input-search").val("")
   search_mode = false
   removeAllShipping()
-  start()
+  start(cache)
 }
 
 // ===== FILTERING TOGGLES =====

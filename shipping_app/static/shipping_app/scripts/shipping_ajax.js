@@ -57,26 +57,20 @@ function getShipping(library, callback) {
 }
 
 // GET: All Shipping 
-function getAllShipping(library, callback) {
-  $.ajax(
-    {
-      type: "GET",
-      url: getAllShipping_url,
-      success: function (response) {
-        shipping = response.shipping
-        shipping_count = shipping.length
-
-        for (i = 0; i < shipping_count; i++) {
-          content = shipping.pop()
-          library.append(content)
-          callback(content)
+function getAllShipping() {
+  return new Promise( (resolve, reject) => {
+    $.ajax(
+      {
+        type: "GET",
+        url: getAllShipping_url,
+        success: function (response) {
+          resolve(response)
+        },
+        error: function (error) {
+          reject(error)
         }
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
-      }
-    })
+      })
+  })
 }
 // Post (new)
 function postShipping(library, new_shipping) {
