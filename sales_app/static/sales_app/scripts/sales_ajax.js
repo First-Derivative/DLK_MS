@@ -1,27 +1,17 @@
-function searchSales(search_key) {
+function searchSales(query) {
+  return new Promise ( (resolve, reject) => {
   $.ajax(
     {
       type: "GET",
-      url: getSearchAPI.replace(0, search_key),
+      url: getSearch_url.replace(0, query),
       success: function (response) {
-
-        if (response.length) {
-          $("#search-text").remove()
-          for (const sale of response) {
-            sale["searched"] = true
-            cache.append(sale)
-            UI_addSale(sale)
-          }
-        }
-        else {
-          $("#search-text").text(`No results for ${search_key}`)
-        }
+        resolve(response)
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
+      error: function (error) {
+        reject(error)
       }
     })
+  })
 }
 
 // Get Sale
@@ -33,7 +23,7 @@ function getSale(params, callback) {
   }
   $.ajax({
     type: "GET",
-    url: getSaleAPI + request_params,
+    url: getSale_url + request_params,
     success: function (response) {
       if (response.hasOwnProperty("error")) {
         console.log("has error")

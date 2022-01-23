@@ -28,7 +28,7 @@ def getSale(request):
     
 # REST SEARCH API
 class searchAPI(generics.ListCreateAPIView):
-  search_fields = ['project_code', 'project_name', 'client_name']
+  search_fields = ['project_code', 'project_name', 'client_name', 'project_detail', 'currency', 'order_date', 'shipping_date', 'payment_term']
   filter_backends = (filters.SearchFilter,)
   queryset = Sales.objects.all()
   serializer_class = SalesSerializer

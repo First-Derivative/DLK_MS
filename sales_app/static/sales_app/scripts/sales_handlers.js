@@ -246,15 +246,35 @@ $("#left_content_form").on("keypress", function (event) {
     event.preventDefault();
 
     if (!search_mode) { // check if already in search mode, if false then enter and start search
-      enterSearchMode()
+      enterSearch()
     }
     else {
-      UI_removeAll()
+      removeAllSales()
     }
+    const search_header_template = `
+    <div class="row" id="searchHeader">
+    <div class="header_title">
+    </div>
+    </div>
+    `
+    $("#sales_display").prepend(search_header_template)
+
     const input_value = $("#input-search").val()
-    searchSales(input_value)
-    $("#sales_display").append(`<div class="text-center"><h5 id="search-text">Searching for ${input_value}...</h5></div>`)
-    return false;
+    cache.clearLibrary()
+    searchSales(input_value).then((response) => {
+      $("#input-search-clear").addClass("std-btn-red")
+      if (response.length > 0) {
+        for (const sales of response) {
+          $(".header_title").text(`Found ${response.length} results...`)
+          sales["searched"] = true
+          cache.append(sales)
+          addSales(sales)
+        }
+      }
+      else { $(".header_title").text(`No results for ${input_value}`) }
+    }).catch( (error) => {
+      $(`sales_display`).append(`<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`)
+    })
   }
 })
 
@@ -262,30 +282,29 @@ $("#left_content_form").on("keypress", function (event) {
 $("#left_content_form").on("keyup", function (event) {
   keyPressed = event.keyCode || event.which;
   if (keyPressed === 27) {
-    if (search_mode) { leaveSearchMode() } // check if already out of search mode
+    if (search_mode) { leaveSearch() } // check if already out of search mode
   }
 })
 
-// UX Functionality: calls leaveSearchMode
+// UX Functionality: calls leaveSearch
 $("#input-search-clear").click(function () {
-  if (search_mode) { leaveSearchMode() } // Prevents clearing override if clicked whilst not in search_mode
+  if (search_mode) { leaveSearch() } // Prevents clearing override if clicked whilst not in search_mode
 })
 
 // UI Functionality: Entering search mode clears all displayed cards
-function enterSearchMode() {
+function enterSearch() {
   search_mode = true
-  UI_removeAll()
+  removeAllSales()
   return true
 }
 
 // UI Functionality: Leaving search mode displays all previously hidden cards
-function leaveSearchMode() {
+function leaveSearch() {
   search_mode = false
-
-  UI_removeAll()
-  start(cache)
-  // clearSearchDOM()
+  if ($("#input-search-clear").hasClass("std-btn-red")) { $("#input-search-clear").removeClass("std-btn-red") }
   $("#input-search").val("")
+  removeAllSales()
+  start(cache)
 
 }
 
