@@ -251,7 +251,7 @@ $("#input-cancelled").click(function () {
   for (const operations of cache.allCancelled) {
     if (!search_mode) //not in search mode 
     {
-      addOperations(operations, true)
+      addOperations(operations, prepend=true, replace=false)
     }
     else { if (operations.searched) { addOperations(operations) } }
   }
