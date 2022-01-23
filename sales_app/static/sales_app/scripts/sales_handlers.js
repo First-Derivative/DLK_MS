@@ -26,6 +26,12 @@ function propertyToTitle(property) {
 
 function formatDate(input)
 {
+  const format = input.match(/([\d]{4})-(0?[\d]{2})-(0?[\d]{2})/g)
+  console.log(format)
+  if(format != null){
+    console.log("in format")
+    return input;
+  }
   // Client: MM/DD/YYYY -> Server: YYYY-MM-DD
   raw = input
   raw = raw.replace("/", "-")
@@ -211,7 +217,7 @@ $("#modal-btn-save").click(function () {
     else if (property == "completed") {
       new_sales["completed"] = true
     }
-    else if ( property == "order_date" )
+    else if (property == "order_date" )
     {
       new_sales[property] = formatDate(field.value)
     }
@@ -384,7 +390,6 @@ function edit(library, project_code) {
       
       if(field == "cancelled") { cancelled_value = $(this).attr("value") }
       if(field == "completed") { completed_value = $(this).attr("value") }
-      console.log(cancelled_value, completed_value)
       // Configuring Input DOM based on field
       if (field == "project_code") {
         input_field_template = `
@@ -425,14 +430,34 @@ function edit(library, project_code) {
             <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
           </div>`
         }
-      } else {
+      }
+      else if ( field == "order_date")
+      {
+        input_field_template = `
+        <div class="mb-3 form-group" id="${field}_${project_code}">
+          <label for="edit_input_${field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
+          <input type="text" class="form-control edit-input date" id="edit_input_${field}_${project_code}" name="${field}">
+        </div>`
+      } 
+      else {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${project_code}">
           <label for="edit_input_${field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
           <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
         </div>`
       }
+
       $(this).replaceWith(input_field_template)
+
+      if(field == "order_date") {
+          // Attach Date Handler
+          $('.date').datepicker({
+            todayBtn: "linked",
+            clearBtn: true,
+            orientation: "top auto"
+          });
+      }
+
       if (field == "invoice_amount") {
         raw = dom_value
         matches = raw.match(/\d+/g);
@@ -447,13 +472,13 @@ function edit(library, project_code) {
         buffer = 0
         if(field == "project_detail") { buffer = 16 }
         else if ( field == "shipping_date" ) { buffer = 22 }
-        else if ( field == "order_date" ) { buffer = 23 }
+        else if ( field == "order_date" ) { buffer = 21 }
         else if ( field == "payment_term" ) { buffer = 16 }
         min = buffer;
         max = dom_value.length
         dom_value = dom_value.substr(min, max)
         $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
-      }
+      } 
       else {
         $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
       }
@@ -470,9 +495,8 @@ function edit(library, project_code) {
 
     edit_errors_template = `<div class="" id="edit-errors-${project_code}"></div>`
 
-    // Add Footer Template with Cancel & Save buttons
+    // Add Footer Template with Cancel & Save buttons + Errors
     $(`.card[name=${project_code}]`).append(card_footer_template)
-    // Add empty div to house form errors
     $(`#card-footer-${project_code}`).append(edit_errors_template)
 
     // Cancel Edit button handler
@@ -499,6 +523,9 @@ function edit(library, project_code) {
         } else if (property == "completed")
         {
           edit_sales["completed"] = true
+        } else if (property == "order_date" )
+        {
+          edit_sales[property] = formatDate(field.value)
         }
         else{
           edit_sales[property] = field.value

@@ -91,6 +91,7 @@ def postNewSales(request):
 @unauthenticated_check 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="sales")
+@api_view(['POST'])
 def postEditSales(request):
   post = request.POST
 
@@ -103,15 +104,14 @@ def postEditSales(request):
   shipping_date = post["shipping_date"]
   payment_term = post["payment_term"]
   currency = post["currency"] 
-  cancelled = True if (post["cancelled"] == "true" in post) else False
-  completed = True if (post["completed"] == "true" in post) else False
+  cancelled = True if ("cancelled" in post) else False
+  completed = True if ("completed" in post) else False
 
   # Validate postdata for duplication 
   try:
     sales = Sales.objects.get(project_code=post["project_code"])
     
     try:
-
       sales.project_code = project_code
       sales.project_name = project_name
       sales.client_name = client_name
@@ -123,12 +123,10 @@ def postEditSales(request):
       sales.payment_term = payment_term
       sales.cancelled = cancelled
       sales.completed = completed
-      sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled, completed=completed)
       sales.full_clean()
 
     except ValidationError as e:
       return Response(status=400, data=dict(e))
-
 
     sales.save()
     return JsonResponse({"sales":SalesSerializer(sales).data})
