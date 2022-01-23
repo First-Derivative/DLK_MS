@@ -213,8 +213,6 @@ $("#modal-btn-save").click(function () {
     addPurchases(response_purchase, prepend=true, replace=false)
     $("#modal-btn-close").trigger("click")
   }).catch( (error) => {
-    console.log(error)
-    console.log(error.responseJSON)
     Object.keys(error.responseJSON).forEach(key => {
       title = propertyToTitle(String(key))
       error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
