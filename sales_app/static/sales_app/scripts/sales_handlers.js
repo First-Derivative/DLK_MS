@@ -1,10 +1,17 @@
-// UX Functionality: Start Up Sales  Page
-function startUpSales() {
-  cache.clearLibrary()
-  $.when(getSales(cache)).done(function () {
-    for (const sale of cache.getLibrary()) {
-      UI_addSale(sale)
+// ===== AUXILIARY FUNCTIONS =====
+function start(library) {
+  library.clearLibrary()
+  getAllSales().then((response) => {
+    sales = response.sales
+    sales_count = sales.length
+
+    for (i = 0; i < sales_count; i++) {
+      content = sales.pop()
+      library.append(content)
+      addSales(content)
     }
+  }).catch((error) => {
+    $(`sales_display`).append(`<p class="h5 text-danger> Get Sales Error: Please report bug with the text: ${error} </p>`)
   })
 }
 
@@ -56,12 +63,12 @@ $("#modal-btn-save").click(function () {
     }
   })
 
-  // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
+  // Calls Ajax postSale which will call addSales if server-side validation checks out
   postSale(cache, new_sales)
 })
 
 // UI Functionality: Add Sale
-function UI_addSale(new_sale) {
+function addSales(new_sale) {
   alerted = false
   for (const field of Object.entries(new_sale)) {
     if (new_sale[field[0]] === '') { alerted = true; }
@@ -385,7 +392,7 @@ function leaveSearchMode() {
   search_mode = false
 
   UI_removeAll()
-  startUpSales()
+  start(cache)
   // clearSearchDOM()
   $("#input-search").val("")
 

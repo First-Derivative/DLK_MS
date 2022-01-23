@@ -52,21 +52,18 @@ function getSale(params, callback) {
 }
 
 // Get (all) Sales
-function getSales(library) {
-  return $.ajax({
-    type: "GET",
-    url: getSales_url,
-    success: function (response) {
-      sales = response.sales
-      sales_count = sales.length
-
-      sales.reverse() // reverse sales array for performance
-      library.setLibrary(sales)
-    },
-    error: function (jqXHR, textStatus, errorThrown) {
-      // Debugging case
-      alert("textStatus: " + textStatus + " " + errorThrown)
-    }
+function getAllSales(library) {
+  return new Promise ( (resolve, reject) => {
+    $.ajax({
+      type: "GET",
+      url: getAllSales_url,
+      success: function (response) {
+        resolve(response)
+      },
+      error: function (error) {
+        reject(error)
+      }
+    })
   })
 }
 

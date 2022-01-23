@@ -209,14 +209,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   
   <!-- Sales Scripts -->
-  <script src="{% static 'sales_app/scripts/cache.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/sales_library.js' %}"></script>
   
   <script>
 
   // Import Consts
-  const getSales_url = "{% url 'getSales_api' %}"
+  const getAllSales_url = "{% url 'getAllSales_api' %}"
   const getSaleAPI = "{% url 'getSale_api' %}"
   const getSearchAPI = "{% url 'searchSales_api' %}" + "?search=0"
   const postSales_url = "{% url 'postSales_api' %}"
@@ -232,7 +232,7 @@
   search_mode = false
 
   // Startup Script
-  startUpSales()
+  start(cache)
 
   // Datepicker Utility for modal order date
   $('.date').datepicker({

@@ -39,10 +39,10 @@ class searchAPI(generics.ListCreateAPIView):
 def salesPage(request):
   return render(request, "sales_app/sales.html",  {})
 
-# GET ALL SALES API
+# Get All Sales
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
-def getSales(request):
+def getAllSales(request):
     unserialized_sales = Sales.objects.all()
     sales = []
     for sale in unserialized_sales:
