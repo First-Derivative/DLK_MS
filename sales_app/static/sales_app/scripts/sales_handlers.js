@@ -1,8 +1,8 @@
 // UX Functionality: Start Up Sales  Page
 function startUpSales() {
-  sales_library.clearLibrary()
-  $.when(getSales(sales_library)).done(function () {
-    for (const sale of sales_library.getLibrary()) {
+  cache.clearLibrary()
+  $.when(getSales(cache)).done(function () {
+    for (const sale of cache.getLibrary()) {
       UI_addSale(sale)
     }
   })
@@ -57,7 +57,7 @@ $("#modal-btn-save").click(function () {
   })
 
   // Calls Ajax postSale which will call UI_AddSale if server-side validation checks out
-  postSale(sales_library, new_sales)
+  postSale(cache, new_sales)
 })
 
 // UI Functionality: Add Sale
@@ -431,7 +431,7 @@ $("#input-cancelled").click(function () {
     })
     return
   }
-  for (const sale of sales_library.getLibrary()) {
+  for (const sale of cache.getLibrary()) {
     if (sale.cancelled && search_mode) {
       if (sale.searched) {
         UI_addSale(sale)
@@ -451,7 +451,7 @@ $('#input-completed').click(function () {
     })
     return
   }
-  for (const sale of sales_library.getLibrary()) {
+  for (const sale of cache.getLibrary()) {
     if (sale.completed && search_mode) {
       if (sale.searched) {
         UI_addSale(sale)

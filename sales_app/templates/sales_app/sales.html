@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block app_stylesheet %}
-<link href="{% static '/sales_app/styles/sales.css' %}" rel="stylesheet">
-<link href="{% static '/overview_app/styles/overview.css' %}" rel="stylesheet">
+  <link href="{% static '/sales_app/styles/sales.css' %}" rel="stylesheet">
+  <link href="{% static '/overview_app/styles/overview.css' %}" rel="stylesheet">
 {% endblock app_stylesheet %}
 
 {% block left_content%}
@@ -42,9 +42,9 @@
 </div>
 
 <!-- Page Down Button -->
-<div class="row mb-3">
+<div class="row mb-3" id="page_down">
   <div class="col-3">
-    <button type="button" class="btn sales_standard-btn btn-clear clear-3" id="page_down">
+    <button type="button" class="btn sales_standard-btn btn-clear clear-3">
       <img src="{% static 'overview_app/icons/up_page.png' %} " class="hoverable " width="32"
       height="32">
     </button>
@@ -203,12 +203,16 @@
 {% endblock right_content %}
 
 {% block scripts %}
-  <script src="{% static 'sales_app/scripts/sales_library.js' %}"></script>
-  <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
-  <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
+  <!-- Dependency Imports for Datepicker -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <!-- Sales Scripts -->
+  <script src="{% static 'sales_app/scripts/cache.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
+  <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
+  
   <script>
 
   // Import Consts
@@ -224,7 +228,7 @@
   const token = "{{csrf_token}}"
 
   // Initiliaze parameters
-  sales_library = new Library()
+  cache = new Library()
   search_mode = false
 
   // Startup Script

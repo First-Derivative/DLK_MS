@@ -9,7 +9,7 @@ function searchSales(search_key) {
           $("#search-text").remove()
           for (const sale of response) {
             sale["searched"] = true
-            sales_library.append(sale)
+            cache.append(sale)
             UI_addSale(sale)
           }
         }
