@@ -24,6 +24,22 @@ function propertyToTitle(property) {
   return format.join(" ")
 }
 
+function formatDate(input)
+{
+  // Client: MM/DD/YYYY -> Server: YYYY-MM-DD
+  raw = input
+  raw = raw.replace("/", "-")
+  raw = raw.replace("/", "-")
+  raw_array = raw.split("-")
+
+  raw_array.reverse()
+  temp = raw_array[1]
+  raw_array[1] = raw_array[2]
+  raw_array[2] = temp
+
+  return raw_array.join("-")
+}
+
 // UX Functionality: resolveCurrency for API serialized schema for Sales
 function resolveCurrency(currency) {
   switch (currency) {
@@ -34,13 +50,18 @@ function resolveCurrency(currency) {
   }
 }
 
-$(`#page_down`).click(function () {
-  window.scrollTo(0, document.body.scrollHeight);
-})
+// UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'
+$('#modal-form-addSales input').keydown(function (e) {
+  if (e.keyCode == 13) {
+    var inputs = $(this).parents("form").eq(0).find(":input");
+    if (inputs[inputs.index(this) + 1] != null) {
+      inputs[inputs.index(this) + 1].focus();
+    }
+    e.preventDefault();
+    return false;
+  }
+});
 
-$(`#page_up`).click(function () {
-  window.scrollTo(document.body.scrollHeight, 0);
-})
 
 // ===== UI ADD/REMOVE =====
 function getTemplate(new_sales)
@@ -72,7 +93,7 @@ function getTemplate(new_sales)
       </div>
       <div class="card_row">
         <p class="card-text ${ (new_sales.order_date_isNull) ? 'missing_text' : ''}" id="order_date_${new_sales.project_code}" name-"order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
-        <p class="card-text ${(new_sales.shipping_date_isNull) ? 'missing_text' : ''}" id="shipping_date_${new_sales.project_code}" name="shipping_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.shipping_date_isNull)  ? 'null' : new_sales.shipping_date}</p>
+        <p class="card-text ${ (new_sales.shipping_date_isNull) ? 'missing_text' : ''}" id="shipping_date_${new_sales.project_code}" name="shipping_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.shipping_date_isNull)  ? 'null' : new_sales.shipping_date}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sales.project_code}">
@@ -167,49 +188,115 @@ function removeSales(project_code) {
   $(`div[id*='${project_code}']`).remove()
 }
 
+// ===== ADD ENTRY FEATURE =====
 
-// UX Functionality: Add Sale Handler
+// UX Functionality: Add Sales Handler
 $("#modal-btn-save").click(function () {
   new_sales = {}
   new_sales["cancelled"] = false
   new_sales["completed"] = false
 
-  $("div[class*=modal-validation-update-text]").each(function () {
-    $(this).remove()
+  $("input[class*=input-error-highlight]").each(function () {
+    $(this).removeClass("input-error-highlight")
   })
+
+  $("#modal-errors").empty()
 
   // Get & Assign Data
   let data_form = $(`form[id=modal-form-addSales]`).serializeArray()
   $.each(data_form, function (i, field) {
     property = field.name
-    if (property == "order_date") {
-      // Client: MM/DD/YYYY -> Server:
-      src = field.value
-      src = src.replace("/", "-")
-      src = src.replace("/", "-")
-      src_split = src.split("-")
-      src_split.reverse()
-      temp = src_split[2]
-      src_split[2] = src_split[1]
-      src_split[1] = temp
-
-      format_date = src_split.join("-")
-      new_sales[property] = format_date
-    }
-    else if (property == "cancelled") {
+    if (property == "cancelled") {
       new_sales["cancelled"] = true
     }
     else if (property == "completed") {
       new_sales["completed"] = true
     }
+    else if ( property == "order_date" )
+    {
+      new_sales[property] = formatDate(field.value)
+    }
     else {
       new_sales[property] = field.value
-
     }
   })
 
-  // Calls Ajax postSale which will call addSales if server-side validation checks out
-  postSale(cache, new_sales)
+  // Calls Ajax postNewSales which will call addSales if server-side validation checks out
+  postNewSales(new_sales).then((response) => {
+    response_sales = response.new_sales
+    cache.append(response_sales)
+    addSales(response_sales, prepend=true, replace=false)
+    $("#modal-btn-close").trigger("click")
+  }).catch( (error) => {
+    Object.keys(error.responseJSON).forEach(key => {
+      title = propertyToTitle(String(key))
+      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+      $("#modal-errors").prepend(error_text_template)
+      $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+    })
+  })
+})
+
+// ===== SEARCH FEAURE =====
+
+// UX Functionality: Enter 'search mode' on enter key
+$("#left_content_form").on("keypress", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 13) {
+    event.preventDefault();
+
+    if (!search_mode) { // check if already in search mode, if false then enter and start search
+      enterSearchMode()
+    }
+    else {
+      UI_removeAll()
+    }
+    const input_value = $("#input-search").val()
+    searchSales(input_value)
+    $("#sales_display").append(`<div class="text-center"><h5 id="search-text">Searching for ${input_value}...</h5></div>`)
+    return false;
+  }
+})
+
+// UX Functionality: Leave 'search mode' on escape key
+$("#left_content_form").on("keyup", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 27) {
+    if (search_mode) { leaveSearchMode() } // check if already out of search mode
+  }
+})
+
+// UX Functionality: calls leaveSearchMode
+$("#input-search-clear").click(function () {
+  if (search_mode) { leaveSearchMode() } // Prevents clearing override if clicked whilst not in search_mode
+})
+
+// UI Functionality: Entering search mode clears all displayed cards
+function enterSearchMode() {
+  search_mode = true
+  UI_removeAll()
+  return true
+}
+
+// UI Functionality: Leaving search mode displays all previously hidden cards
+function leaveSearchMode() {
+  search_mode = false
+
+  UI_removeAll()
+  start(cache)
+  // clearSearchDOM()
+  $("#input-search").val("")
+
+}
+
+// ===== FILTERING TOGGLES =====
+
+$(`#page_down`).click(function () {
+  window.scrollTo(0, document.body.scrollHeight);
+})
+
+$(`#page_up`).click(function () {
+  window.scrollTo(document.body.scrollHeight, 0);
 })
 
 // UX Functionality: Handler for #reverse-list button
@@ -219,7 +306,49 @@ $("#reverse-list").click(function () {
   })
 })
 
-// UI Functionality: Selects a specific card to enterEditMode, allowing for inputs and POST to db
+// UX Functionality: Show Cancelled Order Toggle
+$("#input-cancelled").click(function () {
+  if (!$(this).is(":checked")) {
+    $("div[class*=cancelled-card]").each(function () {
+      $(this).remove()
+    })
+    return
+  }
+  for (const sale of cache.getLibrary()) {
+    if (sale.cancelled && search_mode) {
+      if (sale.searched) {
+        UI_addSale(sale)
+      }
+    }
+    else if (sale.cancelled) {
+      UI_addSale(sale)
+    }
+  }
+})
+
+// UX Functionality: Show Completed Order Toggle
+$('#input-completed').click(function () {
+  if (!$(this).is(":checked")) {
+    $("div[class*=completed-card]").each(function () {
+      $(this).remove()
+    })
+    return
+  }
+  for (const sale of cache.getLibrary()) {
+    if (sale.completed && search_mode) {
+      if (sale.searched) {
+        UI_addSale(sale)
+      }
+    }
+    else if (sale.completed) {
+      UI_addSale(sale)
+    }
+  }
+})
+
+// ===== EDIT FEATURE ======
+
+// edit Handler
 function enterEditMode(project_code) {
   edit_check = $(`#card-${project_code}`).attr('editing');
   
@@ -303,8 +432,8 @@ function enterEditMode(project_code) {
 
       // Add Cancel and Save Changes Buttons
       $(`#card-${project_code}`).append(`<div class="d-flex flex-row justify-content-end m-3 sales_footer_buttons" id="card-footer-buttons-${project_code}">
-      <button type="button" class="btn sales_standard-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-      <button class="btn sales_standard-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
+      <button type="button" class="btn std-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
+      <button class="btn std-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
 
       // Add Event Handlers to newly appended DOMS
       $('.edit-input').on("keydown", function (e) {
@@ -454,105 +583,3 @@ function leaveEditMode(sale) {
     enterEditMode(project_code)
   })
 }
-
-// UI Functionality: Entering search mode clears all displayed cards
-function enterSearchMode() {
-  search_mode = true
-  UI_removeAll()
-  return true
-}
-
-// UI Functionality: Leaving search mode displays all previously hidden cards
-function leaveSearchMode() {
-  search_mode = false
-
-  UI_removeAll()
-  start(cache)
-  // clearSearchDOM()
-  $("#input-search").val("")
-
-}
-
-// UX Functionality: Enter 'search mode' on enter key
-$("#left_content_form").on("keypress", function (event) {
-  keyPressed = event.keyCode || event.which;
-  if (keyPressed === 13) {
-    event.preventDefault();
-
-    if (!search_mode) { // check if already in search mode, if false then enter and start search
-      enterSearchMode()
-    }
-    else {
-      UI_removeAll()
-    }
-    const input_value = $("#input-search").val()
-    searchSales(input_value)
-    $("#sales_display").append(`<div class="text-center"><h5 id="search-text">Searching for ${input_value}...</h5></div>`)
-    return false;
-  }
-})
-
-// UX Functionality: Leave 'search mode' on escape key
-$("#left_content_form").on("keyup", function (event) {
-  keyPressed = event.keyCode || event.which;
-  if (keyPressed === 27) {
-    if (search_mode) { leaveSearchMode() } // check if already out of search mode
-  }
-})
-
-// UX Functionality: calls leaveSearchMode
-$("#input-search-clear").click(function () {
-  if (search_mode) { leaveSearchMode() } // Prevents clearing override if clicked whilst not in search_mode
-})
-
-// UX Functionality: Show Cancelled Order Toggle
-$("#input-cancelled").click(function () {
-  if (!$(this).is(":checked")) {
-    $("div[class*=cancelled-card]").each(function () {
-      $(this).remove()
-    })
-    return
-  }
-  for (const sale of cache.getLibrary()) {
-    if (sale.cancelled && search_mode) {
-      if (sale.searched) {
-        UI_addSale(sale)
-      }
-    }
-    else if (sale.cancelled) {
-      UI_addSale(sale)
-    }
-  }
-})
-
-// UX Functionality: Show Completed Order Toggle
-$('#input-completed').click(function () {
-  if (!$(this).is(":checked")) {
-    $("div[class*=completed-card]").each(function () {
-      $(this).remove()
-    })
-    return
-  }
-  for (const sale of cache.getLibrary()) {
-    if (sale.completed && search_mode) {
-      if (sale.searched) {
-        UI_addSale(sale)
-      }
-    }
-    else if (sale.completed) {
-      UI_addSale(sale)
-    }
-  }
-})
-
-// UX Functionality: Prevents form (for modal inputs) submit on Enter; Replaces it with 'Tab'
-$('#modal-form-addSales input').keydown(function (e) {
-  if (e.keyCode == 13) {
-    var inputs = $(this).parents("form").eq(0).find(":input");
-    if (inputs[inputs.index(this) + 1] != null) {
-      inputs[inputs.index(this) + 1].focus();
-    }
-    e.preventDefault();
-    return false;
-  }
-});

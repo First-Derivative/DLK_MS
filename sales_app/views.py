@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponseBadRequest
 from ms_app.decorators import *
 from .models import Sales
-from ms_app.models import Currency, resolveCurrencyLabel
+from ms_app.models import Currency, resolveCurrency
 from django.core.exceptions import ValidationError
 from rest_framework import generics, filters
 from rest_framework.decorators import api_view
@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from .serializers import SalesSerializer
 
 # REST GET SALE API
-# @unauthenticated_check
+@unauthenticated_check
 @api_view(['GET'])
 def getSale(request):
   project_code = request.query_params.get('project_code', None)
@@ -50,17 +50,18 @@ def getAllSales(request):
 
     return JsonResponse({"sales":sales})
 
-# ADD NEW SALE
-#@unauthenticated_check 
+# postNewSale
+@unauthenticated_check 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="sales")
-def addSales(request):
+@api_view(['POST'])
+def postNewSales(request):
   post = request.POST
   
   # Validate postdata for duplication 
   try:
     sale = Sales.objects.get(project_code=post["data[project_code]"])
-    return JsonResponse({"error": {"duplication_error": "Sale with that project code already exists, please check for duplicate records"}})
+    return Response(status=400, data={"duplication_error": "Sale with that project code already exists, please check for duplicate records"})
   # No Duplicate Found-> Create new Object
   except Sales.DoesNotExist:
     project_code = post["data[project_code]"]
@@ -71,28 +72,23 @@ def addSales(request):
     order_date = post["data[order_date]"]
     shipping_date = post["data[shipping_date]"]
     payment_term = post["data[payment_term]"]
-    currency = post["data[currency]"] 
+    currency = resolveCurrency(post["data[currency]"] )
     cancelled = True if post["data[cancelled]"] == 'true' else False
-    
-    #Double check that this logic works for view
-    for choice in Currency:
-      if choice.label == currency:
-        currency = choice
-        break
+    completed = True if post["data[completed]"] == 'true' else False
     
     #Instantiate and save new Sale object on DB
-    new_sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled)
+    new_sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled, completed=completed)
     try:
       new_sales.full_clean()
     except ValidationError as e:
-      return JsonResponse({"error": dict(e)})
+      return Response(status=400, data=dict(e))
 
-    #end of user-flow for succesful request: return status OK
+    #end of user-flow for succesful request: return new_sales
     new_sales.save()
-    return JsonResponse({"status":"OK"}) #consider sending new_sales back if necessary instead of status:OK
+    return JsonResponse({"new_sales":SalesSerializer(new_sales).data}) 
 
 # EDIT SALE
-#@unauthenticated_check 
+@unauthenticated_check 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="sales")
 def editSale(request):
