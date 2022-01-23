@@ -223,8 +223,22 @@ $("#left_content_form").on("keypress", function (event) {
     $("#shipping_display").prepend(search_header_template)
 
     const input_value = $("#input-search").val()
-    searchShipping(input_value, cache)
-    return false;
+    cache.clearLibrary()
+    searchShipping(input_value).then((response) => {
+      $("#input-search-clear").addClass("shipping_standard-btn-danger")
+      if (response.length > 0) {
+        for (const shipping of response) {
+          $(".header_title").text(`Found ${response.length} results...`)
+          shipping["searched"] = true
+          cache.append(shipping)
+          addShipping(shipping)
+        }
+      }
+      else { $(".header_title").text(`No results for ${input_value}`) }
+    }).catch( (error) => {
+      $(`shipping_display`).append(`<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`)
+    })
+
   }
 })
 
