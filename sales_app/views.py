@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from ms_app.decorators import *
 from .models import Sales
 from ms_app.models import Currency, resolveCurrency
@@ -91,70 +91,50 @@ def postNewSales(request):
 @unauthenticated_check 
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="sales")
-def editSale(request):
+def postEditSales(request):
   post = request.POST
-  
+
+  project_code = post["project_code"]
+  project_name = post["project_name"]
+  client_name = post["client_name"]
+  project_detail = post["project_detail"]
+  value = post["value"]
+  order_date = post["order_date"]
+  shipping_date = post["shipping_date"]
+  payment_term = post["payment_term"]
+  currency = post["currency"] 
+  cancelled = True if (post["cancelled"] == "true" in post) else False
+  completed = True if (post["completed"] == "true" in post) else False
+
   # Validate postdata for duplication 
   try:
+    sales = Sales.objects.get(project_code=post["project_code"])
     
     try:
 
-      # Creating Temp Sale before full clean
-      temp_project_code = post["project_code"]
-      temp_project_name = post["project_name"]
-      temp_client_name = post["client_name"]
-      temp_project_detail = post["project_detail"]
-      temp_value = post["value"]
-      temp_order_date = post["order_date"]
-      temp_shipping_date = post["shipping_date"]
-      temp_payment_term = post["payment_term"]
-      temp_currency = post["currency"] 
-      temp_cancelled = True if (post["cancelled"] == "true") else False
-      temp_completed = True if (post["completed"] == "true") else False
-
-      for choice in Currency:
-        if choice.label == temp_currency:
-          temp_currency = choice
-          break
-      
-      temp_sale = Sales(project_code=temp_project_code, project_name=temp_project_name, client_name=temp_client_name, project_detail=temp_project_detail, value=temp_value, currency=temp_currency, order_date=temp_order_date, shipping_date=temp_shipping_date, payment_term=temp_payment_term, cancelled=temp_cancelled, completed=temp_completed)
-      temp_sale.full_clean()
+      sales.project_code = project_code
+      sales.project_name = project_name
+      sales.client_name = client_name
+      sales.project_detail = project_detail
+      sales.value = value
+      sales.currency = currency
+      sales.order_date = order_date
+      sales.shipping_date = shipping_date
+      sales.payment_term = payment_term
+      sales.cancelled = cancelled
+      sales.completed = completed
+      sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term, cancelled=cancelled, completed=completed)
+      sales.full_clean()
 
     except ValidationError as e:
-      return JsonResponse({"error": dict(e)})
+      return Response(status=400, data=dict(e))
 
 
-    sale = Sales.objects.get(project_code=post["project_code"])
-    project_code = temp_project_code
-    project_name = temp_project_name
-    client_name = temp_client_name
-    project_detail = temp_project_detail
-    value = temp_value
-    currency = temp_currency
-    order_date = temp_order_date
-    shipping_date = temp_shipping_date
-    payment_term = temp_payment_term
-    cancelled = temp_cancelled
-    completed = temp_completed
-    print("nominal values are {a}, {b}".format(a=cancelled, b=completed))
-    
-    sale.project_code = project_code
-    sale.project_name = project_name
-    sale.client_name = client_name
-    sale.project_detail = project_detail
-    sale.value = value
-    sale.currency = currency
-    sale.order_date = order_date
-    sale.shipping_date = shipping_date
-    sale.payment_term = payment_term
-    sale.cancelled = cancelled
-    sale.completed = completed
-
-    sale.save()
-    return JsonResponse({"status":"OK"})
+    sales.save()
+    return JsonResponse({"sales":SalesSerializer(sales).data})
 
   except Sales.DoesNotExist:
     # Sale not found-> Return error
-    return JsonResponse({"error": {"sale_does_not_exist": "Sale with that project code does not exist. Your request has been flagged as suspicious"}})
+    return Response(status=400, data={"sale_does_not_exist": "Sale with that project code does not exist. Your request has been flagged as suspicious"})
 
     

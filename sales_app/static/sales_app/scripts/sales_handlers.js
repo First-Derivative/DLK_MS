@@ -62,7 +62,6 @@ $('#modal-form-addSales input').keydown(function (e) {
   }
 });
 
-
 // ===== UI ADD/REMOVE =====
 function getTemplate(new_sales)
 {
@@ -72,7 +71,7 @@ function getTemplate(new_sales)
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_sales.project_code}" style="padding-bottom: 0.2em" name="${new_sales.project_code}" alt="Needs Entry"></div>`
 
   sales_card_template =
-  `<div class="card ${new_sales.cancelled ? 'cancelled-card' : ''} ${new_sales.completed ? 'completed-card' : ''}"  id="card-${new_sales.project_code}" name="${new_sales.project_code}">
+  `<div class="card ${new_sales.cancelled ? 'cancelled-card' : ''} ${new_sales.completed ? 'completed-card' : ''}"  id="card-${new_sales.project_code}" name="${new_sales.project_code}" edit="0">
     <div class="card-header ${new_sales.cancelled ? 'cancelled-card-header' : ''} ${new_sales.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_sales.project_code}">
       <p id="project_code_${new_sales.project_code}" name="project_code">${new_sales.project_code}</p>
       <div class="d-flex justify-content-between" id="card-header-icons">
@@ -92,7 +91,7 @@ function getTemplate(new_sales)
         <p class="card-text value" id="invoice_amount_${new_sales.project_code}" name="invoice_amount">${new_sales.invoice_amount}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${ (new_sales.order_date_isNull) ? 'missing_text' : ''}" id="order_date_${new_sales.project_code}" name-"order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
+        <p class="card-text ${ (new_sales.order_date_isNull) ? 'missing_text' : ''}" id="order_date_${new_sales.project_code}" name="order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
         <p class="card-text ${ (new_sales.shipping_date_isNull) ? 'missing_text' : ''}" id="shipping_date_${new_sales.project_code}" name="shipping_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.shipping_date_isNull)  ? 'null' : new_sales.shipping_date}</p>
       </div>
     </div>
@@ -109,7 +108,7 @@ function getTemplate(new_sales)
 
 // UI Functionality: Add Sale
 function addSales(new_sales, prepend=false, replace=false) {
-  // edge-case replace handler
+  // edge=case replace handler
   if (replace == true) {
     sales_card_template = getTemplate(new_sales)
     if( $(`form[id=edit-form-${new_sales.project_code}]`).length > 0 )
@@ -230,7 +229,7 @@ $("#modal-btn-save").click(function () {
   }).catch( (error) => {
     Object.keys(error.responseJSON).forEach(key => {
       title = propertyToTitle(String(key))
-      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+      error_text_template = `<div class="row text-left edit-validation-update=text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
       $("#modal-errors").prepend(error_text_template)
       $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
     })
@@ -362,237 +361,169 @@ $('#input-completed').click(function () {
 // ===== EDIT FEATURE ======
 
 // edit Handler
-function enterEditMode(project_code) {
-  edit_check = $(`#card-${project_code}`).attr('editing');
-  
-  if (edit_check == undefined || edit_check == "0") {
-    
-    if (!$(`#card-${project_code}`).attr("editing") || $(`#card-${project_code}`).attr("editing", "0")) {
+// ===== EDIT FEATURE ======
+
+// enter editMode
+function edit(library, project_code) {
+  edit_check = $(`.card[name=${project_code}]`).attr("edit")
+
+  if (edit_check == "0") {
+    $(`.card[name=${project_code}]`).attr("edit", "1") // set active card to edit mode
+    $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
+    $(`#card-body-${project_code}`).removeClass(["d-flex", "justify-content-between"])
+    $(`#card-footer-${project_code}`).css("display", "block")
+    $(`#card-dropdown-${project_code}`).parent().hide()
+
+
+    $(`p[id*=${project_code}]`).each(function () {
+      field = $(this).attr("name") ? $(this).attr("name") : ''
+      dom_value = $(this).text() ? $(this).text() : ''
+      cancelled_value = undefined
+      completed_value = undefined
+      input_field_template = ``
       
-      // Set card (wrapper) attribute 'editing' to active '1'
-      $(`#card-${project_code}`).attr("editing", "1")
-      
-      // Edit Card Styling for Editing formatting
-      $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
-      $(`#card-body-${project_code}`).removeClass(["d-flex", "justify-content-between"])
-      $(`#card-footer-${project_code}`).css("display", "block")
-      
-      // Replace p tags with inputs (Excludes Currency + Value)
-      fields = ["project_code", "project_name", "client_name", "project_detail", "order_date", "shipping_date", "payment_term"]
-      $.each(fields, function (i, item) {
+      if(field == "cancelled") { cancelled_value = $(this).attr("value") }
+      if(field == "completed") { completed_value = $(this).attr("value") }
+      console.log(cancelled_value, completed_value)
+      // Configuring Input DOM based on field
+      if (field == "project_code") {
+        input_field_template = `
+        <div class="mb-3 form-group" id="${field}_${project_code}">
+          <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
+        </div>`
+      }
+      else if (field == "invoice_amount") {
+        invoice_currency = dom_value.substr(0, 1)
+        input_field_template = `
+        <div class="mb-3 form-group" id="currency_${project_code}">
+          <label for="edit_input_currency_${project_code}" class="sr-only form-label edit-label">Currency</label>
+          <select class="form-select edit-input" id="edit_input_currency_${project_code}" name="currency">
+          <option ${invoice_currency == 'R' ? 'selected ' : ''}value="MYR">RM</option>
+          <option ${invoice_currency == '€' ? 'selected ' : ''}value="EUR">€</option>
+          <option ${invoice_currency == '$' ? 'selected ' : ''}value="USD">$</option>
+        </select>
+        </div>
+        <div class="mb-3 form-group" id="value_${project_code}">
+          <label for="edit_input_value_${project_code}" class="form-label edit-label">Value</label>
+          <input type="text" class="form-control edit-input" id="edit_input_value_${project_code}" name="value">
+        </div>`
+      }
+      else if (field == "cancelled" || field == "completed") {
+        if(field == "cancelled")
+        {
+          input_field_template = `
+          <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
+            <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(cancelled_value == 'true') ? 'checked' : ''}>
+            <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
+          </div>`
+        }
+        else //completed
+        {
+          input_field_template = `
+          <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
+            <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(completed_value == 'true') ? 'checked' : ''}>
+            <label for="edit_input_${field}_${project_code}" class="form-label edit-label edit-label-checkbox" id="edit_label_${field}_${project_code}">${propertyToTitle(field)}</label>
+          </div>`
+        }
+      } else {
+        input_field_template = `
+        <div class="mb-3 form-group" id="${field}_${project_code}">
+          <label for="edit_input_${field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
+          <input type="text" class="form-control edit-input" id="edit_input_${field}_${project_code}" name="${field}">
+        </div>`
+      }
+      $(this).replaceWith(input_field_template)
+      if (field == "invoice_amount") {
+        raw = dom_value
+        matches = raw.match(/\d+/g);
+        if (matches.length == 1) { dom_value = matches[0] }
+        else { dom_value = matches[0] + "." + matches[1] }
         
-        // handles project_code, project_name, client_name
-        if (i < 3) {
-          if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
-          
-          const input = $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
-          $(`#${item}_${project_code}`).replaceWith(input)
+        // set .val() for value field
+        $(`#edit_input_value_${project_code}`).val(dom_value)
+      }
+      else if(field == "project_detail" || field == "shipping_date" || field == "order_date" || field == "payment_term")
+      {
+        buffer = 0
+        if(field == "project_detail") { buffer = 16 }
+        else if ( field == "shipping_date" ) { buffer = 22 }
+        else if ( field == "order_date" ) { buffer = 23 }
+        else if ( field == "payment_term" ) { buffer = 16 }
+        min = buffer;
+        max = dom_value.length
+        dom_value = dom_value.substr(min, max)
+        $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
+      }
+      else {
+        $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
+      }
+    })
 
-          $(`#input_${item}_${project_code}`).wrap(`<div class="form-group mb-2" ${i == 0 ? 'style="display: inline;' : ''} id="form-group-${item}_${project_code}"></div>`)
+    // Initliaze cancel & save changes buttons @card-footer
+    card_footer_template = `
+    <div class="card-footer d-flex justify-content-end" id="card_footer_${project_code}">
+      <div class="my-3">
+        <button type="button" class="btn btn-pair edit-button text-center" id="cancel-edit-${project_code}" name="${project_code}">Cancel</button>
+        <button type="button" class="btn btn-pair edit-save text-center" id="save-edit-${project_code}" name="${project_code}" style="margin-right:0rem;">Save Changes</button>
+      </div>
+    </div>`
 
-          $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" id="label-${item}-${project_code}" style="color: #426285">${propertyToTitle(item)}</label>`)
+    edit_errors_template = `<div class="" id="edit-errors-${project_code}"></div>`
+
+    // Add Footer Template with Cancel & Save buttons
+    $(`.card[name=${project_code}]`).append(card_footer_template)
+    // Add empty div to house form errors
+    $(`#card-footer-${project_code}`).append(edit_errors_template)
+
+    // Cancel Edit button handler
+    $(`#cancel-edit-${project_code}`).on("click", function () {
+      archive = library.getItem(project_code)
+      addSales(archive, prepend=false, replace=true)
+    })
+
+    // Save Changes button handler
+    $(`#save-edit-${project_code}`).on("click", function () {
+
+      $(`#edit-errors-${project_code}`).empty()
+
+      edit_sales = {}
+
+      // Get & Assign Data
+      let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
+      $.each(data_form, function (i, field) {
+        property = field.name
+        
+        if(property == "cancelled") 
+        {
+          edit_sales["cancelled"] = true
+        } else if (property == "completed")
+        {
+          edit_sales["completed"] = true
         }
-
-        // handles project_detail, order_date, shpping_date (customer wanted date), payment_term
-        else {
-          if ($(`#${item}_${project_code}`).parent().hasClass("card_row")) { $(`#${item}_${project_code}`).unwrap() }
-          $(`#${item}_${project_code} > span`).remove()
-
-          const input = (item == "project_detail") ? $(`<textarea class="form-control" id="input_${item}_${project_code}" name="${item}" style="height: 6em" required>></textarea>`).val($(`#${item}_${project_code}`).text()) : $(`<input type="text" class="form-control edit-input" id="input_${item}_${project_code}" name="${item}" required>`).val($(`#${item}_${project_code}`).text())
-          $(`#${item}_${project_code}`).replaceWith(input)
-
-          $(`#input_${item}_${project_code}`).wrap(`<div class="form-group my-2" id="form-group-${item}_${project_code}"></div>`)
-          $(`#form-group-${item}_${project_code}`).prepend(`<label for="input_${item}_${project_code}" class="sr-only ps-1 pb-2" style="color: #426285">${i == 5 ? "Customer Wanted Date" : propertyToTitle(item)}</label>`)
-        }
-      })
-
-      // Add Currency + Value Input
-      invoice_amount = $(`#invoice_amount_${project_code}`).text()
-      invoice_currency = invoice_amount.substr(0, 1)
-      invoice_value = invoice_amount.replace(/[^\d.-]/g, '')
-
-      // Format extracted invoice_currency invoice_value into DOM elements
-      currency_value_input = `<div class="form-group my-2" id="form-group-currency_${project_code}">
-      <label for="input_currency" class="sr-only ps-1 pb-2" style="color: #426285">Currency</label>
-      <select class="form-select edit-input" id="input_currency_${project_code}" name="currency" required>
-        <option ${invoice_currency == 'R' ? 'selected ' : ''}value="MYR">RM</option>
-        <option ${invoice_currency == '€' ? 'selected ' : ''}value="EUR">€</option>
-        <option ${invoice_currency == '$' ? 'selected ' : ''}value="USD">$</option>
-      </select></div>
-      <div class="form-group mb-2" id="form-group-value_${project_code}">
-        <label for="input_value" class="sr-only ps-1 pb-2" style="color: #426285">Amount</label>
-        <input type="text" class="form-control edit-input" id="input_value_${project_code}" name="value">
-      </div>`
-      // Replace invoice amount with inputs
-      $(`#invoice_amount_${project_code}`).replaceWith(currency_value_input)
-      $(`#input_value_${project_code}`).val(invoice_value)
-
-      // Format and Append Cancelled & Completed Input
-      sale_cancelled = ($(`#card-${project_code}`).hasClass('cancelled-card')) ? true : false
-      const cancelled_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_cancelled_${project_code}" name="cancelled" ${sale_cancelled ? 'checked' : ''}>`
-      sale_completed = ($(`#card-${project_code}`).hasClass('completed-card')) ? true : false
-      const completed_input = `<input class="form-check-input edit-input edit-check-input my-2" style="margin-right: 1em" type="checkbox" value="" id="input_completed_${project_code}" name="completed" ${sale_completed ? 'checked' : ''}>`
-
-      // Add new Cancelled & Completed DOM elements to card-footer
-      $(`#cancelled_${project_code}`).replaceWith(cancelled_input)
-      $(`#completed_${project_code}`).replaceWith(completed_input)
-
-      $(`#input_cancelled_${project_code}`).wrap(`<div class="form-group mb-2 d-flex align-items-center" id="form-group-cancelled_${project_code}"></div>`)
-      $(`#input_completed_${project_code}`).wrap(`<div class="form-group mb-2 d-flex align-items-center" id="form-group-completed_${project_code}"></div>`)
-
-      $(`#form-group-cancelled_${project_code}`).append(`<label class="form-check-label pt-1" for="input_cancelled_${project_code}" style="color: #426285;font-size:1.15em"> Cancelled Order? </label>`)
-      $(`#form-group-completed_${project_code}`).append(`<label class="form-check-label pt-1" for="input_completed_${project_code}" style="color: #426285;font-size:1.15em"> Completed Order? </label>`)
-
-      // Add Cancel and Save Changes Buttons
-      $(`#card-${project_code}`).append(`<div class="d-flex flex-row justify-content-end m-3 sales_footer_buttons" id="card-footer-buttons-${project_code}">
-      <button type="button" class="btn std-btn" id="cancel-edit-${project_code}" name="${project_code}" style="width:auto;">Cancel</button>
-      <button class="btn std-btn" style="margin-left: 0.75em;width:auto;" name="${project_code}" id="save-edit-${project_code}">Save changes</button></div>`)
-
-      // Add Event Handlers to newly appended DOMS
-      $('.edit-input').on("keydown", function (e) {
-        if (e.keyCode == 13) {
-          var inputs = $(this).parents("form").eq(0).find(":input");
-          if (inputs[inputs.index(this) + 1] != null) {
-            inputs[inputs.index(this) + 1].focus();
-          }
-          e.preventDefault();
-          return false;
+        else{
+          edit_sales[property] = field.value
         }
       })
 
-      // Cancel_edit button for sales editing handler
-      $(`#cancel-edit-${project_code}`).on("click", function () {
-        id = $(this).attr("name")
-        if ($(`#card-${id}`).attr("editing") == "1") {
-          getSale({ "project_code": String(project_code) }, leaveEditMode)
+      // Make Ajax Call & handle OK response
+      postEditSales(edit_sales).then((response) => {
+        new_edit = response.sales
+        library.updateItem(new_edit)
+        addSales(new_edit, prepend=false, replace=true)
+      }).catch((error) => {
+        if (error.responseJSON) {
+          Object.keys(error.responseJSON).forEach(key => {
+            error_title = propertyToTitle(key)
+            $(`#edit-errors-${edit_sales.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
+            $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
+          })
         }
       })
 
-      // Save Edit button for sales editing handler
-      $(`#save-edit-${project_code}`).on("click", function (e) {
-        // init
-        e.preventDefault();
-        id = $(this).attr("name")
-        $(`div[id*=error-text-${id}]`).each(function () {
-          $(this).remove()
-        })
+    })
 
-        // Gathering & Formatting Data
-        sale = {}
-        sale["cancelled"] = false
-        sale["completed"] = false
-
-        // Get & Assign Data
-        let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
-        $.each(data_form, function (i, field) {
-          property = field.name
-          // if (property == "order_date") {
-          //   src = field.value
-          //   src = src.replace("/", "-")
-          //   src = src.replace("/", "-")
-          //   src_split = src.split("-")
-          //   src_split.reverse()
-          //   temp = src_split[2]
-          //   src_split[2] = src_split[1]
-          //   src_split[1] = temp
-
-          //   format_date = src_split.join("-")
-          //   sale[property] = format_date
-          // }
-          if (property == "cancelled") {
-            sale["cancelled"] = true
-          }
-          else if (property == "completed") {
-            sale["completed"] = true
-          }
-          else {
-            sale[property] = field.value
-          }
-        })
-
-        if ($(`#card-${id}`).attr("editing") == "1") {
-          editSale(sale, leaveEditMode)
-        }
-      })
-
-      // Autoresize by Jack Moore
-      autosize($(`#input_project_detail_${project_code}`))
-      $(`#input_project_detail_${project_code}`).css("height", "5em")
-    }
   }
-}
-
-function leaveEditMode(sale) {
-  project_code = sale.project_code
-  is_cancelled = sale.cancelled
-  is_completed = sale.completed
-
-  // Reset card & card-header classes
-  $(`#card-${project_code}`).removeClass()
-  $(`#card-header-${project_code}`).removeClass()
-
-  // Revert DOM and Styling to before Edit mode
-  $(`#card-${project_code}`).unwrap()
-  $(`#card-${project_code}`).addClass("card")
-  $(`#card-header-${project_code}`).addClass(["card-header", "d-flex", "flex-row", "justify-content-between"])
-  $(`#card-body-${project_code}`).addClass(["d-flex", "justify-content-between"])
-  $(`#card-footer-${project_code}`).css("display", "flex")
-
-  if (is_cancelled) {
-    $(`#card-${project_code}`).addClass("cancelled-card")
-    $(`#card-header-${project_code}`).addClass("cancelled-card-header")
+  else {
+    console.log("Already in edit mdoe")
   }
-
-  if (is_completed) {
-    $(`#card-${project_code}`).addClass("completed-card")
-    $(`#card-header-${project_code}`).addClass("completed-card-header")
-  }
-
-  // Remove excess validation texts
-  $("div[class*=edit-validation-update-text]").each(function () {
-    $(this).remove()
-  })
-
-  // Empty card-body, card-footer card-footer-buttons, 
-  $(`#card-body-${project_code}`).empty();
-  $(`#card-footer-${project_code}`).empty();
-  $(`#card-footer-buttons-${project_code}`).remove();
-
-  // Add card_rows to card-body
-  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row0"></div>`)
-  $(`#card-body-${project_code}`).append(`<div class="card_row" name="${project_code}_row1"></div>`)
-
-  $.each(sale, function (field, value) {
-    if (field == "project_code") {
-      selector = `#input_project_code_${project_code}`
-      $(selector).unwrap()
-      $(selector).replaceWith(`<p id="project_code_${project_code}">${project_code}</p>`)
-    }
-    else if (field == "project_name" || field == "client_name") {
-      $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text" id="${field}_${project_code}">${value}</p>`)
-    }
-    else if (field == "invoice_amount") {
-      $(`.card_row[name=${project_code}_row0]`).append(`<p class="card-text value" id="invoice_amount_${project_code}">${value}</p>`)
-    }
-    else if (field == "order_date" || field == "shipping_date") {
-      $(`.card_row[name=${project_code}_row1]`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
-    }
-    else if (field == "project_detail" || field == "payment_term") {
-      $(`#card-footer-${project_code}`).append(`<p class="card-text" id="${field}_${project_code}"><span class="text-muted">${propertyToTitle(field)}: </span>${value}</p>`)
-    }
-  })
-  // Append Cancelled & Completed at the end
-  $(`#card-footer-${project_code}`).append(`<p class="card-text" id="cancelled_${project_code}"><span class="text-muted">Cancelled: </span>${is_cancelled ? 'True' : 'False'}</p>`)
-  $(`#card-footer-${project_code}`).append(`<p class="card-text" id="completed_${project_code}"><span class="text-muted">Completed: </span>${is_completed ? 'True' : 'False'}</p>`)
-
-  // Finally, set card editing to false "0" and scroll into view 
-  $(`#card-${sale.project_code}`).attr("editing", 0)
-  document.getElementById(`card-${sale.project_code}`).scrollIntoView(false)
-
-  // Edit button for sales Card Handler
-  $(`#card-edit-${project_code}`).on("click", function () {
-    id = $(this).attr("name")
-    if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
-    enterEditMode(project_code)
-  })
 }

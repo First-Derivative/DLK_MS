@@ -77,41 +77,20 @@ function postNewSales(new_sales) {
 }
 
 // Put (edited) sale
-function editSale(sale, callback) {
-  $.ajax(
+function postEditSales(sale) {
+  return new Promise ( (resolve, reject) => {
+    $.ajax(
     {
       type: "POST",
       headers: { "X-CSRFToken": token },
-      url: editSale_url,
+      url: postEditSales_url,
       data: sale,
       success: function (response) {
-        start = 0
-        if (response.hasOwnProperty("error"))
-        {
-          Object.keys(response.error).forEach(key => {
-            error_title = propertyToTitle(key)
-            if (start == 0) {
-              $(`#card-footer-${sale.project_code}`).append(`<div class="row text-left edit-validation-update-text mt-3" id="error-text-${sale.project_code}"><p style="color: #d82d4e">${error_title} : ${response.error[key]}</p></div>`)
-              $(`#input_${key}_${sale.project_code}[name=${key}]`).css("border", "0.1em solid #d82d4e")
-            }
-            else {
-              $(`#error-text-${sale.project_code}`).append(`<p style="color: #d82d4e">${error_title} : ${response.error[key]}</p>`)
-
-              $(`.input[name=${key}]`).css("border", "0.1em solid #d82d4e")
-            }
-            start == 1
-          })
-          document.getElementById(`card-footer-${sale.project_code}`).scrollIntoView(false)
-        }
-        else
-        {
-          sale["invoice_amount"] = resolveCurrency(sale["currency"]) + sale["value"]
-          callback(sale)
-        }
+        resolve(response)
       },
-      error: function (jqXHR, textStatus, errorThrown) {
-        // Debugging case
-        alert("textStatus: " + textStatus + " " + errorThrown)
+      error: function (error) {
+        reject(error)
       }
     })
+  })
 }
