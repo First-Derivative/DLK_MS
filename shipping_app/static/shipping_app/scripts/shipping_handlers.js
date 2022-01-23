@@ -195,7 +195,6 @@ $("#modal-btn-save").click(function () {
     }
   })
 
-
   postNewShipping(new_shipping).then((response) => {
     cache.append(new_shipping)
     addShipping(new_shipping, prepend=true, replace=false)
