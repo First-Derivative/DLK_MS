@@ -34,6 +34,7 @@ def getAllShipping(request):
 # POST Shipping
 @method_check(allowed_methods=["POST"])
 @role_check(allowed_roles="shipping")
+@api_view(['POST'])
 def postNewShipping(request):
   post = request.POST
   print(post)
@@ -52,7 +53,7 @@ def postNewShipping(request):
     try:
       new_shipping.full_clean()
     except ValidationError as e:
-      return JsonResponse({"error":dict(e)})
+      return Response(status=400, data=dict(e))
     new_shipping.save()
     return JsonResponse({"status":"OK"})
 
