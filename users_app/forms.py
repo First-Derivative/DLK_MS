@@ -8,9 +8,9 @@ class LoginForm(ModelForm):
   
   class Meta:
     model = User
-    fields = ("email", "password")
+    fields = ("username", "password")
 
-  email = forms.CharField(max_length=50,widget=forms.TextInput(attrs={
+  username = forms.CharField(max_length=50,widget=forms.EmailInput(attrs={
     "class": "form-control login_input",
     "id": "login_email",
     "placeholder": "Email"
@@ -32,11 +32,12 @@ class LoginForm(ModelForm):
 class RegisterForm(UserCreationForm):
   class Meta:
       model = User
-      fields = ("email", "first_name", "last_name", "password1", "password2")
+      fields = ("username", "first_name", "last_name", "password1", "password2")
 
-  email = forms.CharField(max_length=50, help_text="This is what you'll use to login",widget=forms.EmailInput(attrs={
+  username = forms.CharField(max_length=50, help_text="Use your work email as the username",widget=forms.EmailInput(attrs={
     'placeholder': 'email@dlk.com',
     'class': 'form-control ',
+
   }))
 
   first_name = forms.CharField(label="First Name", widget=forms.TextInput(attrs={

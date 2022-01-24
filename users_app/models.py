@@ -5,12 +5,12 @@ from django.contrib.auth.models import PermissionsMixin
 # from django.core.exceptions import SuspiciousOperation # Consider writing on Error Classs
 
 class UserManager(BaseUserManager):
-  def create_user(self, email, first_name, last_name, password=None):
-    if not (first_name or last_name or email):
+  def create_user(self, username, first_name, last_name, password=None):
+    if not (first_name or last_name or username):
       raise ValueError("This field is required")
 
     user = self.model(
-      email =  self.normalize_email(email),
+      username =  self.normalize_email(username),
       first_name = first_name,
       last_name = last_name
     )
@@ -19,9 +19,9 @@ class UserManager(BaseUserManager):
     user.save()
     return user
 
-  def create_superuser(self, email, first_name, last_name, password):
+  def create_superuser(self, username, first_name, last_name, password):
     user = self.create_user(
-      email =  self.normalize_email(email),
+      username =  self.normalize_email(username),
       first_name = first_name,
       last_name = last_name,
       password = password
@@ -34,14 +34,14 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
 
-  email = models.EmailField(verbose_name="email",max_length=50, unique=True)
+  username = models.EmailField(verbose_name="email",max_length=50, unique=True)
   first_name = models.CharField(max_length=30)
   last_name = models.CharField(max_length=30)
   is_admin = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
   is_staff = models.BooleanField(default=True)  
 
-  USERNAME_FIELD = 'email'
+  USERNAME_FIELD = 'username'
   REQUIRED_FIELDS = ('first_name','last_name')
 
   objects = UserManager()
