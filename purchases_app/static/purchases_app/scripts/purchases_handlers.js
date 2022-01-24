@@ -213,12 +213,20 @@ $("#modal-btn-save").click(function () {
     addPurchases(response_purchase, prepend=true, replace=false)
     $("#modal-btn-close").trigger("click")
   }).catch( (error) => {
-    Object.keys(error.responseJSON).forEach(key => {
-      title = propertyToTitle(String(key))
-      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+    if(error.responseJSON)
+    {
+      Object.keys(error.responseJSON).forEach(key => {
+        title = propertyToTitle(String(key))
+        error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+        $("#modal-errors").prepend(error_text_template)
+        $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+      })
+    }
+    else
+    {
+      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${error.responseText}</p></div>`
       $("#modal-errors").prepend(error_text_template)
-      $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
-    })
+    }
   })
 })
 // ===== SEARCH FEAURE =====
@@ -426,6 +434,7 @@ function edit(library, purchases_id) {
             $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
           })
         }
+        else { $(`#edit-errors-${edit_purchases.purchases_id}`).append(`<p class="error-text">${error.responseText}`) }
       })
 
     })

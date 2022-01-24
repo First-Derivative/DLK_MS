@@ -233,12 +233,19 @@ $("#modal-btn-save").click(function () {
     addSales(response_sales, prepend=true, replace=false)
     $("#modal-btn-close").trigger("click")
   }).catch( (error) => {
-    Object.keys(error.responseJSON).forEach(key => {
-      title = propertyToTitle(String(key))
-      error_text_template = `<div class="row text-left edit-validation-update=text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+    if(error.responseJSON)
+    {
+      Object.keys(error.responseJSON).forEach(key => {
+        title = propertyToTitle(String(key))
+        error_text_template = `<div class="row text-left edit-validation-update=text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+        $("#modal-errors").prepend(error_text_template)
+        $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+      })
+    } else
+    {
+      error_text_template = `<div class="row text-left edit-validation-update=text" id=""><p class="error-text">${error.responseText}</p></div>`
       $("#modal-errors").prepend(error_text_template)
-      $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
-    })
+    }
   })
 })
 
@@ -544,6 +551,8 @@ function edit(library, project_code) {
             $(`#edit-errors-${edit_sales.project_code}`).append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
             $(`.edit-input[name=${key}]`).addClass("input-error-highlight")
           })
+        } else {
+          $(`#edit-errors-${edit_sales.project_code}`).append(`<p class="error-text"> ${error.responseText}`)
         }
       })
 
