@@ -18,10 +18,10 @@ def userLogin(request):
     form = LoginForm(request.POST)
 
     if(form.is_valid()):
-      email = request.POST["email"]  
+      username = request.POST["username"]  
       password = request.POST["password"]
       
-      user = authenticate(email=email, password=password)
+      user = authenticate(username=username, password=password)
       if(user):
         login(request, user)
         return redirect("home")
@@ -50,7 +50,7 @@ def userRegister(request):
       
       #Validating form and data using DjangoValidation
       user = form.save()
-      email = form.cleaned_data.get("email")
+      username = form.cleaned_data.get("username")
       raw_password = form.cleaned_data.get("password1")
   
       #Attempt login
