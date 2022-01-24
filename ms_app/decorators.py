@@ -1,5 +1,7 @@
 from django.shortcuts import redirect
-from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 # Disables access to rest of site if user is unathenticated *consider refactor if low use case
 def unauthenticated_check(view_func):
@@ -20,9 +22,9 @@ def role_check(allowed_roles=""):
         for group in user_groups:
           if( group.name == allowed_roles):
             return view_func(request, *args, **kwargs)
-        return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})    
+        return HttpResponseBadRequest("This account is not authorized for this action")
       else:
-        return JsonResponse({"error":{"not_authorized":"You are not authorized to perform this function"}})
+        return HttpResponseBadRequest("This account is not authorized for this action")
     return wrapper_func
   return decorator
 
