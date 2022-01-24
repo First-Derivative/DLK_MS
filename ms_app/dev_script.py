@@ -16,7 +16,7 @@ def reset_database():
     if(("_app" in all_dir[i]) and all_dir[i] != "ms_app" ):
       sorted_dir.append(all_dir[i])
   
-  os.system('rm db.sqlite3')
+  # os.system('rm db.sqlite3')
 
   for i in range(6):
 
@@ -178,8 +178,8 @@ def resolveDate(date,format="british"):
       return "".join(new_date)
   return None
 
-# print("===== Reseting Database =====")
-# reset_database()
+print("===== Reseting Database =====")
+reset_database()
 
 # print("===== Reading SALES =====")
 # readSheet("SALES")
@@ -190,5 +190,5 @@ def resolveDate(date,format="british"):
 # print("===== Reading SHIPPING =====")
 # readSheet("SHIPPING")
 
-print("===== Reading PURCHASES =====")
-readSheet("PURCHASING")
+# print("===== Reading PURCHASES =====")
+# readSheet("PURCHASING")
