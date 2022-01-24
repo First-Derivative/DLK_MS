@@ -28,6 +28,7 @@ class UserManager(BaseUserManager):
     )
 
     user.is_admin = True
+    user.is_staff = True
     user.save(using=self._db)
     return user
 

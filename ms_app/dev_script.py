@@ -1,8 +1,10 @@
+from pymysql import NULL
 from sales_app.models import Sales
 from operations_app.models import Operations
 from shipping_app.models import Shipping
 from purchases_app.models import Purchases
 from ms_app.models import *
+from overview_app.models import *
 import os
 import gspread
 import time
@@ -49,100 +51,136 @@ def readSheet(sheet):
 
   if(sheet == "SALES"):
     sales = db.worksheet(sheet)
-    start_row = 5
-    end_row = 56
+    start_row = 22
+    end_row = 59
+    missed = []
 
     for i in range(start_row, end_row+1):
-      active_row = sales.row_values(i)
+      try:
+        active_row = sales.row_values(i)
 
-      project_code = active_row[0].replace(" ","-")
-      project_name = active_row[1]
-      client_name = active_row[2]
-      project_detail = active_row[3] if (active_row[3] != '') else "null"
-      invoice_amount = active_row[4]
-      order_date = resolveDate(active_row[5],"american")
-      shipping_date = active_row[6] if (active_row[6] != '') else 'null'
-      payment_term = active_row[7] if (active_row[7] != '') else 'null'
-      cancelled = True if (active_row[8] == "TRUE") else False 
-      completed = True if (active_row[9] == "TRUE") else False 
+        project_code = active_row[0].replace(" ","-")
+        project_name = active_row[1]
+        client_name = active_row[2]
+        project_detail = active_row[3] if (active_row[3] != '') else "null"
+        invoice_amount = active_row[4]
+        order_date = resolveDate(active_row[5],"american")
+        shipping_date = active_row[6] if (active_row[6] != '') else 'null'
+        payment_term = active_row[7] if (active_row[7] != '') else 'null'
+        cancelled = True if (active_row[8] == "TRUE") else False 
+        completed = True if (active_row[9] == "TRUE") else False 
 
-      currency, value = resolveInvoiceAmount(invoice_amount)
+        currency, value = resolveInvoiceAmount(invoice_amount)
 
-      new_sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,cancelled=cancelled, completed=completed)
+        new_sales = Sales(project_code=project_code, project_name=project_name, client_name=client_name, project_detail=project_detail, value=value, currency=currency, order_date=order_date, shipping_date=shipping_date, payment_term=payment_term,cancelled=cancelled, completed=completed)
 
-      print("Added {}...".format(new_sales))
-      new_sales.save()
-      time.sleep(5)
+        print("Added {}...".format(new_sales))
+        new_sales.save()
+        time.sleep(1)
+      except Exception as e:
+        missed.append(i)
+    
+    for i in range(0, len(missed)):
+      new_report = Report(title="Missing Sales Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      print("saving new report {new_report}".format(new_report=new_report))
+      new_report.save()
+
 
   elif(sheet == "OPERATION"):
     operation = db.worksheet(sheet)
     start_row = 4
-    end_row = 55
-    
-    for i in range(start_row,end_row+1):
-      active_row = operation.row_values(i)
-      
-      project_code = active_row[0].replace(" ","-")
-      project_name = active_row[1]
-      client_name = active_row[2]
-      status = active_row[3] if (active_row[3] != 'null') else 'null'
-      finish_detail = active_row[7] if (active_row[7] != '') else 'null'
-      cancelled = True if (active_row[8] == "TRUE") else False
+    end_row = 58
+    missed = []
 
-      new_operation = Operations(project_code=project_code, project_name=project_name, client_name=client_name, status=status, finish_detail=finish_detail,cancelled=cancelled)
-      print("Added {}...".format(new_operation))
-      new_operation.save()
-      time.sleep(5)
+    for i in range(start_row,end_row+1):
+      try:
+        active_row = operation.row_values(i)
+        
+        project_code = active_row[0].replace(" ","-")
+        project_name = active_row[1]
+        client_name = active_row[2]
+        status = active_row[3] if (active_row[3] != 'null') else 'null'
+        finish_detail = active_row[7] if (active_row[7] != '') else 'null'
+        cancelled = True if (active_row[8] == "TRUE") else False
+
+        new_operation = Operations(project_code=project_code, project_name=project_name, client_name=client_name, status=status, finish_detail=finish_detail,cancelled=cancelled)
+        print("Added {}...".format(new_operation))
+        new_operation.save()
+        time.sleep(1)
+      except Exception as e:
+        missed.append(i)
+
+    for i in range(0, len(missed)):
+      new_report = Report(title="Missing Operations Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      print("saving new report {new_report}".format(new_report=new_report))
+      new_report.save()
 
   elif(sheet == "SHIPPING"):
     shipping = db.worksheet(sheet)
     start_row = 6
     end_row = 57
+    missed = []
     
     for i in range(start_row, end_row+1):
-      active_row = shipping.row_values(i)
+      try:
+        active_row = shipping.row_values(i)
 
-      project_code = active_row[0].replace(" ", "-")
-      project_name = active_row[1]
-      client_name = active_row[2]
-      germany = active_row[3] if (active_row[3] != '') else 'null'
-      customer = active_row[4] if (active_row[4] != '') else 'null'
-      charges = active_row[5] if (active_row[5] != '') else 'null'
-      remarks = active_row[6] if (active_row[6] != '') else 'null' 
-      cancelled = True if (active_row[7] == "TRUE") else False
-      completed = True if (active_row[8] == "TRUE") else False
+        project_code = active_row[0].replace(" ", "-")
+        project_name = active_row[1]
+        client_name = active_row[2]
+        germany = active_row[3] if (active_row[3] != '') else 'null'
+        customer = active_row[4] if (active_row[4] != '') else 'null'
+        charges = active_row[5] if (active_row[5] != '') else 'null'
+        remarks = active_row[6] if (active_row[6] != '') else 'null' 
+        cancelled = True if (active_row[7] == "TRUE") else False
+        completed = True if (active_row[8] == "TRUE") else False
 
-      new_shipping = Shipping(project_code=project_code, project_name=project_name, client_name=client_name, germany=germany, customer=customer, charges=charges, remarks=remarks, cancelled=cancelled, completed=completed)
-      print("Added {}...".format(new_shipping))
-      new_shipping.save()
-      time.sleep(5)
+        new_shipping = Shipping(project_code=project_code, project_name=project_name, client_name=client_name, germany=germany, customer=customer, charges=charges, remarks=remarks, cancelled=cancelled, completed=completed)
+        print("Added {}...".format(new_shipping))
+        new_shipping.save()
+        time.sleep(1)
+      except Exception as e:
+        missed.append(i)
+
+    for i in range(0, len(missed)):
+      new_report = Report(title="Missing Shipping Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      print("saving new report {new_report}".format(new_report=new_report))
+      new_report.save()
 
   elif(sheet == "PURCHASING"):
     purchases = db.worksheet(sheet)
-    # missing rows 7-9
-    start_row = 7
-    end_row = 9
+    start_row = 5
+    end_row = 243
+    missed = []
 
     for j in range(start_row, end_row+1):
-      active_row = purchases.row_values(j)
+      try:
+        active_row = purchases.row_values(j)
 
-      purchase_order = active_row[0] if(active_row[0] != '') else 'null'
-      project_code = active_row[5] if(active_row[5] != '') else 'null'
-      po_date = resolveDate(active_row[1],"american") 
-      if (j > 32):
-        po_date = resolveDate(active_row[1])
-      supplier_name = active_row[2]
-      purchased_items = active_row[3]
-      invoice_amount = active_row[4]
-      expected_date = active_row[6] if (active_row[6] != '' or active_row[6] != None) else 'null' 
-      supplier_date = active_row[7] if (active_row[7] != '' or active_row[7] != None) else 'null' 
+        purchase_order = active_row[0] if(active_row[0] != '') else 'null'
+        project_code = active_row[5] if(active_row[5] != '') else 'null'
+        po_date = resolveDate(active_row[1],"american") 
+        if (j > 32):
+          po_date = resolveDate(active_row[1])
+        supplier_name = active_row[2]
+        purchased_items = active_row[3]
+        invoice_amount = active_row[4]
+        expected_date = active_row[6] if (active_row[6] != '' or active_row[6] != None) else 'null' 
+        supplier_date = active_row[7] if (active_row[7] != '' or active_row[7] != None) else 'null' 
 
-      currency, value = resolveInvoiceAmount(invoice_amount)
+        currency, value = resolveInvoiceAmount(invoice_amount)
 
-      new_purchases = Purchases(purchase_order=purchase_order, project_code=project_code, po_date=po_date, supplier_name=supplier_name, purchased_items=purchased_items, currency=currency, value=value, expected_date=expected_date, supplier_date=supplier_date)
-      new_purchases.save()
-      print("Added {}...".format(new_purchases))
-      time.sleep(0.8)
+        new_purchases = Purchases(purchase_order=purchase_order, project_code=project_code, po_date=po_date, supplier_name=supplier_name, purchased_items=purchased_items, currency=currency, value=value, expected_date=expected_date, supplier_date=supplier_date)
+        new_purchases.save()
+        print("Added {}...".format(new_purchases))
+        time.sleep(1)
+      except Exception as e:
+        missed.append(j)
+
+    for i in range(0, len(missed)):
+      new_report = Report(title="Missing Purchasese Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      print("saving new report {new_report}".format(new_report=new_report))
+      new_report.save()
 
 def resolveInvoiceAmount(invoice):
   if(invoice == '' or invoice == None):
@@ -178,17 +216,17 @@ def resolveDate(date,format="british"):
       return "".join(new_date)
   return None
 
-print("===== Reseting Database =====")
-reset_database()
+# print("===== Reseting Database =====")
+# reset_database()
 
 # print("===== Reading SALES =====")
 # readSheet("SALES")
 
-# print("===== Reading OPERATION =====")
-# readSheet("OPERATION")
+print("===== Reading OPERATION =====")
+readSheet("OPERATION")
 
-# print("===== Reading SHIPPING =====")
-# readSheet("SHIPPING")
+print("===== Reading SHIPPING =====")
+readSheet("SHIPPING")
 
-# print("===== Reading PURCHASES =====")
-# readSheet("PURCHASING")
+print("===== Reading PURCHASES =====")
+readSheet("PURCHASING")
