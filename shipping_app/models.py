@@ -1,15 +1,15 @@
 from django.db import models
-from .validators import *
+from ms_app.validators import *
 
 class Shipping(models.Model):
   shipping_id = models.BigAutoField(primary_key=True)
   project_code = models.CharField(max_length=20, validators=[validate_project_code])
-  project_name = models.CharField(null=True, blank=False, max_length=80)
+  project_name = models.CharField(max_length=80)
   client_name = models.CharField(max_length=100)
-  germany = models.CharField(null=True, blank=False, max_length=500)
-  customer = models.CharField(null=True, blank=False,max_length=500)
-  charges = models.CharField(null=True, blank=False,max_length=100)
-  remarks = models.CharField(null=True, blank=False,max_length=100)
+  germany = models.CharField( max_length=500, validators=[check_null])
+  customer = models.CharField(max_length=500, validators=[check_null])
+  charges = models.CharField(max_length=100, validators=[check_null])
+  remarks = models.CharField(max_length=100, validators=[check_null])
   cancelled = models.BooleanField(default=False)
   completed = models.BooleanField(default=False)
 
