@@ -9,6 +9,7 @@ media
 */*/migrations/
 */*/migrations/*
 staticfiles/
+db_archive.json
 
 # Special Files #
 *_key.json
