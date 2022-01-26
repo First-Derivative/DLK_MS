@@ -34,8 +34,8 @@ def reset_database():
     os.chdir(home)
 
   os.system('python manage.py makemigrations users_app')
-  os.system('python manage.py migrate')
-  os.system('python manage.py createsuperuser')
+  # os.system('python manage.py migrate')
+  # os.system('python manage.py createsuperuser')
   os.system('python manage.py makemigrations sales_app accounts_app shipping_app purchases_app operations_app overview_app')
   os.system('python manage.py migrate')
 
@@ -216,17 +216,17 @@ def resolveDate(date,format="british"):
       return "".join(new_date)
   return None
 
-# print("===== Reseting Database =====")
-# reset_database()
+print("===== Reseting Database =====")
+reset_database()
 
 # print("===== Reading SALES =====")
 # readSheet("SALES")
 
-print("===== Reading OPERATION =====")
-readSheet("OPERATION")
+# print("===== Reading OPERATION =====")
+# readSheet("OPERATION")
 
-print("===== Reading SHIPPING =====")
-readSheet("SHIPPING")
+# print("===== Reading SHIPPING =====")
+# readSheet("SHIPPING")
 
-print("===== Reading PURCHASES =====")
-readSheet("PURCHASING")
+# print("===== Reading PURCHASES =====")
+# readSheet("PURCHASING")
