@@ -1,4 +1,5 @@
 from django.utils import timezone
+from datetime import datetime
 from django.db import models
 from ms_app.models import Currency, resolveCurrencyLabel
 from .validators import *
@@ -7,7 +8,7 @@ class Purchases(models.Model):
   purchases_id = models.BigAutoField(primary_key=True)
   purchase_order = models.CharField(verbose_name="Purchase Order Number", max_length=20, validators=[validate_purchase_order])
   project_code = models.CharField(max_length=100, verbose_name="Purchased For", validators=[validate_project_code])
-  po_date = models.DateField(verbose_name="Purchase Order Date", default=timezone.now())
+  po_date = models.DateField(verbose_name="Purchase Order Date", default=datetime(1950, 1, 1))
   supplier_name	= models.CharField(max_length=100, verbose_name="Supplier Name", validators=[check_null])
   purchased_items = models.CharField(max_length=80, verbose_name="Purchased Item", validators=[check_null])
   value = models.DecimalField(max_digits=8, decimal_places=2)
