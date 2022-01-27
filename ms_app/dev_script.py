@@ -44,6 +44,36 @@ def reset_database():
     # os.system('python manage.py migrate')
     # Done Reseting DB's
   
+
+def reset_migrations():
+  home = os.getcwd() # "./"
+  path = home
+  all_dir = os.listdir(path)
+  sorted_dir = []
+  for i in range(len(all_dir)):
+    if(("_app" in all_dir[i]) and all_dir[i] != "ms_app" ):
+      sorted_dir.append(all_dir[i])
+  
+  # os.system('rm db.sqlite3')
+
+  for i in range(6):
+
+    # Move to select _app folder
+    os.chdir(os.path.join(home, sorted_dir[i]))
+
+    #remove migrations folder
+    os.system('rm -rf migrations/')
+    #remove pycache folder
+    os.system('rm -rf __pycache__')
+
+    #Reset to Home after deleetion
+    os.chdir(home)
+
+  os.system('python manage.py makemigrations users_app')
+  os.system('python manage.py makemigrations sales_app accounts_app shipping_app purchases_app operations_app overview_app')
+  os.system('python manage.py migrate')
+  
+
 # CUSTOM READSHEET FUNCTION FOR FILE: 'DLK - MASTER SCHEDULE LQ2021 & 2022_COPY'
 def readSheet(sheet):
   gc = gspread.service_account(filename=os.path.join(os.getcwd(),'ms_app/google_dlk_key.json'))
@@ -217,7 +247,8 @@ def resolveDate(date,format="british"):
   return None
 
 print("===== Reseting Database =====")
-reset_database()
+# reset_database()
+reset_migrations()
 
 # print("===== Reading SALES =====")
 # readSheet("SALES")
