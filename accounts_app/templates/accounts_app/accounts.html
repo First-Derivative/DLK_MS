@@ -47,7 +47,7 @@
               </div>
 
               <div class="col mb-3">
-                <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
+                <input class="form-check-input" type="checkbox" value="" id="input-cancelled">
                 <label class="form-check-label" for="input-cancelled">
                   Show Cancelled Orders
                 </label>
@@ -66,6 +66,8 @@
 
         <!-- MAIN CONTENT -->
         <div class="col-xl-10" id="main_content">
+D
+          {% if accounts %}
           <table class="table table-hoveer">
             <thead>
               <tr>
@@ -90,6 +92,8 @@
               </tr>
             </tbody>
           </table>
+          {% endfor %}
+
         </div>
     </div>
 
