@@ -11,9 +11,9 @@ class Purchases(models.Model):
   po_date = models.DateField(verbose_name="Purchase Order Date", default=datetime(1950, 1, 1))
   supplier_name	= models.CharField(max_length=100, verbose_name="Supplier Name", validators=[check_null])
   purchased_items = models.CharField(max_length=80, verbose_name="Purchased Item", validators=[check_null])
-  value = models.DecimalField(max_digits=8, decimal_places=2)
+  value = models.DecimalField(max_digits=8, default='-1', decimal_places=2)
   currency = models.CharField(max_length=10, choices=Currency.choices, default=Currency.MYR)
-  expected_date = models.CharField(max_length=200, verbose_name="Expected Paymenet Date", validators=[check_null])
+  expected_date = models.CharField(max_length=200, default='null',verbose_name="Expected Paymenet Date", validators=[check_null])
   supplier_date = models.CharField(max_length=200, verbose_name="Supplier Delivary Date", validators=[check_null])
   
   created_at = models.DateTimeField(auto_now_add=True)

@@ -6,8 +6,8 @@ class Operations(models.Model):
   project_code = models.CharField(max_length=20, validators=[validate_project_code])
   project_name = models.CharField(max_length=80, validators=[check_null])
   client_name = models.CharField(max_length=100, validators=[check_null])
-  status = models.CharField(max_length=600,verbose_name="Production Status", validators=[check_null])
-  finish_detail = models.CharField(max_length=100, validators=[check_null])
+  status = models.CharField(max_length=600, default='null',verbose_name="Production Status", validators=[check_null])
+  finish_detail = models.CharField(max_length=100, default='null', validators=[check_null])
   cancelled = models.BooleanField(default=False)
 
   @property
