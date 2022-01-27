@@ -5,15 +5,17 @@ from purchases_app.models import Purchases
 
 
 class PaymentStatus(models.Model):
-
-  sales_relation = models.ForeignKey(Sales, on_delete=PROTECT)
-  purchases_relation = models.ForeignKey(Purchases, on_delete=PROTECT)
-
+  sales_relation = models.ForeignKey(Sales, on_delete=PROTECT, related_name="sales")
   paymentstatus_id = models.BigAutoField(primary_key=True)
-  proforma_number = models.CharField(max_length=30)
   invoice_number = models.CharField(max_length=30)
   invoice_date = models.DateField()
-  due_date = models.DateField(blank=True, null=True)
-  value = models.DecimalField(max_digits=12, decimal_places=2)
   status = models.CharField(max_length=100)
   completed = models.BooleanField(default=False)
+  cancelled = models.BooleanField(default=False)
+
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    verbose_name = "Payment Status"
+    verbose_name_plural = "Payment Status"

@@ -48,12 +48,12 @@
         <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a class="" href="{% url 'purchases' %}"></a><a class="" href="{% url 'purchases' %}">Purchases</li>
         <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
         <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
-        <li class="nav-item dropdown" id="accounts_tab">
+        <li class="nav-item dropdown {% if request.path == '/accounts/' %}active{% endif %}" id="accounts_tab">
           <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Accounts
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-            <li><a class="dropdown-item" href="#">Receivables</a></li>
+            <li><a class="dropdown-item" href="{% url 'accounts'%}">Receivables</a></li>
             <li><a class="dropdown-item" href="#">Payables</a></li>
           </ul>
         </li>
