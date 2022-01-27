@@ -107,7 +107,7 @@
 
 /* CARD  */
 
-.missing_text {color: red;}
+.missing_text { color: red !important;}
 .header-img{filter: invert(100%);}
 .value
 {
@@ -256,3 +256,21 @@
 }
 
 .edit-save:hover{ color: white; background-color: #0d78ee; }
+
+/* Accounts Table */
+
+.table-hover>tbody>tr:hover>* {
+  --bs-table-hover-color: inherit;
+}
+
+.cancelled-payment
+{
+  background-color: #d82d4e;
+  color: white;
+}
+
+.completed-payment { background-color: #24cf4a; }
+
+.cancelled-payment > *, completed-payment > * {
+  color: white !important;
+}
