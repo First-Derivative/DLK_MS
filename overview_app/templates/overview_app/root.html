@@ -35,43 +35,48 @@
 </head>
 
 <body>
+
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg d-flex justify-content-between" id="navbar_container"> 
     
-    <a class="navbar-brand" href="{% url 'home'%}">DLK Master </br>Schedule</a>
+    <a class="navbar-brand" href="{% url 'home'%}">DLK Master</br>Schedule</a>
     <button type="button" data-bs-toggle="collapse" data-bs-target="#navbar_nav" class="navbar-toggler">Nav</button>
     
     <div class="collapse navbar-collapse" id="navbar_nav">
-      <ul class="navbar-nav">
-        <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
-        <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a class="" href="{% url 'sales' %}">Sales</li>
-        <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a class="" href="{% url 'purchases' %}"></a><a class="" href="{% url 'purchases' %}">Purchases</li>
-        <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
-        <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
-        <li class="nav-item dropdown {% if request.path == '/accounts/' %}active{% endif %}" id="accounts_tab">
-          <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Accounts
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-            <li><a class="dropdown-item" href="{% url 'accounts'%}">Receivables</a></li>
-            <li><a class="dropdown-item" href="#">Payables</a></li>
-          </ul>
-        </li>
-      </ul>
-      <div class="nav_footer" style="max-width: 25vw;">
-        <div class="d-flex flex-row" style="align-items:center;">
-          <div class="col p-3">
-            <li id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" id="profile_icon" alt="Profile"></a></li>
-          </div>
-          <div class="col p-3">
-            <button type="button" class="btn btn-outline-danger" id="logout_button">logout</button>
-          </div>
-          <div class="col p-3">
-            <button type="button" class="btn btn-outline-warning"  data-bs-toggle="modal" data-bs-target="#reportModal" id="bug">report</button>
-          </div>
+        <div class="col-lg-10">
+        <ul class="navbar-nav justify-content-center">
+          <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
+          <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a class="" href="{% url 'sales' %}">Sales</li>
+          <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a class="" href="{% url 'purchases' %}"></a><a class="" href="{% url 'purchases' %}">Purchases</li>
+          <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
+          <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
+          <li class="nav-item dropdown {% if request.path == '/accounts/' %}active{% endif %}" id="accounts_tab">
+            <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Accounts
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+              <li><a class="dropdown-item" href="{% url 'accounts'%}">Receivables</a></li>
+              <li><a class="dropdown-item" href="#">Payables</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="col-lg-2">
+        <div class="nav_footer d-flex flex-row justify-content-center">
+            <div class="col">
+              <li id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" id="profile_icon" alt="Profile"></a></li>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-outline-danger" id="logout_button">logout</button>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-outline-warning"  data-bs-toggle="modal" data-bs-target="#reportModal" id="bug">report</button>
+            </div>
         </div>
       </div>
     </div>
+      
   </nav>
 
   <!-- REPORT MODAL -->
