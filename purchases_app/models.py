@@ -13,13 +13,8 @@ class Purchases(models.Model):
   purchased_items = models.CharField(max_length=80, verbose_name="Purchased Item", validators=[check_null])
   value = models.DecimalField(max_digits=8, decimal_places=2)
   currency = models.CharField(max_length=10, choices=Currency.choices, default=Currency.MYR)
-<<<<<<< Updated upstream
-  expected_date = models.CharField(max_length=200, verbose_name="Expected Paymenet Date", validators=[check_null])
-  supplier_date = models.CharField(max_length=200, verbose_name="Supplier Delivary Date", validators=[check_null])
-=======
   expected_date = models.CharField(max_length=200, default='null', verbose_name="Expected Paymenet Date", validators=[check_null])
   supplier_date = models.CharField(max_length=200, default='null', verbose_name="Supplier Delivary Date", validators=[check_null])
->>>>>>> Stashed changes
   
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
