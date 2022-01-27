@@ -1,8 +1,10 @@
+import re
 from pymysql import NULL
 from sales_app.models import Sales
 from operations_app.models import Operations
 from shipping_app.models import Shipping
 from purchases_app.models import Purchases
+from accounts_app.models import PaymentStatus
 from ms_app.models import *
 from overview_app.models import *
 import os
@@ -108,10 +110,10 @@ def readSheet(sheet):
         new_sales.save()
         time.sleep(1)
       except Exception as e:
-        missed.append(i)
+        missed.append({"row":i, "exception": e})
     
     for i in range(0, len(missed)):
-      new_report = Report(title="Missing Sales Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      new_report = Report(title="Missing Sales Entry", body="row:{i}, exception: {e}".format(i=str(missed[i]["row"]), e=str(missed[i]["exception"])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
       print("saving new report {new_report}".format(new_report=new_report))
       new_report.save()
 
@@ -138,10 +140,10 @@ def readSheet(sheet):
         new_operation.save()
         time.sleep(1)
       except Exception as e:
-        missed.append(i)
+        missed.append({"row":i, "exception": e})
 
     for i in range(0, len(missed)):
-      new_report = Report(title="Missing Operations Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      new_report = Report(title="Missing Operations Entry", body="row:{i}, exception: {e}".format(i=str(missed[i]["row"]), e=str(missed[i]["exception"])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
       print("saving new report {new_report}".format(new_report=new_report))
       new_report.save()
 
@@ -170,10 +172,10 @@ def readSheet(sheet):
         new_shipping.save()
         time.sleep(1)
       except Exception as e:
-        missed.append(i)
+        missed.append({"row":i, "exception": e})
 
     for i in range(0, len(missed)):
-      new_report = Report(title="Missing Shipping Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      new_report = Report(title="Missing Shipping Entry", body="row:{i}, exception: {e}".format(i=str(missed[i]["row"]), e=str(missed[i]["exception"]), location='Importing page {sheet} from dev_script'.format(sheet=sheet)))
       print("saving new report {new_report}".format(new_report=new_report))
       new_report.save()
 
@@ -208,9 +210,45 @@ def readSheet(sheet):
         missed.append(j)
 
     for i in range(0, len(missed)):
-      new_report = Report(title="Missing Purchasese Entry", body="row:{i}".format(i=str(missed[i])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      new_report = Report(title="Missing Purchasese Entry", body="row:{i}, exception: {e}".format(i=str(missed[i]["row"]), e=str(missed[i]["exception"])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
       print("saving new report {new_report}".format(new_report=new_report))
       new_report.save()
+  
+
+  elif(sheet == "AC RECEIVABLES"):
+    purchases = db.worksheet(sheet)
+    start_row = 5
+    end_row = 58
+    missed = []
+
+    for i in range(start_row, end_row+1):
+      try:
+        active_row = purchases.row_values(i)
+
+        sales_relation = active_row[0].replace(" ","-") if(active_row[0] != '') else 'null'
+        invoice_number = active_row[9] if(active_row[9] != '') else 'null'
+        invoice_date = resolveDate(active_row[8]) if (active_row != '') else '1950-01-01'
+        status = active_row[10] if(active_row[10] != '') else 'null'
+        completed = True if (active_row[11] == "TRUE") else False
+        cancelled = True if (active_row[12] == "TRUE") else False
+
+        print("=============")
+        print(sales_relation)
+        print("raw: {a} formatted: {b}".format(a=active_row[8], b=invoice_date))
+        sale = Sales.objects.get(project_code=sales_relation)
+
+        payment_status = PaymentStatus(sales_relation=sale, invoice_number=invoice_number, invoice_date=invoice_date, status=status, cancelled=cancelled, completed=completed)
+        payment_status.save()
+        print("Added {}...".format(payment_status))
+        time.sleep(1)
+      except Exception as e:
+        missed.append({"row":i, "exception": e})
+
+    for i in range(0, len(missed)):
+      new_report = Report(title="Missing PaymentStatus Entry", body="row:{i}, exception: {e}".format(i=str(missed[i]["row"]), e=str(missed[i]["exception"])), location='Importing page {sheet} from dev_script'.format(sheet=sheet))
+      print("saving new report {new_report}".format(new_report=new_report))
+      new_report.save()
+
 
 def resolveInvoiceAmount(invoice):
   if(invoice == '' or invoice == None):
@@ -225,8 +263,11 @@ def resolveInvoiceAmount(invoice):
   return resolveCurrency(format_invoice[0]), format_invoice[1].replace(",", "")
 
 def resolveDate(date,format="british"):
+  pattern = re.compile('(0?[\d]{2})\/(0?[\d]{2})\/([\d]{4})')
+  if(not pattern.match(date)):
+    return "1950-01-01"
   if(date == "" or date == None):
-    return None
+    return "1950-01-01"
   if(date):
     raw_date = date.split("/")
 
@@ -235,7 +276,6 @@ def resolveDate(date,format="british"):
         raw_date[i] = "0"+raw_date[i]
 
     if(format.lower() == "us" or format.lower() == "american"):
-      
       # American Format Input : MM/DD/YYYY -> Output: YYYY-MM-DD
       new_date = [raw_date[2], "-", raw_date[0],"-", raw_date[1]]
       return "".join(new_date)
@@ -246,9 +286,9 @@ def resolveDate(date,format="british"):
       return "".join(new_date)
   return None
 
-print("===== Reseting Database =====")
+# print("===== Reseting Database =====")
 # reset_database()
-reset_migrations()
+# reset_migrations()
 
 # print("===== Reading SALES =====")
 # readSheet("SALES")
@@ -261,3 +301,6 @@ reset_migrations()
 
 # print("===== Reading PURCHASES =====")
 # readSheet("PURCHASING")
+
+print("===== Reading ACCOUNTS =====")
+readSheet("AC RECEIVABLES")
