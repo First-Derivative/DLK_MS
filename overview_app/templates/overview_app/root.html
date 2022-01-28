@@ -167,6 +167,12 @@
 
     const postReport_url = "{% url 'postNewReport_API' %}"
     let report_token = "{{csrf_token}} "
+
+    if($('#dog_on_dog').length > 0){
+      console.log("great success")
+    } else {
+      console.log("fail")
+    }
   </script>
   {% block scripts %}
   {% endblock scripts %}
