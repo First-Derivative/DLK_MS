@@ -45,7 +45,7 @@ function getTemplate(new_operations) {
   operations_card_template =
     `<div class="card ${new_operations.cancelled ? 'cancelled-card' : ''} " id="card-${new_operations.project_code}" name="${new_operations.project_code}" edit="0">
     <div class="card-header ${new_operations.cancelled ? 'cancelled-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_operations.project_code}">
-      <p id="project_code_${new_operations.project_code}" name="project_code">${new_operations.project_code}</p>
+      <p id="${new_operations.project_code}" name="project_code">${new_operations.project_code}</p>
       <div class="d-flex justify-content-between" id="card-header-icons" >
         ${alerted ? alerted_tag : ''}
         <div class="col" style="padding-right:0em;">
@@ -55,13 +55,13 @@ function getTemplate(new_operations) {
     </div>
     <div class="card-body d-flex justify-content-between" id="card-body-${new_operations.project_code}">
       <div class="card_row">
-        <p class="card-text" id="project_name_${new_operations.project_code}" name="project_name">${new_operations.project_name}</p>
-        <p class="card-text" id="client_name_${new_operations.project_code}" name="client_name">${new_operations.client_name}</p>
-        <p class="card-text ${new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="finish_detail_${new_operations.project_code}" name="finish_detail"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
+        <p class="card-text" id="${new_operations.project_code}" name="project_name">${new_operations.project_name}</p>
+        <p class="card-text" id="${new_operations.project_code}" name="client_name">${new_operations.client_name}</p>
+        <p class="card-text ${new_operations.finish_detail_isNull ? 'missing_text' : ''}" id="${new_operations.project_code}" name="finish_detail"><span class="text-muted">Finish Detail: </span>${new_operations.finish_detail_isNull ? 'null' : new_operations.finish_detail}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${new_operations.status_isNull ? 'missing_text' : ''}" id="status_${new_operations.project_code}" name="status"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
-        <p class="card-text" id="cancelled_${new_operations.project_code}" name="cancelled" value="${(new_operations.cancelled) ? 'true' : 'false'}">
+        <p class="card-text ${new_operations.status_isNull ? 'missing_text' : ''}" id="${new_operations.project_code}" name="status"><span class="text-muted ">Status: </span>${new_operations.status_isNull ? 'null' : new_operations.status}</p>
+        <p class="card-text" id="${new_operations.project_code}" name="cancelled" value="${(new_operations.cancelled) ? 'true' : 'false'}">
         <span class="text-muted">Cancelled: </span>${new_operations.cancelled ? 'True' : 'False'}
         </p>
       </div>
@@ -76,13 +76,12 @@ function addOperations(new_operations, prepend = false, replace = false) {
   // edge-case replace handler
   if (replace == true) {
     operations_card_template = getTemplate(new_operations)
-    if( $(`form[id=edit-form-${new_operations.project_code}]`).length > 0 )
-    {
+    if ($(`form[id=edit-form-${new_operations.project_code}]`).length > 0) {
       $(`form[id=edit-form-${new_operations.project_code}]`).replaceWith(operations_card_template)
     }
-    
-    else{ $(`div[id=card-${new_operations.project_code}]`).replaceWith(operations_card_template) }
-    
+
+    else { $(`div[id=card-${new_operations.project_code}]`).replaceWith(operations_card_template) }
+
     // Attatching Edit Handler to Replaced Card
     $(`img[id=card-edit-${new_operations.project_code}]`).on("click", function () {
       $(this).empty
@@ -152,19 +151,17 @@ $("#modal-btn-save").click(function () {
   })
   postNewOperations(new_operations).then((response) => {
     cache.append(new_operations)
-    addOperations(new_operations, prepend=true, replace=false)
+    addOperations(new_operations, prepend = true, replace = false)
     $("#modal-btn-close").trigger("click")
-  }).catch( (error) => {
-    if (error.responseJSON)
-    {
+  }).catch((error) => {
+    if (error.responseJSON) {
       Object.keys(error.responseJSON).forEach(key => {
         title = propertyToTitle(String(key))
         error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
         $("#modal-errors").prepend(error_text_template)
         $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
       })
-    } else
-    {
+    } else {
       error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${error.responseText}</p></div>`
       $("#modal-errors").prepend(error_text_template)
     }
@@ -207,7 +204,7 @@ $("#left_content_form").on("keypress", function (event) {
         }
       }
       else { $(".header_title").text(`No results for ${input_value}`) }
-    }).catch( (error) => {
+    }).catch((error) => {
       $(`operations_display`).append(`<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`)
     })
 
@@ -258,7 +255,7 @@ $("#input-cancelled").click(function () {
   for (const operations of cache.allCancelled) {
     if (!search_mode) //not in search mode 
     {
-      addOperations(operations, prepend=true, replace=false)
+      addOperations(operations, prepend = true, replace = false)
     }
     else { if (operations.searched) { addOperations(operations) } }
   }
@@ -282,13 +279,13 @@ function edit(library, project_code) {
     $(`#card-${project_code}`).wrap(`<form id="edit-form-${project_code}"></form`)
     $(`#card-body-${project_code}`).removeClass(["d-flex", "justify-content-between"])
 
-    $(`p[id*=${project_code}]`).each(function () {
+    $(`p[id=${project_code}]`).each(function () {
       field = $(this).attr("name") ? $(this).attr("name") : ''
       dom_value = $(this).text() ? $(this).text() : ''
       value = undefined
       input_field_template = ``
-      
-      if(field == "cancelled") { value = $(this).attr("value") }
+
+      if (field == "cancelled") { value = $(this).attr("value") }
 
       // Configuring Input DOM based on field
       if (field == "project_code") {
@@ -343,7 +340,7 @@ function edit(library, project_code) {
     // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function () {
       archive = library.getItem(project_code)
-      addOperations(archive, prepend=false, replace=true)
+      addOperations(archive, prepend = false, replace = true)
     })
 
     // Save Changes button handler
@@ -368,7 +365,7 @@ function edit(library, project_code) {
       postEditOperations(edit_operations).then((response) => {
         new_edit = response.operations
         library.updateItem(new_edit)
-        addOperations(new_edit, prepend=false, replace=true)
+        addOperations(new_edit, prepend = false, replace = true)
       }).catch((error) => {
         if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {

@@ -24,11 +24,10 @@ function propertyToTitle(property) {
   return format.join(" ")
 }
 
-function formatDate(input)
-{
+function formatDate(input) {
   const format = input.match(/([\d]{4})-(0?[\d]{2})-(0?[\d]{2})/g)
   console.log(format)
-  if(format != null){
+  if (format != null) {
     console.log("in format")
     return input;
   }
@@ -69,17 +68,16 @@ $('#modal-form-addSales input').keydown(function (e) {
 });
 
 // ===== UI ADD/REMOVE =====
-function getTemplate(new_sales)
-{
+function getTemplate(new_sales) {
   alerted = false
-  
+
   if (new_sales.project_detail_isNull || new_sales.order_date_isNull || new_sales.shipping_date_isNull || new_sales.payment_term_isNull) { alerted = true }
   alerted_tag = `<div class="col"><img src="${alertedHD_src}" width="32" height="32" id="card-alert-${new_sales.project_code}" style="padding-bottom: 0.2em" name="${new_sales.project_code}" alt="Needs Entry"></div>`
 
   sales_card_template =
-  `<div class="card ${new_sales.cancelled ? 'cancelled-card' : ''} ${new_sales.completed ? 'completed-card' : ''}"  id="card-${new_sales.project_code}" name="${new_sales.project_code}" edit="0">
+    `<div class="card ${new_sales.cancelled ? 'cancelled-card' : ''} ${new_sales.completed ? 'completed-card' : ''}"  id="card-${new_sales.project_code}" name="${new_sales.project_code}" edit="0">
     <div class="card-header ${new_sales.cancelled ? 'cancelled-card-header' : ''} ${new_sales.completed ? 'completed-card-header' : ''} d-flex flex-row justify-content-between" id="card-header-${new_sales.project_code}">
-      <p id="project_code_${new_sales.project_code}" name="project_code">${new_sales.project_code}</p>
+      <p id="${new_sales.project_code}" name="project_code">${new_sales.project_code}</p>
       <div class="d-flex justify-content-between" id="card-header-icons">
         ${alerted ? alerted_tag : ''}
         <div class="col">
@@ -92,38 +90,37 @@ function getTemplate(new_sales)
     </div>
     <div class="card-body d-flex justify-content-between" id="card-body-${new_sales.project_code}">
       <div class="card_row">
-        <p class="card-text" id="project_name_${new_sales.project_code}" name="project_name">${new_sales.project_name}</p>
-        <p class="card-text" id="client_name_${new_sales.project_code}" name="client_name">${new_sales.client_name}</p>
-        <p class="card-text value" id="invoice_amount_${new_sales.project_code}" name="invoice_amount">${new_sales.invoice_amount}</p>
+        <p class="card-text" id="${new_sales.project_code}" name="project_name">${new_sales.project_name}</p>
+        <p class="card-text" id="${new_sales.project_code}" name="client_name">${new_sales.client_name}</p>
+        <p class="card-text value" id="${new_sales.project_code}" name="invoice_amount">${new_sales.invoice_amount}</p>
       </div>
       <div class="card_row">
-        <p class="card-text ${ (new_sales.order_date_isNull) ? 'missing_text' : ''}" id="order_date_${new_sales.project_code}" name="order_date"><span class="text-muted">Customer Order Date: </span>${ (new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
-        <p class="card-text ${ (new_sales.shipping_date_isNull) ? 'missing_text' : ''}" id="shipping_date_${new_sales.project_code}" name="shipping_date"><span class="text-muted">Customer Wanted Date: </span>${ (new_sales.shipping_date_isNull)  ? 'null' : new_sales.shipping_date}</p>
+        <p class="card-text ${(new_sales.order_date_isNull) ? 'missing_text' : ''}" id="${new_sales.project_code}" name="order_date"><span class="text-muted">Customer Order Date: </span>${(new_sales.order_date_isNull) ? 'null' : new_sales.order_date}</p>
+        <p class="card-text ${(new_sales.shipping_date_isNull) ? 'missing_text' : ''}" id="${new_sales.project_code}" name="shipping_date"><span class="text-muted">Customer Wanted Date: </span>${(new_sales.shipping_date_isNull) ? 'null' : new_sales.shipping_date}</p>
       </div>
     </div>
     <div class="card-footer" id="card-footer-${new_sales.project_code}">
-      <p class="card-text ${(new_sales.project_detail_isNull) ? 'missing_text' : ''}" id="project_detail_${new_sales.project_code}" name="project_detail"><span class="text-muted">Project Detail: </span>${ (new_sales.project_detail_isNull) ? 'null' : new_sales.project_detail}</p>
-      <p class="card-text ${(new_sales.payment_term_isNull) ? 'missing_text' : ''}" id="payment_term_${new_sales.project_code}" name="payment_term"><span class="text-muted">Payment Detail: </span>${ (new_sales.payment_term_isNull) ? 'null' : new_sales.payment_term}</p>
-      <p class="card-text" id="cancelled_${new_sales.project_code}" name="cancelled" value="${ (new_sales.cancelled) ? 'true' : 'false'}"><span class="text-muted">Cancelled: </span>${new_sales.cancelled ? 'True' : 'False'}</p>
-      <p class="card-text" id="completed_${new_sales.project_code}" name="completed" value="${ (new_sales.completed) ? 'true' : 'false'}"><span class="text-muted">Completed: </span>${new_sales.completed ? 'True' : 'False'}</p>
+      <p class="card-text ${(new_sales.project_detail_isNull) ? 'missing_text' : ''}" id="${new_sales.project_code}" name="project_detail"><span class="text-muted">Project Detail: </span>${(new_sales.project_detail_isNull) ? 'null' : new_sales.project_detail}</p>
+      <p class="card-text ${(new_sales.payment_term_isNull) ? 'missing_text' : ''}" id="${new_sales.project_code}" name="payment_term"><span class="text-muted">Payment Detail: </span>${(new_sales.payment_term_isNull) ? 'null' : new_sales.payment_term}</p>
+      <p class="card-text" id="${new_sales.project_code}" name="cancelled" value="${(new_sales.cancelled) ? 'true' : 'false'}"><span class="text-muted">Cancelled: </span>${new_sales.cancelled ? 'True' : 'False'}</p>
+      <p class="card-text" id="${new_sales.project_code}" name="completed" value="${(new_sales.completed) ? 'true' : 'false'}"><span class="text-muted">Completed: </span>${new_sales.completed ? 'True' : 'False'}</p>
     </div>
 </div>`
 
-    return sales_card_template;
+  return sales_card_template;
 }
 
 // UI Functionality: Add Sale
-function addSales(new_sales, prepend=false, replace=false) {
+function addSales(new_sales, prepend = false, replace = false) {
   // edge=case replace handler
   if (replace == true) {
     sales_card_template = getTemplate(new_sales)
-    if( $(`form[id=edit-form-${new_sales.project_code}]`).length > 0 )
-    {
+    if ($(`form[id=edit-form-${new_sales.project_code}]`).length > 0) {
       $(`form[id=edit-form-${new_sales.project_code}]`).replaceWith(sales_card_template)
     }
-    
-    else{ $(`div[id=card-${new_sales.project_code}]`).replaceWith(sales_card_template) }
-    
+
+    else { $(`div[id=card-${new_sales.project_code}]`).replaceWith(sales_card_template) }
+
     // Attatching Edit Handler to Replaced Card
     $(`img[id=card-edit-${new_sales.project_code}]`).on("click", function () {
       $(this).empty
@@ -131,17 +128,17 @@ function addSales(new_sales, prepend=false, replace=false) {
       if ($(`#card-footer-${id}`).css('display') == "none") { $(`#card-footer-${id}`).show("fast") }
       edit(cache, new_sales.project_code)
     })
-    
+
     // Dropdown for sales Card Handler
     $(`img[id=card-dropdown-${new_sales.project_code}]`).on("click", function () {
       id = $(this).attr("name")
-  
+
       if ($(`#card-footer-${id}`).css('display') == "none") {
         $(`#card-footer-${id}`).show("fast")
       }
       else { $(`#card-footer-${id}`).hide("fast") }
     })
-    
+
     document.getElementById(`card-${new_sales.project_code}`).scrollIntoView({ behavior: "smooth", block: "start" })
     return;
   }
@@ -217,8 +214,7 @@ $("#modal-btn-save").click(function () {
     else if (property == "completed") {
       new_sales["completed"] = true
     }
-    else if (property == "order_date" )
-    {
+    else if (property == "order_date") {
       new_sales[property] = formatDate(field.value)
     }
     else {
@@ -230,19 +226,17 @@ $("#modal-btn-save").click(function () {
   postNewSales(new_sales).then((response) => {
     response_sales = response.new_sales
     cache.append(response_sales)
-    addSales(response_sales, prepend=true, replace=false)
+    addSales(response_sales, prepend = true, replace = false)
     $("#modal-btn-close").trigger("click")
-  }).catch( (error) => {
-    if(error.responseJSON)
-    {
+  }).catch((error) => {
+    if (error.responseJSON) {
       Object.keys(error.responseJSON).forEach(key => {
         title = propertyToTitle(String(key))
         error_text_template = `<div class="row text-left edit-validation-update=text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
         $("#modal-errors").prepend(error_text_template)
         $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
       })
-    } else
-    {
+    } else {
       error_text_template = `<div class="row text-left edit-validation-update=text" id=""><p class="error-text">${error.responseText}</p></div>`
       $("#modal-errors").prepend(error_text_template)
     }
@@ -284,7 +278,7 @@ $("#left_content_form").on("keypress", function (event) {
         }
       }
       else { $(".header_title").text(`No results for ${input_value}`) }
-    }).catch( (error) => {
+    }).catch((error) => {
       $(`sales_display`).append(`<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`)
     })
   }
@@ -348,7 +342,7 @@ $("#input-cancelled").click(function () {
   for (const sales of cache.allCancelled) {
     if (!search_mode) //not in search mode 
     {
-      addSales(sales, prepend=true, replace=false)
+      addSales(sales, prepend = true, replace = false)
     }
     else { if (sales.searched) { addSales(sales) } }
   }
@@ -365,7 +359,7 @@ $('#input-completed').click(function () {
   for (const sales of cache.allCompleted) {
     if (!search_mode) //not in search mode 
     {
-      addSales(sales, prepend=true, replace=false)
+      addSales(sales, prepend = true, replace = false)
     }
     else { if (sales.searched) { addSales(sales) } }
   }
@@ -388,15 +382,15 @@ function edit(library, project_code) {
     $(`#card-dropdown-${project_code}`).parent().hide()
 
 
-    $(`p[id*=${project_code}]`).each(function () {
+    $(`p[id=${project_code}]`).each(function () {
       field = $(this).attr("name") ? $(this).attr("name") : ''
       dom_value = $(this).text() ? $(this).text() : ''
       cancelled_value = undefined
       completed_value = undefined
       input_field_template = ``
-      
-      if(field == "cancelled") { cancelled_value = $(this).attr("value") }
-      if(field == "completed") { completed_value = $(this).attr("value") }
+
+      if (field == "cancelled") { cancelled_value = $(this).attr("value") }
+      if (field == "completed") { completed_value = $(this).attr("value") }
       // Configuring Input DOM based on field
       if (field == "project_code") {
         input_field_template = `
@@ -421,8 +415,7 @@ function edit(library, project_code) {
         </div>`
       }
       else if (field == "cancelled" || field == "completed") {
-        if(field == "cancelled")
-        {
+        if (field == "cancelled") {
           input_field_template = `
           <div class="mb-3 form-group d-flex align-items-center" id="${field}_${project_code}">
             <input type="checkbox" class="form-check-input edit-check-input edit-input " id="edit_input_${field}_${project_code}" name="${field}" ${(cancelled_value == 'true') ? 'checked' : ''}>
@@ -438,14 +431,13 @@ function edit(library, project_code) {
           </div>`
         }
       }
-      else if ( field == "order_date")
-      {
+      else if (field == "order_date") {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${project_code}">
           <label for="edit_input_${field}_${project_code}" class="form-label edit-label ">${propertyToTitle(field)}</label>
           <input type="text" class="form-control edit-input date" id="edit_input_${field}_${project_code}" name="${field}">
         </div>`
-      } 
+      }
       else {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${project_code}">
@@ -456,13 +448,13 @@ function edit(library, project_code) {
 
       $(this).replaceWith(input_field_template)
 
-      if(field == "order_date") {
-          // Attach Date Handler
-          $('.date').datepicker({
-            todayBtn: "linked",
-            clearBtn: true,
-            orientation: "top auto"
-          });
+      if (field == "order_date") {
+        // Attach Date Handler
+        $('.date').datepicker({
+          todayBtn: "linked",
+          clearBtn: true,
+          orientation: "top auto"
+        });
       }
 
       if (field == "invoice_amount") {
@@ -470,22 +462,21 @@ function edit(library, project_code) {
         matches = raw.match(/\d+/g);
         if (matches.length == 1) { dom_value = matches[0] }
         else { dom_value = matches[0] + "." + matches[1] }
-        
+
         // set .val() for value field
         $(`#edit_input_value_${project_code}`).val(dom_value)
       }
-      else if(field == "project_detail" || field == "shipping_date" || field == "order_date" || field == "payment_term")
-      {
+      else if (field == "project_detail" || field == "shipping_date" || field == "order_date" || field == "payment_term") {
         buffer = 0
-        if(field == "project_detail") { buffer = 16 }
-        else if ( field == "shipping_date" ) { buffer = 22 }
-        else if ( field == "order_date" ) { buffer = 21 }
-        else if ( field == "payment_term" ) { buffer = 16 }
+        if (field == "project_detail") { buffer = 16 }
+        else if (field == "shipping_date") { buffer = 22 }
+        else if (field == "order_date") { buffer = 21 }
+        else if (field == "payment_term") { buffer = 16 }
         min = buffer;
         max = dom_value.length
         dom_value = dom_value.substr(min, max)
         $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
-      } 
+      }
       else {
         $(`.edit-input[id*=${field}_${project_code}]`).val(dom_value)
       }
@@ -509,7 +500,7 @@ function edit(library, project_code) {
     // Cancel Edit button handler
     $(`#cancel-edit-${project_code}`).on("click", function () {
       archive = library.getItem(project_code)
-      addSales(archive, prepend=false, replace=true)
+      addSales(archive, prepend = false, replace = true)
     })
 
     // Save Changes button handler
@@ -523,18 +514,15 @@ function edit(library, project_code) {
       let data_form = $(`form[id=edit-form-${project_code}]`).serializeArray()
       $.each(data_form, function (i, field) {
         property = field.name
-        
-        if(property == "cancelled") 
-        {
+
+        if (property == "cancelled") {
           edit_sales["cancelled"] = true
-        } else if (property == "completed")
-        {
+        } else if (property == "completed") {
           edit_sales["completed"] = true
-        } else if (property == "order_date" )
-        {
+        } else if (property == "order_date") {
           edit_sales[property] = formatDate(field.value)
         }
-        else{
+        else {
           edit_sales[property] = field.value
         }
       })
@@ -543,7 +531,7 @@ function edit(library, project_code) {
       postEditSales(edit_sales).then((response) => {
         new_edit = response.sales
         library.updateItem(new_edit)
-        addSales(new_edit, prepend=false, replace=true)
+        addSales(new_edit, prepend = false, replace = true)
       }).catch((error) => {
         if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
