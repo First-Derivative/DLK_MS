@@ -346,7 +346,15 @@ function edit(library, purchases_id) {
           <label for="edit_input_value_${purchases_id}" class="form-label edit-label">Value</label>
           <input type="text" class="form-control edit-input" id="edit_input_value_${purchases_id}" name="value">
         </div>`
-      } else {
+      }
+      else if (field == "po_date") {
+        input_field_template = `
+        <div class="mb-3 form-group" id="${field}_${purchases_id}">
+          <label for="edit_input_${field}_${purchases_id}" class="form-label edit-label ">${propertyToTitle(field)}</label>
+          <input type="text" class="form-control edit-input date" id="edit_input_${field}_${purchases_id}" name="${field}">
+        </div>`
+      }
+      else {
         input_field_template = `
         <div class="mb-3 form-group" id="${field}_${purchases_id}">
           <label for="edit_input_${field}_${purchases_id}" class="form-label edit-label ">${propertyToTitle(field)}</label>
@@ -354,6 +362,16 @@ function edit(library, purchases_id) {
         </div>`
       }
       $(this).replaceWith(input_field_template)
+
+      if (field == "po_date") {
+        // Attach Date Handler
+        $('.date').datepicker({
+          todayBtn: "linked",
+          clearBtn: true,
+          orientation: "top auto"
+        });
+      }
+
       if (field == "invoice_amount") {
         raw = dom_value
         matches = raw.match(/\d+/g);
