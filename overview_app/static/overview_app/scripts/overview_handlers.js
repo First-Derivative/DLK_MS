@@ -8,47 +8,45 @@ function propertyToTitle(property) {
   return format.join(" ")
 }
 
-function start(callback, src, params = null) {
+function start(src) {
   display_selector = `#` + src + `_display`
-  if (params != null) {
-    callback(params).then((response) => {
-      data = response.data
-      count = data.length
-      for (i = 0; i < count; i++) {
-        content = data.pop()
-        addElement(content, src)
+  getAllRecords(getAll_url).then((response) => {
+    data = response.data
+    count = data.length
+    for (i = 0; i < count; i++) {
+      content = data.pop()
+      addElement(content, src)
 
-        if (i == count - 1) {
-          if ($('#loading_info').length > 0) {
-            $("#loading_info").fadeOut("fast", function () {
-              $(this).remove()
-            })
-          }
-        }
+      if (i == count - 5) {
+        removeLoadingBar()
       }
-    }).catch(error => {
+    }
+  }).catch(error => {
 
-      $(display_selector).append(`<p class="h5 text-danger> Get Records Error: Please report bug with the text: ${error} </p>`)
+    $(display_selector).append(`<p class="h5 text-danger> Get Records Error: Please report bug with the text: ${error} </p>`)
+  })
+}
+
+function addLoadingBar(src) {
+  display_selector = `#` + src + `_display`
+  if (src == "accounts") {
+    $("#main_display").prepend(`<div class="h5 bg-warning p-3" id="loading_bar"> Loading items from Database... </div>`)
+  } else {
+    $(display_selector).prepend(`<div class="h5 bg-warning p-3" id="loading_bar"> Loading items from Database... </div>`)
+  }
+}
+
+function removeLoadingBar() {
+  if ($("#loading_bar").length > 0) {
+    $("#loading_bar").fadeOut("fast", function () {
+      $(this).remove()
     })
   }
-  else {
-    callback().then((response) => {
-      data = response.data
-      count = data.length
-      for (i = 0; i < count; i++) {
-        content = data.pop()
-        addElement(content, src)
-      }
-    }).catch(error => {
-      selector = `# ` + src + `_display`
-      $(selector).append(`<p class="h5 text-danger> Get Records Error: Please report bug with the text: ${error} </p>`)
-    })
-  }
-
 }
 
 // ===== UI ADD/REMOVE =====
 
+// Add Element to src_display given record
 function addElement(record, src, prepend = false, replace = false) {
   id = null
   if (src == "accounts") { id = record.paymentstatus_id }
@@ -150,6 +148,21 @@ function addElement(record, src, prepend = false, replace = false) {
 
 }
 
+// Remove all Records Cards
+function removeAllElements(src) {
+  display_selector = `#` + src + `_display`
+  if (src == "accounts") {
+    $(`.tr`).each(function () {
+      $(this).off()
+    })
+  } else {
+    $(`.card`).each(function () {
+      $(this).off()
+    })
+  }
+  $(display_selector).empty()
+}
+
 // ===== REPORT FEATURE =====
 
 $(`#reportModal-save`).click(function () {
@@ -193,4 +206,93 @@ function getTableTemplate(record) {
     </tr>`
 
   return template
+}
+
+
+// ===== SEARCH FEAURE =====
+
+// UX Functionality: Enter 'search mode' on enter key
+$("#left_content_form").on("keypress", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 13) {// Enter Key
+    event.preventDefault();
+    src = $(this).attr("source")
+    display_selector = `#` + src + `_display`
+    const input_value = $("#input-search").val()
+
+    if (input_value == "") { return; }
+
+    const search_header_template = `
+    <div class="row" id="searchHeader">
+    <div class="header_title"> Searching For ${input_value}
+    </div>
+    </div>
+    `
+    // Clear page for search results
+    if ($("#searchHeader").length > 0) { $("#searchHeader").remove() }
+    removeAllElements(src)
+    removeLoadingBar()
+
+    // Adding New Search Header
+    if (src == "accounts") {
+      $("#main_display").prepend(search_header_template)
+    } else {
+      $(display_selector).prepend(search_header_template)
+    }
+
+    searchRecords(search_url, input_value).then((response) => {
+      $("#input-search-clear").addClass("std-btn-red")
+      if (response.length > 0) {
+        for (const record of response) {
+          $(".header_title").text(`Found ${response.length} results...`)
+          addElement(record, src)
+        }
+      }
+      else { $(".header_title").text(`No results for ${input_value}`) }
+    }).catch((error) => {
+
+      error_template = `<p class="h5 text-danger> Server Search Query Error: Please report bug with the text: ${error} </p>`
+
+      if (src == "accounts") {
+        $("#main_display").append(error_template)
+      } else {
+        $(display_selector).append(error_template)
+      }
+    })
+
+  }
+})
+
+// UX Functionality: Leave 'search mode' on clear button press
+$("#input-search-clear").click(function () {
+  if ($("#searchHeader").length == 0) { console.log("caught "); return; }
+
+  src = $(this).attr("source")
+  leaveSearch(src)
+})
+
+// UX Functionality: Leave 'search mode' ALT Trigger:  escape key
+$("#left_content_form").on("keyup", function (event) {
+  keyPressed = event.keyCode || event.which;
+  if (keyPressed === 27) {
+    if ($("#searchHeader").length == 0) { console.log("caught "); console.log(); return; }
+
+    src = $(this).attr("source")
+    leaveSearch(src)
+  }
+})
+
+// Leave Search
+function leaveSearch(src) {
+
+  // Clear
+  if ($("#input-search-clear").hasClass("std-btn-red")) { $("#input-search-clear").removeClass("std-btn-red") }
+  $("#input-search").val("")
+  if ($("#searchHeader").length > 0) { $("#searchHeader").remove() }
+  removeAllElements(src)
+  removeLoadingBar()
+
+  // Add
+  addLoadingBar(src)
+  start(src)
 }
