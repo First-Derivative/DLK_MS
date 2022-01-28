@@ -108,16 +108,8 @@
         </div>
 
         <!-- MAIN CONTENT -->
-        <div class="col-xl-10 overflow-auto" id="main_content">
-          {% if search %}
-            <div class="row" id="searchHeader">
-              <div class="header_title">
-                Found {{ accounts|length }} results 
-              </div>
-            </div>
-          {% endif%}
-
-          {% if accounts %}
+        <div class="col-xl-10 overflow-auto" id="main_content" style="padding-right: 2rem;">
+          <div class="h5 bg-warning p-3" id="loading_info"> Loading items from Database... </div>
           <table class="table table-hover">
             <thead>
               <tr>
@@ -130,57 +122,41 @@
                 <th scope="col">Cancelled</th>
               </tr>
             </thead>
-            <tbody>
-              {% for payment in accounts %}
-
-              <tr {% if payment.cancelled %} class="cancelled-payment" {% elif payment.completed %} class="completed-payment" {% else %} {% endif %}>
-                <th scope="row"> {{ payment.sales_relation }} </th>
-                <td> {{ payment.payment_value }} </td>
-                <td {% if payment.invoice_number_isNull%} class="missing_text" {% endif %}> {{ payment.invoice_number }} </td>
-                <td {% if payment.invoice_date_isNull%} class="missing_text" {% endif %}> {{ payment.invoice_date }} </td>
-                <td {% if payment.status_isNull%} class="missing_text" {% endif %}> {{ payment.status }} </td>
-                <td class="text-center"> {% if payment.completed %} <img src="{% static 'overview_app/icons/true.png'%}", width="24", height="24">  {% else %} <img src="{% static 'overview_app/icons/false.png'%}", width="24", height="24">  {% endif %}</td>
-                <td class="text-center"> {% if payment.cancelled %} <img src="{% static 'overview_app/icons/true.png'%}", width="24", height="24">  {% else %} <img src="{% static 'overview_app/icons/false.png'%}", width="24", height="24">  {% endif %} </td>
-              </tr>
-
-              {% endfor %}
+            <!-- Accounts Display -->
+            <tbody id="accounts_display">
             </tbody>
-          </table>
-          {% endif %}
-
+            </table>
         </div>
     </div>
 
   </body>
-    <style>
-        #main_content
-        {
-          padding-right: 2rem;
-        }
+  
+  <!-- Handler/Ajax Imports -->
+  <script src="{% static 'overview_app/scripts/overview_handlers.js'%}"></script>
+  <!-- <script src="{% static 'acccounts_app/scripts/acccounts_handlers.js'%}"></script> -->
+  <script src="{% static 'overview_app/scripts/overview_ajax.js'%}"></script>
+  <!-- <script src="{% static 'acccounts_app/scripts/acccounts_ajax.js'%}"></script> -->
+  
+  <script>
+    
+    // urls
+    const accounts_url = "{% url 'accounts' %}" + "?search=0"
+    const getAllSales_url = "{% url 'getAllPayments_API' %}"
+    const postReport_url = "{% url 'postNewReport_API' %}"
+    
+    // icons
+    true_icon_src = "{% static 'overview_app/icons/true.png' %}"
+    false_icon_src = "{% static 'overview_app/icons/false.png' %}"
 
-    </style>
-   <script>
-     $("#logout_button").click(function() {
-       window.location.replace("{% url 'user_logout' %}"); 
-     })
+    // tokens
+    let report_token = "{{csrf_token}} "
+    let token = "{{csrf_token}} "
 
-     $("#left_content_form").on("keypress", function (event) {
-        keyPressed = event.keyCode || event.which;
-        if (keyPressed === 13) {
-          event.preventDefault();
-          const input_value = $("#input-search").val()
-          window.location.replace(accounts_url.replace(0, input_value))
-        } 
-      })
 
-      $("#input-search-clear").click(function () {
-        window.location.replace("{% url 'accounts' %}")
-      })
+    $("#logout_button").click(function() {
+      window.location.replace("{% url 'user_logout' %}"); 
+    })
 
-      
-     const accounts_url = "{% url 'accounts' %}" + "?search=0"
-     const postReport_url = "{% url 'postNewReport_API' %}"
-     let report_token = "{{csrf_token}} "
-     let token = "{{csrf_token}} "
+    $(document).ready(start(getAllRecords, "accounts", params=getAllSales_url))
    </script>
 </html>

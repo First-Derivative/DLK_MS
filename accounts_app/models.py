@@ -18,8 +18,12 @@ class PaymentStatus(models.Model):
   updated_at = models.DateTimeField(auto_now=True)
 
   @property
-  def payment_value(self):
+  def sales_invoice_amount(self):
     return self.sales_relation.invoice_amount
+
+  @property
+  def sales_project_code(self):
+    return self.sales_relation.project_code
 
   @property
   def invoice_number_isNull(self):
