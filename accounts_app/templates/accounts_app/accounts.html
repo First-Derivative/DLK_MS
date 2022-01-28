@@ -156,6 +156,17 @@
       window.location.replace("{% url 'user_logout' %}"); 
     })
 
-    $(document).ready(start("accounts"))
+    {% if search %}
+      $("#input-search").val("{{search}}")
+      let enter = jQuery.Event("keypress");
+      enter.which = 13; 
+      enter.keyCode = 13;
+
+      $("#input-search").trigger(enter);
+
+    {% else %}
+      $(document).ready(start("accounts"))
+    {% endif %}
+
    </script>
 </html>

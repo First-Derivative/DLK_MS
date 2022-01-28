@@ -13,7 +13,11 @@ from rest_framework.response import Response
 @unauthenticated_check
 @method_check(allowed_methods=['GET'])
 def getAccountsPage(request):
-  return render(request, "accounts_app/accounts.html")
+  context = {}
+  if( 'search' in request.GET ):
+    context["search"] = request.GET['search']
+
+  return render(request, "accounts_app/accounts.html", context)
 
 # Get ALL Payments
 @method_check(allowed_methods=["GET"])
