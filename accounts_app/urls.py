@@ -3,5 +3,6 @@ from .views import *
 
 urlpatterns = [
   path('', getAccountsPage, name='accounts'),
-  path('api/get/all', getAllPayments, name="getAllPayments_API")
+  path('api/get/all', getAllPayments, name="getAllPayments_API"),
+  path('api/search', searchAPI.as_view(), name="searchPayments_API")
 ]

@@ -5,6 +5,10 @@ from .models import PaymentStatus
 from .serializers import PaymentStatusSerializer
 from ms_app.decorators import *
 
+from rest_framework.decorators import api_view
+from rest_framework import generics, filters
+from rest_framework.response import Response
+
 # Get Accounts Page
 @unauthenticated_check
 @method_check(allowed_methods=['GET'])
@@ -19,5 +23,11 @@ def getAllPayments(request):
   serial = []
   for record in payments:
     serial.append(PaymentStatusSerializer(record).data)
-  print("sending over {} records".format(len(serial)))
   return JsonResponse({"data":serial})
+
+# Get search Payment
+class searchAPI(generics.ListCreateAPIView):
+  search_fields = ['invoice_number', 'invoice_date', 'status']
+  filter_backends = (filters.SearchFilter,)
+  queryset = PaymentStatus.objects.all()
+  serializer_class = PaymentStatusSerializer

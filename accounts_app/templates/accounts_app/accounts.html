@@ -76,15 +76,14 @@
 
           <!-- Search & Filtering -->
           <div class="d-flex flex-row ">
-            <form class="search_wrapper mb-3" id="left_content_form">
+            <form class="search_wrapper mb-3" id="left_content_form" source="accounts">
 
               <div class="col mb-3">
-                <input type="text" class="search_input form-control" value="Search Not Working in this build" placeholder="Search..." id="input-search">
-                <p class="mt-1" style="font-size: 75%;margin-left: 0.25em" id="input-helper">press enter to start search</p>
+                <input type="text" class="search_input form-control" value="" placeholder="Press enter to start search" id="input-search">
               </div>
 
               <div>
-                <button type="button" class="btn std-btn col mb-3" id="input-search-clear">
+                <button type="button" class="btn std-btn col mb-3" id="input-search-clear" source="accounts">
                   Clear Search Results
                 </button>
               </div>
@@ -108,8 +107,8 @@
         </div>
 
         <!-- MAIN CONTENT -->
-        <div class="col-xl-10 overflow-auto" id="main_content" style="padding-right: 2rem;">
-          <div class="h5 bg-warning p-3" id="loading_info"> Loading items from Database... </div>
+        <div class="col-xl-10 overflow-auto" id="main_display" style="padding-right: 2rem;">
+          <div class="h5 bg-warning p-3" id="loading_bar"> Loading items from Database... </div>
           <table class="table table-hover">
             <thead>
               <tr>
@@ -140,8 +139,8 @@
   <script>
     
     // urls
-    const accounts_url = "{% url 'accounts' %}" + "?search=0"
-    const getAllSales_url = "{% url 'getAllPayments_API' %}"
+    const getAll_url = "{% url 'getAllPayments_API' %}"
+    const search_url = "{% url 'searchPayments_API' %}" + "?search=0"
     const postReport_url = "{% url 'postNewReport_API' %}"
     
     // icons
@@ -157,6 +156,6 @@
       window.location.replace("{% url 'user_logout' %}"); 
     })
 
-    $(document).ready(start(getAllRecords, "accounts", params=getAllSales_url))
+    $(document).ready(start("accounts"))
    </script>
 </html>
