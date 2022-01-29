@@ -9,22 +9,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import SalesSerializer
 
-# REST GET SALE API
-@unauthenticated_check
-@api_view(['GET'])
-def getSale(request):
-  project_code = request.query_params.get('project_code', None)
-
-  if(project_code):
-    sale = None
-    try:
-      sale = Sales.objects.get(project_code=project_code)
-      sale_serialized = SalesSerializer(sale)
-      return Response(sale_serialized.data) 
-    except Sales.DoesNotExist as e:
-      return JsonResponse({"error": {"not_found": "This is not the sale you're looking for"}})
-      
-  return Response({})
     
 # REST SEARCH API
 class searchAPI(generics.ListCreateAPIView):
@@ -37,7 +21,10 @@ class searchAPI(generics.ListCreateAPIView):
 @unauthenticated_check
 @method_check(allowed_methods=["GET"])
 def salesPage(request):
-  return render(request, "sales_app/sales.html",  {})
+  context = {}
+  if( 'search' in request.GET ):
+    context["search"] = request.GET['search']
+  return render(request, "sales_app/sales.html",  context)
 
 # Get All Sales
 @unauthenticated_check

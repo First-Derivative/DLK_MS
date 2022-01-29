@@ -220,7 +220,6 @@
 
   // Import Consts
   const getAllSales_url = "{% url 'getAllSales_API' %}"
-  const getSale_url = "{% url 'getSale_API' %}"
   const getSearch_url = "{% url 'searchSales_API' %}" + "?search=0"
   const postNewSales_url = "{% url 'postNewSales_API' %}"
   const postEditSales_url = "{% url 'postEditSaless_API' %}"
@@ -234,8 +233,18 @@
   cache = new Library()
   search_mode = false
 
-  // Startup Script
-  start(cache)
+
+  {% if search %}
+    $("#input-search").val("{{search}}")
+    let enter = jQuery.Event("keypress");
+    enter.which = 13; 
+    enter.keyCode = 13;
+
+    $("#input-search").trigger(enter);
+  {% else %}
+    // Startup Script
+    start(cache)
+  {% endif %}
 
   // Datepicker Utility for modal order date
   $('.date').datepicker({
