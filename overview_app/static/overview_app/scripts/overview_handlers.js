@@ -60,6 +60,16 @@ function addElement(record, src, prepend = false, replace = false) {
 
     if (src == "accounts") {
       $(`tr[name=${record.id}]`).replaceWith(template)
+      // Set Link to sales via project_code
+      if ($(`th[name=sales_project_code]`).length > 0) {
+        $(`th[name=sales_project_code]`).on("click", function () {
+          console.log("got project code click")
+          sales_id = $(this).text()
+          url = $("#sales-nav-link").attr("href") + "?search=" + sales_id
+          window.location.replace(url);
+          return;
+        })
+      }
       return
     } else {
       if ($(`form[id=edit-form-${record.id}]`).length > 0) {
@@ -106,7 +116,6 @@ function addElement(record, src, prepend = false, replace = false) {
     if ($(`.card[name*='${record.id}']`).length > 0) { return; }
   }
 
-
   template = null
   if (src == "accounts") {
     template = getTableTemplate(record)
@@ -121,6 +130,17 @@ function addElement(record, src, prepend = false, replace = false) {
   // Set card-footers to display none
   if ($(`#card-footer-${record.id}`).length > 0) {
     $(`#card-footer-${record.id}`).css("display", "none")
+  }
+
+  // Set Link to sales via project_code
+  if ($(`th[name=sales_project_code]`).length > 0) {
+    $(`th[name=sales_project_code]`).on("click", function () {
+      console.log("got project code click")
+      sales_id = $(this).text()
+      url = $("#sales-nav-link").attr("href") + "?search=" + sales_id
+      window.location.replace(url);
+      return;
+    })
   }
 
   // Dropdown handler for record cards
@@ -196,7 +216,7 @@ $(`#reportModal-save`).click(function () {
 function getTableTemplate(record) {
   const template = `
     <tr class="payment ${(record.cancelled) ? 'cancelled-payment ' : ''}${record.completed ? 'completed-payment' : ''}" id="tr-${record.paymentstatus_id}" name='${record.paymentstatus_id}'>
-      <th scope="row" id="${record.paymentstatus_id}" name="sales_project_code"> ${record.sales_project_code} </th>
+      <th scope="row" class="hoverable" id="${record.paymentstatus_id}" name="sales_project_code"> ${record.sales_project_code} </th>
         <td id="${record.paymentstatus_id}" name="sales_invoice_amount"> ${record.sales_invoice_amount} </td>
         <td id="${record.paymentstatus_id}" name="invoice_number" class="${record.invoice_number_isNull ? 'missing_text' : ''}"> ${record.invoice_number} </td>
         <td id="${record.paymentstatus_id}" name="invoice_date" class="${record.invoice_date_isNull ? 'missing_text' : ''}"> ${record.invoice_date} </td>
@@ -207,7 +227,6 @@ function getTableTemplate(record) {
 
   return template
 }
-
 
 // ===== SEARCH FEAURE =====
 

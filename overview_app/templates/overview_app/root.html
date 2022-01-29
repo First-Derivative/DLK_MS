@@ -156,8 +156,7 @@
     </div>
   </div>
   
-  <script src="{% static 'overview_app/scripts/overview_ajax.js'%}"></script>
-  <script src="{% static 'overview_app/scripts/overview_handlers.js'%}"></script>
+  <script src="{% static 'overview_app/scripts/overview_temp.js'%}"></script>
   <script>
 
 
@@ -168,11 +167,6 @@
     const postReport_url = "{% url 'postNewReport_API' %}"
     let report_token = "{{csrf_token}} "
 
-    if($('#dog_on_dog').length > 0){
-      console.log("great success")
-    } else {
-      console.log("fail")
-    }
   </script>
   {% block scripts %}
   {% endblock scripts %}
