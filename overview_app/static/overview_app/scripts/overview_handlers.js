@@ -46,7 +46,6 @@ function removeLoadingBar() {
 
 function formatDate(input) {
   const format = input.match(/([\d]{4})-(0?[\d]{2})-(0?[\d]{2})/g)
-  console.log(format)
   if (format != null) {
     console.log("in format")
     return input;
@@ -136,6 +135,7 @@ function addElement(record, src, prepend = false, replace = false) {
     if ($(`.card[name*='${record.id}']`).length > 0) { return; }
   }
 
+  // Get template to append/prepend
   template = null
   if (src == "accounts") {
     template = getTableTemplate(record)
@@ -144,7 +144,7 @@ function addElement(record, src, prepend = false, replace = false) {
   }
 
   // Add Element from template to src_display
-  if (prepend) { $(`#{src}_display`).prepend(template) }
+  if (prepend) { $(`#${src}_display`).prepend(template) }
   else { $(`#${src}_display`).append(template) }
 
   // Set card-footers to display none
@@ -251,13 +251,16 @@ function getTableTemplate(record) {
 
 $("#modal-btn-save").click(function () {
   src = $(this).attr("source")
+  console.log("src is" + src)
   record = {}
 
   $("input[class*=input-error-highlight]").each(function () {
     $(this).removeClass("input-error-highlight")
   })
 
+  // Loading bar: 'Processing Info'
   $("#modal-errors").empty()
+  $("#modal-errors").append(`<p class="text-info">Processing New Payment...</p>`)
 
   // Get & Assign Data
   let data_form = $(`form[id=modal-form-addRecord]`).serializeArray()
@@ -269,19 +272,21 @@ $("#modal-btn-save").click(function () {
     else if (property == "completed") {
       record["completed"] = true
     }
-    else if (property == "order_date" || property == "po_date") {
+    else if (property == "order_date" || property == "po_date" || property == "invoice_date") {
       record[property] = formatDate(field.value)
     }
     else {
       record[property] = field.value
     }
   })
-  console.log(record)
+
   postNewRecords(postNew_url, record).then((response) => {
+    $("#modal-errors").empty()
     response_record = response.data
-    addElement(record, src, prepend = true, replace = false)
+    addElement(response_record, src, prepend = true, replace = false)
     $("#modal-btn-close").trigger("click")
   }).catch((error) => {
+    $("#modal-errors").empty()
     if (error.responseJSON) {
       Object.keys(error.responseJSON).forEach(key => {
         title = propertyToTitle(String(key))

@@ -13,6 +13,10 @@
 
 .flipped{ transform: rotate(180deg); }
 
+.text-info {
+  color: #1e72a2 !important;
+}
+
 /* Standard Buttons */
 
 .std-btn

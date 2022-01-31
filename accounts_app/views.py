@@ -60,16 +60,18 @@ def postNewPayment(request):
   
   # No Duplicate Found-> Create new Object
   except PaymentStatus.DoesNotExist:
-    cancelled = True if post["cancelled"] == "true" else False
-    completed = True if post["completed"] == "true" else False
+    cancelled = post["cancelled"] if "cancelled" in post else False
+    completed = post["completed"] if "completed" in post else False
 
     # Instantiate New Payment from Post data
-    new_payment = PaymentStatus(sales_relation=post["sales_relation"], invoice_number=post["invoice_number"], invoice_date=post["invoice_date"], status=post["status"], cancelled=cancelled, completed=completed)
+    new_payment = PaymentStatus(sales_relation=sale, invoice_number=post["invoice_number"], invoice_date=post["invoice_date"], status=post["status"], cancelled=cancelled, completed=completed)
     
     # Validate new_payment with validators
     try:
       new_payment.full_clean()
     except ValidationError as e:
       return Response(status=400, data=dict(e))
-    new_payment.save()
-    return JsonResponse({"data":PaymentStatusSerializer(new_payment)})
+
+    # new_payment.save()
+    return JsonResponse({"data":PaymentStatusSerializer(new_payment).data})
+    # return Response(status=200, data=PaymentStatusSerializer(new_payment).data)
