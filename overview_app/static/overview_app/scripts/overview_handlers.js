@@ -44,6 +44,27 @@ function removeLoadingBar() {
   }
 }
 
+function formatDate(input) {
+  const format = input.match(/([\d]{4})-(0?[\d]{2})-(0?[\d]{2})/g)
+  console.log(format)
+  if (format != null) {
+    console.log("in format")
+    return input;
+  }
+  // Client: MM/DD/YYYY -> Server: YYYY-MM-DD
+  raw = input
+  raw = raw.replace("/", "-")
+  raw = raw.replace("/", "-")
+  raw_array = raw.split("-")
+
+  raw_array.reverse()
+  temp = raw_array[1]
+  raw_array[1] = raw_array[2]
+  raw_array[2] = temp
+
+  return raw_array.join("-")
+}
+
 // ===== UI ADD/REMOVE =====
 
 // Add Element to src_display given record
@@ -63,7 +84,6 @@ function addElement(record, src, prepend = false, replace = false) {
       // Set Link to sales via project_code
       if ($(`th[name=sales_project_code]`).length > 0) {
         $(`th[name=sales_project_code]`).on("click", function () {
-          console.log("got project code click")
           sales_id = $(this).text()
           url = $("#sales-nav-link").attr("href") + "?search=" + sales_id
           window.location.replace(url);
@@ -135,7 +155,6 @@ function addElement(record, src, prepend = false, replace = false) {
   // Set Link to sales via project_code
   if ($(`th[name=sales_project_code]`).length > 0) {
     $(`th[name=sales_project_code]`).on("click", function () {
-      console.log("got project code click")
       sales_id = $(this).text()
       url = $("#sales-nav-link").attr("href") + "?search=" + sales_id
       window.location.replace(url);
@@ -227,6 +246,65 @@ function getTableTemplate(record) {
 
   return template
 }
+
+// ===== ADD ENTRY FEATURE =====
+
+$("#modal-btn-save").click(function () {
+  src = $(this).attr("source")
+  record = {}
+
+  $("input[class*=input-error-highlight]").each(function () {
+    $(this).removeClass("input-error-highlight")
+  })
+
+  $("#modal-errors").empty()
+
+  // Get & Assign Data
+  let data_form = $(`form[id=modal-form-addRecord]`).serializeArray()
+  $.each(data_form, function (i, field) {
+    property = field.name
+    if (property == "cancelled") {
+      record["cancelled"] = true
+    }
+    else if (property == "completed") {
+      record["completed"] = true
+    }
+    else if (property == "order_date" || property == "po_date") {
+      record[property] = formatDate(field.value)
+    }
+    else {
+      record[property] = field.value
+    }
+  })
+  console.log(record)
+  postNewRecords(postNew_url, record).then((response) => {
+    response_record = response.data
+    addElement(record, src, prepend = true, replace = false)
+    $("#modal-btn-close").trigger("click")
+  }).catch((error) => {
+    if (error.responseJSON) {
+      Object.keys(error.responseJSON).forEach(key => {
+        title = propertyToTitle(String(key))
+        error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${title}: ${error.responseJSON[key]}</p></div>`
+        $("#modal-errors").prepend(error_text_template)
+        $(`.modal-input[name=${key}]`).addClass("input-error-highlight")
+      })
+    } else {
+      error_text_template = `<div class="row text-left edit-validation-update-text" id=""><p class="error-text">${error.responseText}</p></div>`
+      $("#modal-errors").prepend(error_text_template)
+    }
+  })
+})
+
+// FILTERING & TOGGLES
+
+$("#reverse-list").click(function () {
+  src = $(this).attr("source")
+  display_selector = `#` + src + `_display`
+  $(display_selector).children().each(function () {
+    $(display_selector).prepend($(this))
+  })
+})
 
 // ===== SEARCH FEAURE =====
 

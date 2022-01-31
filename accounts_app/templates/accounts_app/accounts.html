@@ -15,67 +15,142 @@
    <!-- Overview & Root CSS-->
    <link href="{% static '/overview_app/styles/root.css' %}" rel="stylesheet">
    <link href="{% static '/overview_app/styles/overview.css' %}" rel="stylesheet">
- 
+   
    <!-- Bootstrap JS-->
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
- 
+   
    <!-- Jquery JS-->
    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
- 
+   <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" integrity="sha256-eTyxS0rkjpLEo16uXTS0uVCS4815lc40K2iVpWDvdSY=" crossorigin="anonymous"></script>
+   <link href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css" rel="stylesheet">
+   
 
    <body>
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg d-flex justify-content-between" id="navbar_container"> 
-    
-    <a class="navbar-brand" href="{% url 'home'%}">DLK Master</br>Schedule</a>
-    <button type="button" data-bs-toggle="collapse" data-bs-target="#navbar_nav" class="navbar-toggler">Nav</button>
-    
-    <div class="collapse navbar-collapse" id="navbar_nav">
-        <div class="col-lg-10">
-        <ul class="navbar-nav justify-content-center">
-          <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
-          <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a id="sales-nav-link" href="{% url 'sales' %}">Sales</li>
-          <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a class="" href="{% url 'purchases' %}"></a><a class="" href="{% url 'purchases' %}">Purchases</li>
-          <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
-          <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
-          <li class="nav-item dropdown {% if request.path == '/accounts/' %}active{% endif %}" id="accounts_tab">
-            <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Accounts
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-              <li><a class="dropdown-item" href="{% url 'accounts' %}">Receivables</a></li>
-              <li><a class="dropdown-item" href="#">Payables</a></li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg d-flex justify-content-between" id="navbar_container"> 
       
-      <div class="col-lg-2">
-        <div class="nav_footer d-flex flex-row justify-content-center">
-            <div class="col">
-              <li id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" id="profile_icon" alt="Profile"></a></li>
+      <a class="navbar-brand" href="{% url 'home'%}">DLK Master</br>Schedule</a>
+      <button type="button" data-bs-toggle="collapse" data-bs-target="#navbar_nav" class="navbar-toggler">Nav</button>
+      
+      <div class="collapse navbar-collapse" id="navbar_nav">
+          <div class="col-lg-10">
+          <ul class="navbar-nav justify-content-center">
+            <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
+            <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a id="sales-nav-link" href="{% url 'sales' %}">Sales</li>
+            <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a class="" href="{% url 'purchases' %}"></a><a class="" href="{% url 'purchases' %}">Purchases</li>
+            <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
+            <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
+            <li class="nav-item dropdown {% if request.path == '/accounts/' %}active{% endif %}" id="accounts_tab">
+              <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Accounts
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                <li><a class="dropdown-item" href="{% url 'accounts' %}">Receivables</a></li>
+                <li><a class="dropdown-item" href="#">Payables</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="col-lg-2">
+          <div class="nav_footer d-flex flex-row justify-content-center">
+              <div class="col">
+                <li id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" id="profile_icon" alt="Profile"></a></li>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-outline-danger" id="logout_button">logout</button>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-outline-warning"  data-bs-toggle="modal" data-bs-target="#reportModal" id="bug">report</button>
+              </div>
+          </div>
+        </div>
+      </div>
+        
+    </nav>
+
+    <!-- Modal Add Payment -->
+    <div class="modal" tabindex="-1" id="modal_addRecord">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Add New Payment Entry</h5>
+            <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form class="row gx-3 px-3 mt-3" id="modal-form-addRecord" name="addRecord_form">
+              
+              <div class="col-lg-4">
+                <div class="form-floating">
+                  <input type="text" class="form-control modal-input" name="sales_project_code" id="modal-input-sales_project_code" placeholder="DLK-21-0040">
+                  <label for="modal-input-sales_project_code">Sales Project Code</label>
+                </div>
+              </div>
+              
+              <div class="col-lg-4">
+                <div class="form-floating">
+                  <input type="text" class="form-control modal-input" name="invoice_number" id="modal-input-invoice_number" placeholder="Project Scorsese">
+                  <label for="modal-input-invoice_number">Invoice Number</label>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <div class="form-floating">
+                  <input type="text" class="form-control modal-input date" name="invoice_date" id="modal-input-invoice_date" placeholder="Project Scorsese">
+                  <label for="modal-input-invoice_date">Invoice Date</label>
+                </div>
+              </div>
+              
+              <div class="col-lg-12">
+                <div class="form-floating">
+                  <input type="text" class="form-control modal-input" name="status" id="modal-input-status" placeholder="Leonardo DiCaprio">
+                  <label for="modal-input-status">Status</label>
+                </div>
+              </div>
+              
+              <div class="col-lg">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" name="cancelled" id="modal-input-cancelled">
+                  <label class="form-check-label" for="modal-input-cancelled">
+                    Cancelled Order?
+                  </label>
+                </div>
+              </div>
+              
+              <div class="col-lg">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" name="completed" id="modal-input-completed">
+                  <label class="form-check-label" for="modal-input-completed">
+                    Completed Order?
+                  </label>
+                </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer p-3" style="border: none">
+            <div class="col px-3">
+              <div id="modal-errors">
+              </div>
+              <div class="d-flex flex-row justify-content-end mt-3">
+                <button type="button" class="btn standard-btn" style="width:auto;" id="modal-btn-close" data-bs-dismiss="modal">Close</button>
+                <button  class="btn std-btn" style="margin-left: 0.5em;width:auto;" id="modal-btn-save" source="accounts">Add Payment</button>
+              </div>
             </div>
-            <div class="col">
-              <button type="button" class="btn btn-outline-danger" id="logout_button">logout</button>
-            </div>
-            <div class="col">
-              <button type="button" class="btn btn-outline-warning"  data-bs-toggle="modal" data-bs-target="#reportModal" id="bug">report</button>
-            </div>
+          </div>
         </div>
       </div>
     </div>
-      
-  </nav>
 
     <!-- COMBAT INFORMATION CENTER -->
     <div class="container-fluid mt-3" id="root_container">
       <div class="row d-flex justify-content-center ">
      
         <!-- LEFT_CONTENT -->
-        <div class="col-xl-2" id="left_content">
+        <div class="col-xl-2 justify-content-between" id="left_content">
 
           <!-- Search & Filtering -->
-          <div class="d-flex flex-row ">
+          <div class="row">
             <form class="search_wrapper mb-3" id="left_content_form" source="accounts">
 
               <div class="col mb-3">
@@ -89,7 +164,7 @@
               </div>
 
               <div class="col mb-3">
-                <input class="form-check-input" type="checkbox" value="" id="input-cancelled">
+                <input class="form-check-input" type="checkbox" value="" id="input-cancelled" checked>
                 <label class="form-check-label" for="input-cancelled">
                   Show Cancelled Orders
                 </label>
@@ -101,6 +176,26 @@
                   Show Completed Orders
                 </label>
               </div>
+
+              <div class="d-flex flex-column justify-content-between mt-3">
+
+              <!-- Add & Reverse  -->
+              <div class="row">
+                <div class="mb-3">
+                  <button type="button" class="btn std-btn p-3" data-bs-toggle="modal" data-bs-target="#modal_addRecord">
+                    <img src="{% static 'sales_app/icons/plus_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+                    Add Payment
+                  </button>
+                </div>
+                <div>
+                  <button type="button" class="btn std-btn p-3" id="reverse-list" source="accounts">
+                    <img src="{% static 'sales_app/icons/reverse_HD.png'%}" height="24" width="24" class="header-img" style="position: relative; right: 1em;">
+                    Reverse List
+                  </button>
+                </div>
+              </div>
+              
+            </div>
             </form>
           </div>
 
@@ -109,6 +204,10 @@
         <!-- MAIN CONTENT -->
         <div class="col-xl-10 overflow-auto" id="main_display" style="padding-right: 2rem;">
           <div class="h5 bg-warning p-3" id="loading_bar"> Loading items from Database... </div>
+          <div>
+            <input id="temp-input" name="temp-input" placeholder="temp" type="text">
+            
+          </div>
           <table class="table table-hover">
             <thead>
               <tr>
@@ -141,6 +240,7 @@
     // urls
     const getAll_url = "{% url 'getAllPayments_API' %}"
     const search_url = "{% url 'searchPayments_API' %}" + "?search=0"
+    const postNew_url = "{% url 'postNewPayments_API' %}"
     const postReport_url = "{% url 'postNewReport_API' %}"
     
     // icons
@@ -151,10 +251,19 @@
     let report_token = "{{csrf_token}} "
     let token = "{{csrf_token}} "
 
-
     $("#logout_button").click(function() {
       window.location.replace("{% url 'user_logout' %}"); 
     })
+    
+    var sales_project_code_library = [
+      {% for code in sales_project_code_library %}
+      "{{code}}",
+      {% endfor %}
+    ]
+
+    $("#temp-input").autocomplete({
+      source: sales_project_code_library
+    });
 
     {% if search %}
       $("#input-search").val("{{search}}")
