@@ -72,6 +72,5 @@ def postNewPayment(request):
     except ValidationError as e:
       return Response(status=400, data=dict(e))
 
-    # new_payment.save()
+    new_payment.save()
     return JsonResponse({"data":PaymentStatusSerializer(new_payment).data})
-    # return Response(status=200, data=PaymentStatusSerializer(new_payment).data)
