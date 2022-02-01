@@ -120,7 +120,7 @@ function addPurchases(new_purchases, prepend = false, replace = false) {
     })
 
     // Sales-link handler
-    enableIDLink(`.card-text[id=${new_purchases.purchases_id}]`, "purchases", "sales")
+    enableIDLink(`.card-text[id=${new_purchases.purchases_id}]`, "sales")
 
     document.getElementById(`card-${new_purchases.purchases_id}`).scrollIntoView({ behavior: "smooth", block: "start" })
     return;
@@ -138,7 +138,7 @@ function addPurchases(new_purchases, prepend = false, replace = false) {
   $(`#card-footer-${new_purchases.purchases_id}`).css("display", "none")
 
   // Sales-link handler
-  enableIDLink(`.card-text[id=${new_purchases.purchases_id}]`, "purchases", "sales")
+  enableIDLink(`.card-text[id=${new_purchases.purchases_id}]`, "sales")
 
   // Dropdown for purchases Card Handler
   dropdown_selector = "#card-dropdown-" + new_purchases.purchases_id

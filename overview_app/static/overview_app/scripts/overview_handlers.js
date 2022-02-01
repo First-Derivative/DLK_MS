@@ -66,7 +66,7 @@ function formatDate(input) {
 
 // ===== NAVIGATION FEATURE =====
 
-function enableIDLink(target, src, link) {
+function enableIDLink(target, link) {
 
   if ($(target).length > 0) {
     $(target).on("click", function () {
@@ -101,7 +101,7 @@ function addElement(record, src, prepend = false, replace = false) {
       $(`tr[name=${id}]`).replaceWith(template)
 
       // Sales-link handler
-      enableIDLink("th[name=sales_project_code]", src, "sales")
+      enableIDLink("th[name=sales_project_code]", "sales")
 
       // Edit Handler for rows
       if ($(`td[id=edit-${id}]`).length > 0) { }
@@ -171,7 +171,7 @@ function addElement(record, src, prepend = false, replace = false) {
 
   // Enable Sales-Link for accounts
   if (src == "accounts") {
-    enableIDLink("th[name=sales_project_code]", src, "sales")
+    enableIDLink("th[name=sales_project_code]", "sales")
   }
 
   // Edit Handler for rows
