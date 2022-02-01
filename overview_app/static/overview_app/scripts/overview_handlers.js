@@ -421,6 +421,14 @@ function leaveSearch(src) {
 function editElement(id, src) {
   // accounts edit handler
   if(src == "accounts"){
+    
+    // Reset Edit Modal content for fresh data filling
+    $("#edit-modal-errors").empty()
+    $(".edit-modal-input").each(function () {
+      if( $(this).hasClass("input-error-highlight") ) {
+        $(this).removeClass("input-error-highlight")
+      }
+    })
 
     form_data = {}
     form_data["sales_project_code"] = $(`th[id=${id}]`).attr("for")
