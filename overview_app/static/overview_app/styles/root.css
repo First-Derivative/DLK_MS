@@ -35,11 +35,6 @@ ul,li {list-style-type: none;}
   /* background-color: maroon; */
 }
 
-#navbar_nav
-{
-  margin-left: 2.5em;
-}
-
 .dropdown-item:active
 {
   background-color: #d82d4e;
