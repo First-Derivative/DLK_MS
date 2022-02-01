@@ -16,15 +16,9 @@ ul,li {list-style-type: none;}
   color: black;
 }
 
-/* 
-#navbar_nav
-{
-  max-width: 78em;
-  min-width: 78em;
-} */
-
 #navbar_container
 {
+  /* border-bottom: 0.5em solid #383736; */
   padding-top: 1em;
   padding-bottom: 2em;
 }
@@ -34,10 +28,17 @@ ul,li {list-style-type: none;}
 .navbar-brand
 {
   text-align: center;
+  height: 3em;
+  width: 8.5em;
   font-size: 1.7em;
-  margin-left: 1em;
+  margin-left: 0.5em;
+  /* background-color: maroon; */
 }
 
+#navbar_nav
+{
+  margin-left: 2.5em;
+}
 
 .dropdown-item:active
 {
