@@ -64,7 +64,7 @@ function getTemplate(new_purchases) {
     <div class="card-body d-flex justify-content-between" id="card-body-${new_purchases.purchases_id}">
 
       <div class="card_row">
-        <p class="card-text" id="${new_purchases.purchases_id}" name="project_code">${new_purchases.project_code}</p>
+        <p class="card-text link_text" id="${new_purchases.purchases_id}" name="project_code">${new_purchases.project_code}</p>
 
         <p class="card-text" id="${new_purchases.purchases_id}" name="purchased_items">${new_purchases.purchased_items}</p>
         
@@ -119,6 +119,9 @@ function addPurchases(new_purchases, prepend = false, replace = false) {
       else { $(`#card-footer-${id}`).hide("fast") }
     })
 
+    // Sales-link handler
+    enableIDLink(`.card-text[id=${new_purchases.purchases_id}]`, "purchases", "sales")
+
     document.getElementById(`card-${new_purchases.purchases_id}`).scrollIntoView({ behavior: "smooth", block: "start" })
     return;
   }
@@ -133,6 +136,9 @@ function addPurchases(new_purchases, prepend = false, replace = false) {
 
   // Set new_purchases card css to display none
   $(`#card-footer-${new_purchases.purchases_id}`).css("display", "none")
+
+  // Sales-link handler
+  enableIDLink(`.card-text[id=${new_purchases.purchases_id}]`, "purchases", "sales")
 
   // Dropdown for purchases Card Handler
   dropdown_selector = "#card-dropdown-" + new_purchases.purchases_id
