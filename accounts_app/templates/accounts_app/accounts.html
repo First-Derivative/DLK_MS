@@ -34,9 +34,9 @@
           <ul class="navbar-nav justify-content-center">
             <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
             <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a id="sales-nav-link" href="{% url 'sales' %}">Sales</li>
-            <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a class="" href="{% url 'purchases' %}"></a><a class="" href="{% url 'purchases' %}">Purchases</li>
-            <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a class="" href="{% url 'shipping' %}">Shipping</li>
-            <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a class="" href="{% url 'operations'%}">Operations</li>
+            <li class="nav-item {% if request.path == '/purchases/' %}active{% endif %}"><a id="purchases-nav-link" class="" href="{% url 'purchases' %}">Purchases</li>
+            <li class="nav-item {% if request.path == '/shipping/' %}active{% endif %}"><a id="shipping-nav-link" class="" href="{% url 'shipping' %}">Shipping</li>
+            <li class="nav-item {% if request.path == '/operations/' %}active{% endif %}"><a id="operations-nav-link" class="" href="{% url 'operations'%}">Operations</li>
             <li class="nav-item dropdown {% if request.path == '/accounts/' %}active{% endif %}" id="accounts_tab">
               <a class="nav-link dropdown-toggle" id="accounts_tab_text" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Accounts
