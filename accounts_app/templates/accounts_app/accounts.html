@@ -139,6 +139,72 @@
       </div>
     </div>
 
+    <!-- Modal Edit Payment -->
+    <div class="modal" tabindex="-1" id="modal-edit">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="edit-modal-title"></h5>
+            <button type="button" class="btn-close modal-close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form class="row gx-3 px-3 mt-3" id="modal-form-edit" name="editRecord_form">
+              
+              <div class="col-lg-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control edit-modal-input" name="invoice_number" id="edit-modal-input" placeholder="Project Scorsese">
+                  <label for="modal-input-invoice_number">Invoice Number</label>
+                </div>
+              </div>
+
+              <div class="col-lg-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control edit-modal-input date" name="invoice_date" id="edit-modal-input" placeholder="Project Scorsese">
+                  <label for="modal-input-invoice_date">Invoice Date</label>
+                </div>
+              </div>
+              
+              <div class="col-lg-12">
+                <div class="form-floating">
+                  <input type="text" class="form-control edit-modal-input" name="status" id="edit-modal-input" placeholder="Leonardo DiCaprio">
+                  <label for="modal-input-status">Status</label>
+                </div>
+              </div>
+              
+              <div class="col-lg">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="cancelled" id="edit-modal-input-cancelled">
+                  <label class="form-check-label" for="edit-modal-input-cancelled">
+                    Cancelled Order?
+                  </label>
+                </div>
+              </div>
+              
+              <div class="col-lg">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="completed" id="edit-modal-input-completed">
+                  <label class="form-check-label" for="edit-modal-input-completed">
+                    Completed Order?
+                  </label>
+                </div>
+              </div>
+              
+            </form>
+          </div>
+          <div class="modal-footer p-3" style="border: none">
+            <div class="col px-3">
+              <div id="edit-modal-errors">
+              </div>
+              <div class="d-flex flex-row justify-content-end mt-3">
+                <button type="button" class="btn standard-btn" style="width:auto;" id="edit-modal-btn-close" data-bs-dismiss="modal">Close</button>
+                <button  class="btn std-btn" style="margin-left: 0.5em;width:auto;" id="edit-modal-btn-save" source="accounts">Edit Payment</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- COMBAT INFORMATION CENTER -->
     <div class="container-fluid mt-3" id="root_container">
       <div class="row d-flex justify-content-center ">
@@ -211,6 +277,7 @@
                 <th scope="col">Status</th>
                 <th scope="col">Completed</th>
                 <th scope="col">Cancelled</th>
+                <th scope="col">Edit</th>
               </tr>
             </thead>
             <!-- Accounts Display -->
@@ -239,11 +306,13 @@
     const getAll_url = "{% url 'getAllPayments_API' %}"
     const search_url = "{% url 'searchPayments_API' %}" + "?search=0"
     const postNew_url = "{% url 'postNewPayments_API' %}"
+    const postEdit_url = "{% url 'postEditPayments_API' %}"
     const postReport_url = "{% url 'postNewReport_API' %}"
     
     // icons
     true_icon_src = "{% static 'overview_app/icons/true.png' %}"
     false_icon_src = "{% static 'overview_app/icons/false.png' %}"
+    edit_icon_src = "{% static 'overview_app/icons/edit.png' %}"
 
     // tokens
     let report_token = "{{csrf_token}} "

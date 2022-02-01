@@ -76,11 +76,17 @@ function addElement(record, src, prepend = false, replace = false) {
 
   // edge-case: Replace handler
   if (replace == true) {
-    template = getTemplate(record)
+    template = null
+    if (src == "accounts") {
+      template = getTableTemplate(record)
+    } else {
+      template = getTemplate(record)
+    }
 
     if (src == "accounts") {
-      $(`tr[name=${record.id}]`).replaceWith(template)
-      // Set Link to sales via project_code
+      $(`tr[name=${id}]`).replaceWith(template)
+      
+      // Sales_Link Handler
       if ($(`th[name=sales_project_code]`).length > 0) {
         $(`th[name=sales_project_code]`).on("click", function () {
           sales_id = $(this).text()
@@ -89,16 +95,25 @@ function addElement(record, src, prepend = false, replace = false) {
           return;
         })
       }
-      return
+      // Edit Handler for rows
+      if( $(`td[id=edit-${id}]`).length > 0 ) {}
+      $(`td[id=edit-${id}]`).click(function () {
+        edit_id = $(this).attr("name")
+        editElement(edit_id, src)
+      })
+
+      document.getElementById(`tr-${id}`).scrollIntoView({ behavior: "smooth", block: "start" })
+      return 
     } else {
-      if ($(`form[id=edit-form-${record.id}]`).length > 0) {
-        $(`form[id=edit-form-${record.id}]`).replaceWith(template)
+      if ($(`form[id=edit-form-${id}]`).length > 0) {
+        $(`form[id=edit-form-${id}]`).replaceWith(template)
       }
-      else { $(`div[id=card-${record.id}]`).replaceWith(template); }
+      else { $(`div[id=card-${id}]`).replaceWith(template); }
+      document.getElementById(`card-${id}`).scrollIntoView({ behavior: "smooth", block: "start" })
     }
 
     // Dropdown handler for record cards
-    dropdown_selector = "#card-dropdown-" + record.id
+    dropdown_selector = "#card-dropdown-" + id
     if ($(dropdown_selector).length > 0) {
       $(dropdown_selector).on("click", function () {
         dropdown_id = $(this).attr("name")
@@ -111,28 +126,22 @@ function addElement(record, src, prepend = false, replace = false) {
     }
 
     // Edit button handler for record cards
-    edit_selector = "#card-edit-" + record.id
+    edit_selector = "#card-edit-" + id
     if ($(edit_selector).length > 0) {
       $(edit_selector).on("click", function () {
         edit_id = $(this).attr("name")
         if ($(`#card-footer-${edit_id}`).css('display') == "none") { $(`#card-footer-${edit_id}`).show("fast") }
-        // editElement(record.id, src)
+        editElement(id, src)
       })
     }
 
-    if (src == "accounts") {
-      document.getElementById(`card-${record.id}`).scrollIntoView({ behavior: "smooth", block: "start" })
-    } else {
-      document.getElementById(`tr-${record.id}`).scrollIntoView({ behavior: "smooth", block: "start" })
-    }
-    return;
   }
 
   // Check for Duplicates
   if (src == "accounts") { //temp check whilst accounts is table interface
-    if ($(`.tr[name=${record.id}]`).length > 0) { return; }
+    if ($(`.tr[name=${id}]`).length > 0) { return; }
   } else {
-    if ($(`.card[name*='${record.id}']`).length > 0) { return; }
+    if ($(`.card[name*='${id}']`).length > 0) { return; }
   }
 
   // Get template to append/prepend
@@ -148,11 +157,11 @@ function addElement(record, src, prepend = false, replace = false) {
   else { $(`#${src}_display`).append(template) }
 
   // Set card-footers to display none
-  if ($(`#card-footer-${record.id}`).length > 0) {
-    $(`#card-footer-${record.id}`).css("display", "none")
+  if ($(`#card-footer-${id}`).length > 0) {
+    $(`#card-footer-${id}`).css("display", "none")
   }
 
-  // Set Link to sales via project_code
+  // Set Link to sales via project_code for rows 
   if ($(`th[name=sales_project_code]`).length > 0) {
     $(`th[name=sales_project_code]`).on("click", function () {
       sales_id = $(this).text()
@@ -162,8 +171,15 @@ function addElement(record, src, prepend = false, replace = false) {
     })
   }
 
+  // Edit Handler for rows
+  if( $(`td[id=edit-${id}]`).length > 0 ) {}
+  $(`td[id=edit-${id}]`).click(function () {
+    edit_id = $(this).attr("name")
+    editElement(edit_id, src)
+  })
+
   // Dropdown handler for record cards
-  dropdown_selector = "#card-dropdown-" + record.id
+  dropdown_selector = "#card-dropdown-" + id
   if ($(dropdown_selector).length > 0) {
     $(dropdown_selector).on("click", function () {
       dropdown_id = $(this).attr("name")
@@ -176,12 +192,12 @@ function addElement(record, src, prepend = false, replace = false) {
   }
 
   // Edit button handler for record cards
-  edit_selector = "#card-edit-" + record.id
+  edit_selector = "#card-edit-" + id
   if ($(edit_selector).length > 0) {
     $(edit_selector).on("click", function () {
       edit_id = $(this).attr("name")
       if ($(`#card-footer-${edit_id}`).css('display') == "none") { $(`#card-footer-${edit_id}`).show("fast") }
-      // editElement(record.id, src)
+      editElement(id, src)
     })
   }
 
@@ -235,13 +251,14 @@ $(`#reportModal-save`).click(function () {
 function getTableTemplate(record) {
   const template = `
     <tr class="payment ${(record.cancelled) ? 'cancelled-payment ' : ''}${record.completed ? 'completed-payment' : ''}" id="tr-${record.paymentstatus_id}" name='${record.paymentstatus_id}'>
-      <th scope="row" class="hoverable" id="${record.paymentstatus_id}" name="sales_project_code"> ${record.sales_project_code} </th>
+      <th scope="row" class="hoverable" id="${record.paymentstatus_id}" name="sales_project_code" for="${record.sales_project_code}"> ${record.sales_project_code} </th>
         <td id="${record.paymentstatus_id}" name="sales_invoice_amount"> ${record.sales_invoice_amount} </td>
         <td id="${record.paymentstatus_id}" name="invoice_number" class="${record.invoice_number_isNull ? 'missing_text' : ''}"> ${record.invoice_number} </td>
         <td id="${record.paymentstatus_id}" name="invoice_date" class="${record.invoice_date_isNull ? 'missing_text' : ''}"> ${record.invoice_date} </td>
         <td id="${record.paymentstatus_id}" name="status" class="${record.status_isNull ? 'missing_text' : ''}"> ${record.status} </td>
-        <td id="${record.paymentstatus_id}" name="completed" class="text-center" value="${record.completed ? 'true' : 'false'}"> ${record.completed ? `<img src="${true_icon_src}", width="24", height="24">` : `<img src="${false_icon_src}", width="24", height="24">`}</td>
-        <td id="${record.paymentstatus_id}" name="cancelled" class="text-center" value="${record.cancelled ? 'true' : 'false'}"> ${record.cancelled ? `<img src="${true_icon_src}", width="24", height="24">` : `<img src="${false_icon_src}", width="24", height="24">`}</td>
+        <td id="${record.paymentstatus_id}" name="completed" class="text-center" value="${record.completed ? 'true' : 'false'}"> ${record.completed ? `<img src="${true_icon_src}" width="24" height="24">` : `<img src="${false_icon_src}" width="24" height="24">`}</td>
+        <td id="${record.paymentstatus_id}" name="cancelled" class="text-center" value="${record.cancelled ? 'true' : 'false'}"> ${record.cancelled ? `<img src="${true_icon_src}" width="24" height="24">` : `<img src="${false_icon_src}" width="24" height="24">`}</td>
+        <td id="edit-${record.paymentstatus_id}" name="${record.paymentstatus_id}" class="text-center hoverable" data-bs-toggle="modal" data-bs-target="#modal-edit"><img src="${edit_icon_src}" width="24" height="24"></td>
     </tr>`
 
   return template
@@ -397,4 +414,100 @@ function leaveSearch(src) {
   // Add
   addLoadingBar(src)
   start(src)
+}
+
+// ===== EDIT FEATURE ======
+
+function editElement(id, src) {
+  // accounts edit handler
+  if(src == "accounts"){
+
+    form_data = {}
+    form_data["sales_project_code"] = $(`th[id=${id}]`).attr("for")
+    $(`#edit-modal-input-cancelled`).prop("checked", false)
+    $(`#edit-modal-input-completed`).prop("checked", false)
+
+    // Get Data from table values and put into form_data
+    $(`td[id=${id}]`).each( function () {
+      property = $(this).attr("name")
+      value = $(this).text()
+      
+      if(property == "cancelled" || property == "completed") {
+        if( $(this).attr("value") == 'true' ) {
+          if(property == "cancelled") {
+            form_data["cancelled"] = $(this).attr("value")
+          } else { form_data["completed"] = $(this).attr("value") }
+        } else {
+          if(property == "cancelled") {
+            form_data["cancelled"] = $(this).attr("value")
+          } else { form_data["completed"] = $(this).attr("value") }
+        }
+      } else {
+        format = value.split(" ")
+        if(format[0] == "") { format.splice(0,1) }
+        if(format[(format.length-1)] == "") { format.splice((format.length-1),1) }
+        form_data[property] = format.join(" ")
+      }
+    }) 
+
+    // Fill edit-modal with gathered form_data
+    $(".edit-modal-input").each( function () {
+      property = $(this).attr("name")
+        $(this).val(form_data[property])
+    })
+    if(form_data["cancelled"] == 'true') { $(`#edit-modal-input-cancelled`).prop("checked", true) }
+    if(form_data["completed"] == 'true') { $(`#edit-modal-input-completed`).prop("checked", true) }
+    
+    // Set Modal Title for sales project code
+    $(`.edit-modal-title`).text(`Edit Entry Payment For: ${form_data.sales_project_code}`)
+    $(`.edit-modal-title`).attr("for", form_data.sales_project_code)
+
+    // Save Changes button handler -> submit new edit
+    $("#edit-modal-btn-save").on("click", function () {
+      $("#edit-modal-errors").empty()
+      $("#edit-modal-errors").append(`<p class="text-info">Processing New Payment...</p>`)
+      
+      record = {}
+      record["sales_project_code"] = $(".edit-modal-title").attr("for")
+      
+      // Get & Assign Data
+      let edit_form_data = $("form[id=modal-form-edit]").serializeArray()
+      $.each(edit_form_data, function (i, field) {
+        property = field.name
+        if (property == "cancelled") {
+          record["cancelled"] = true
+        }
+        else if (property == "completed") {
+          record["completed"] = true
+        }
+        else {
+          record[property] = field.value
+        }
+      })
+
+      console.log(record)
+      // Make Ajax Call & handle OK response
+      postEditRecords(postEdit_url, record).then((response) => {
+        $("#edit-modal-errors").empty()
+        console.log("in then")
+        new_edit = response.data
+        console.log(new_edit)
+        addElement(new_edit, src,  prepend = false, replace = true)
+        $("#edit-modal-btn-close").trigger("click")
+      }).catch((error) => {
+        $("#edit-modal-errors").empty()
+        console.log("in catch")
+        if (error.responseJSON) {
+          Object.keys(error.responseJSON).forEach(key => {
+            error_title = propertyToTitle(key)
+            $("#edit-modal-errors").append(`<p class="error-text"> ${error_title}: ${error.responseJSON[key]}`)
+            $(".edit-modal-input").addClass("input-error-highlight")
+          })
+        } else {
+          $("#edit-modal-errors").append(`<p class="error-text"> ${error.responseText}`)
+        }
+      })
+
+    })
+  }
 }

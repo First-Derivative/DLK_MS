@@ -51,3 +51,22 @@ function postNewRecords(url, record) {
       })
   })
 }
+
+// POST edit Records AJAX
+function postEditRecords(url, record) {
+  return new Promise((resolve, reject) =>{
+    $.ajax(
+      {
+        type: "POST",
+        headers: { "X-CSRFToken": token },
+        url: url,
+        data: record,
+        success: function (response) {
+          resolve(response)
+        },
+        error: function (error) {
+          reject(error)
+        }
+      })
+  })
+}

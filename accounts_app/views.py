@@ -42,11 +42,10 @@ class searchAPI(generics.ListCreateAPIView):
 
 # Post new Payment
 @method_check(allowed_methods=["POST"])
-@role_check(allowed_roles="shipping")
+@role_check(allowed_roles="accounts")
 @api_view(['POST'])
 def postNewPayment(request):
   post = request.POST
-  print(post)
   sale = None
   try:
     sale = Sales.objects.get(project_code=post["sales_project_code"])
@@ -60,8 +59,8 @@ def postNewPayment(request):
   
   # No Duplicate Found-> Create new Object
   except PaymentStatus.DoesNotExist:
-    cancelled = post["cancelled"] if "cancelled" in post else False
-    completed = post["completed"] if "completed" in post else False
+    cancelled = bool(post["cancelled"]) if "cancelled" in post else False
+    completed = bool(post["completed"]) if "completed" in post else False
 
     # Instantiate New Payment from Post data
     new_payment = PaymentStatus(sales_relation=sale, invoice_number=post["invoice_number"], invoice_date=post["invoice_date"], status=post["status"], cancelled=cancelled, completed=completed)
@@ -74,3 +73,43 @@ def postNewPayment(request):
 
     new_payment.save()
     return JsonResponse({"data":PaymentStatusSerializer(new_payment).data})
+
+
+# Post edit Payment
+@method_check(allowed_methods=["POST"])
+@role_check(allowed_roles="accounts")
+@api_view(['POST'])
+def postEditPayments(request):
+
+  post = request.POST
+  sale = None
+
+  try:
+    sale = Sales.objects.get(project_code=post["sales_project_code"])
+  except Sales.DoesNotExist: 
+    return Response(status=400, data={"sale_not_found":"Cannot create payment with project code '{}' -Sale does not exist".format(post['sales_project_code'])})
+    
+  # Validate postdata for duplication 
+  try:
+    payment= PaymentStatus.objects.get(sales_relation=sale)
+    cancelled = bool(post["cancelled"]) if "cancelled" in post else False
+    completed = bool(post["completed"]) if "completed" in post else False
+
+    # Update Payment from Post data
+    payment.invoice_number= post["invoice_number"]
+    payment.invoice_date= post["invoice_date"]
+    payment.status= post["status"]
+    payment.cancelled= cancelled
+    payment.completed= completed
+    
+    # Validate new_payment with validators
+    try:
+      payment.full_clean()
+    except ValidationError as e:
+      return Response(status=400, data=dict(e))
+    payment.save()
+    return JsonResponse({"data":PaymentStatusSerializer(payment).data})
+
+  # Payment not found -> return error response
+  except PaymentStatus.DoesNotExist:
+    return Response(status=400, data={"payment_not_found":"Payment Record not found. Suspicious operation logged."})
