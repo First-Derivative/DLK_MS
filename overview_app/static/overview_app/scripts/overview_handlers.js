@@ -465,7 +465,7 @@ function editElement(id, src) {
     // Save Changes button handler -> submit new edit
     $("#edit-modal-btn-save").on("click", function () {
       $("#edit-modal-errors").empty()
-      $("#edit-modal-errors").append(`<p class="text-info">Processing New Payment...</p>`)
+      $("#edit-modal-errors").append(`<p class="text-info">Processing Edit...</p>`)
       
       record = {}
       record["sales_project_code"] = $(".edit-modal-title").attr("for")
@@ -485,18 +485,14 @@ function editElement(id, src) {
         }
       })
 
-      console.log(record)
       // Make Ajax Call & handle OK response
       postEditRecords(postEdit_url, record).then((response) => {
         $("#edit-modal-errors").empty()
-        console.log("in then")
         new_edit = response.data
-        console.log(new_edit)
         addElement(new_edit, src,  prepend = false, replace = true)
         $("#edit-modal-btn-close").trigger("click")
       }).catch((error) => {
         $("#edit-modal-errors").empty()
-        console.log("in catch")
         if (error.responseJSON) {
           Object.keys(error.responseJSON).forEach(key => {
             error_title = propertyToTitle(key)
