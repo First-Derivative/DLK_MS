@@ -112,6 +112,11 @@
 /* CARD  */
 
 .missing_text { color: red !important;}
+.link_text {
+  font-weight: 600;
+  font-style: italic;
+  cursor: pointer;
+}
 .header-img{filter: invert(100%);}
 .value
 {

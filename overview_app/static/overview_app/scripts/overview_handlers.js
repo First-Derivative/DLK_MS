@@ -64,6 +64,20 @@ function formatDate(input) {
   return raw_array.join("-")
 }
 
+// ===== NAVIGATION FEATURE =====
+
+function enableIDLink(target, src, link) {
+
+  if ($(target).length > 0) {
+    $(target).on("click", function () {
+      id = $(this).text()
+      link_selector = `#${link}-nav-link`
+      url = $(link_selector).attr("href") + "?search=" + id
+      window.location.replace(url);
+    })
+  }
+}
+
 // ===== UI ADD/REMOVE =====
 
 // Add Element to src_display given record
@@ -85,25 +99,19 @@ function addElement(record, src, prepend = false, replace = false) {
 
     if (src == "accounts") {
       $(`tr[name=${id}]`).replaceWith(template)
-      
-      // Sales_Link Handler
-      if ($(`th[name=sales_project_code]`).length > 0) {
-        $(`th[name=sales_project_code]`).on("click", function () {
-          sales_id = $(this).text()
-          url = $("#sales-nav-link").attr("href") + "?search=" + sales_id
-          window.location.replace(url);
-          return;
-        })
-      }
+
+      // Sales-link handler
+      enableIDLink("th[name=sales_project_code]", src, "sales")
+
       // Edit Handler for rows
-      if( $(`td[id=edit-${id}]`).length > 0 ) {}
+      if ($(`td[id=edit-${id}]`).length > 0) { }
       $(`td[id=edit-${id}]`).click(function () {
         edit_id = $(this).attr("name")
         editElement(edit_id, src)
       })
 
       document.getElementById(`tr-${id}`).scrollIntoView({ behavior: "smooth", block: "start" })
-      return 
+      return
     } else {
       if ($(`form[id=edit-form-${id}]`).length > 0) {
         $(`form[id=edit-form-${id}]`).replaceWith(template)
@@ -161,18 +169,13 @@ function addElement(record, src, prepend = false, replace = false) {
     $(`#card-footer-${id}`).css("display", "none")
   }
 
-  // Set Link to sales via project_code for rows 
-  if ($(`th[name=sales_project_code]`).length > 0) {
-    $(`th[name=sales_project_code]`).on("click", function () {
-      sales_id = $(this).text()
-      url = $("#sales-nav-link").attr("href") + "?search=" + sales_id
-      window.location.replace(url);
-      return;
-    })
+  // Enable Sales-Link for accounts
+  if (src == "accounts") {
+    enableIDLink("th[name=sales_project_code]", src, "sales")
   }
 
   // Edit Handler for rows
-  if( $(`td[id=edit-${id}]`).length > 0 ) {}
+  if ($(`td[id=edit-${id}]`).length > 0) { }
   $(`td[id=edit-${id}]`).click(function () {
     edit_id = $(this).attr("name")
     editElement(edit_id, src)
@@ -420,12 +423,12 @@ function leaveSearch(src) {
 
 function editElement(id, src) {
   // accounts edit handler
-  if(src == "accounts"){
-    
+  if (src == "accounts") {
+
     // Reset Edit Modal content for fresh data filling
     $("#edit-modal-errors").empty()
     $(".edit-modal-input").each(function () {
-      if( $(this).hasClass("input-error-highlight") ) {
+      if ($(this).hasClass("input-error-highlight")) {
         $(this).removeClass("input-error-highlight")
       }
     })
@@ -436,36 +439,36 @@ function editElement(id, src) {
     $(`#edit-modal-input-completed`).prop("checked", false)
 
     // Get Data from table values and put into form_data
-    $(`td[id=${id}]`).each( function () {
+    $(`td[id=${id}]`).each(function () {
       property = $(this).attr("name")
       value = $(this).text()
-      
-      if(property == "cancelled" || property == "completed") {
-        if( $(this).attr("value") == 'true' ) {
-          if(property == "cancelled") {
+
+      if (property == "cancelled" || property == "completed") {
+        if ($(this).attr("value") == 'true') {
+          if (property == "cancelled") {
             form_data["cancelled"] = $(this).attr("value")
           } else { form_data["completed"] = $(this).attr("value") }
         } else {
-          if(property == "cancelled") {
+          if (property == "cancelled") {
             form_data["cancelled"] = $(this).attr("value")
           } else { form_data["completed"] = $(this).attr("value") }
         }
       } else {
         format = value.split(" ")
-        if(format[0] == "") { format.splice(0,1) }
-        if(format[(format.length-1)] == "") { format.splice((format.length-1),1) }
+        if (format[0] == "") { format.splice(0, 1) }
+        if (format[(format.length - 1)] == "") { format.splice((format.length - 1), 1) }
         form_data[property] = format.join(" ")
       }
-    }) 
+    })
 
     // Fill edit-modal with gathered form_data
-    $(".edit-modal-input").each( function () {
+    $(".edit-modal-input").each(function () {
       property = $(this).attr("name")
-        $(this).val(form_data[property])
+      $(this).val(form_data[property])
     })
-    if(form_data["cancelled"] == 'true') { $(`#edit-modal-input-cancelled`).prop("checked", true) }
-    if(form_data["completed"] == 'true') { $(`#edit-modal-input-completed`).prop("checked", true) }
-    
+    if (form_data["cancelled"] == 'true') { $(`#edit-modal-input-cancelled`).prop("checked", true) }
+    if (form_data["completed"] == 'true') { $(`#edit-modal-input-completed`).prop("checked", true) }
+
     // Set Modal Title for sales project code
     $(`.edit-modal-title`).text(`Edit Entry Payment For: ${form_data.sales_project_code}`)
     $(`.edit-modal-title`).attr("for", form_data.sales_project_code)
@@ -474,10 +477,10 @@ function editElement(id, src) {
     $("#edit-modal-btn-save").on("click", function () {
       $("#edit-modal-errors").empty()
       $("#edit-modal-errors").append(`<p class="text-info">Processing Edit...</p>`)
-      
+
       record = {}
       record["sales_project_code"] = $(".edit-modal-title").attr("for")
-      
+
       // Get & Assign Data
       let edit_form_data = $("form[id=modal-form-edit]").serializeArray()
       $.each(edit_form_data, function (i, field) {
@@ -497,7 +500,7 @@ function editElement(id, src) {
       postEditRecords(postEdit_url, record).then((response) => {
         $("#edit-modal-errors").empty()
         new_edit = response.data
-        addElement(new_edit, src,  prepend = false, replace = true)
+        addElement(new_edit, src, prepend = false, replace = true)
         $("#edit-modal-btn-close").trigger("click")
       }).catch((error) => {
         $("#edit-modal-errors").empty()
