@@ -43,7 +43,7 @@
     <button type="button" data-bs-toggle="collapse" data-bs-target="#navbar_nav" class="navbar-toggler">Nav</button>
     
     <div class="collapse navbar-collapse" id="navbar_nav">
-        <div class="col-lg-10">
+        <div class="col-lg-9">
         <ul class="navbar-nav justify-content-center">
           <li class="nav-item {% if request.path == '/' %}active{% endif %}"><a class="" href="{% url 'home' %}">Overview</a></li>
           <li class="nav-item {% if request.path == '/sales/' %}active{% endif %}"><a class="" href="{% url 'sales' %}">Sales</li>
@@ -62,7 +62,7 @@
         </ul>
       </div>
       
-      <div class="col-lg-2">
+      <div class="col-lg-3">
         <div class="nav_footer d-flex flex-row justify-content-center">
             <div class="col">
               <li id="profile_button"><a href="#"><img src="{% static '/overview_app/icons/profile_icon.png' %}" id="profile_icon" alt="Profile"></a></li>
