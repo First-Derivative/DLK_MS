@@ -56,7 +56,9 @@
 {% block main_content %}
 
 <!-- SOURCE OF SALE CARDS FOR DISPLAY -->
-<div class="" id="sales_display"></div>
+<div class="" id="sales_display">
+  <div class="h5 bg-warning p-3" id="loading_bar"> Loading items from Database... </div>
+</div>
 
 <!-- MODAL  -->
 <div class="modal" tabindex="-1" id="modal_addSales">
@@ -213,6 +215,7 @@
   
   <!-- Sales Scripts -->
   <script src="{% static 'sales_app/scripts/sales_ajax.js' %}"></script>
+  <script src="{% static 'overview_app/scripts/overview_handlers.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_handlers.js' %}"></script>
   <script src="{% static 'sales_app/scripts/sales_library.js' %}"></script>
   
@@ -244,6 +247,7 @@
   {% else %}
     // Startup Script
     start(cache)
+
   {% endif %}
 
   // Datepicker Utility for modal order date

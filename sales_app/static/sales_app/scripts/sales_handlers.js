@@ -11,6 +11,11 @@ function start(library) {
       library.append(content)
       addSales(content)
     }
+
+    if(sales_count > 0) {
+      removeLoadingBar()
+    }
+    
   }).catch((error) => {
     $(`sales_display`).append(`<p class="h5 text-danger> Get Sales Error: Please report bug with the text: ${error} </p>`)
   })
